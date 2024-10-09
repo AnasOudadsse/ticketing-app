@@ -1,13 +1,10 @@
-
+import SideBar from "./component/side-bar/side-bar";
 
 function App() {
   return (
-    <div className="App">
-        <h1>
-          Ticketing app
-        </h1>
-    </div> 
+    <div>
+      <SideBar />
+    </div>
   );
 }
-
 export default App;
