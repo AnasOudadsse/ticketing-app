@@ -1,12 +1,15 @@
-
+import * as React from 'react'
+import { ChakraBaseProvider, ChakraProvider } from '@chakra-ui/react'
 
 function App() {
   return (
-    <div className="App">
-        <h1>
-          Ticketing app
-        </h1>
-    </div> 
+    <ChakraBaseProvider>
+      <div className="App">
+          <h1>
+            Ticketing app
+          </h1>
+      </div> 
+    </ChakraBaseProvider>
   );
 }
 
