@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import SideBar from "./component/side-bar/side-bar";
+import * as React from 'react';
+import { ChakraProvider } from '@chakra-ui/react'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { NewTicket } from "./component/add-ticket/add-ticket";
+import TicketList from "./component/tickets-list/tickets-list";
+import Statistiques from "./component/statistiques/statistiques";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <ChakraProvider>
+        <SideBar />
+        <BrowserRouter>
+          <Routes>
+              <Route element={<NewTicket/>} path="newticket" />
+              <Route element={<TicketList/>} path="ticketlist" />
+              <Route element={<Statistiques />} path="statistiques" />
+              <Route element={<Statistiques />} path="statistiques" />
+          </Routes>
+        </BrowserRouter>
+    </ChakraProvider>
+  )}
 
-export default App;
+  export default App;
