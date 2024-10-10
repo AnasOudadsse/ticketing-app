@@ -19,9 +19,9 @@ return new class extends Migration
             $table->text('description');
             $table->string('status');
             $table->string('attachement')->nullable();
-            $table->unsignedBigInteger('supportItID');
+            $table->unsignedBigInteger('supportItID')->nullable();
             $table->foreign('supportItID')->references('id')->on('support_its');
-            $table->unsignedBigInteger('adminID');
+            $table->unsignedBigInteger('adminID')->nullable();
             $table->foreign('adminID')->references('id')->on('admins');
             $table->unsignedBigInteger('clientID');
             $table->foreign('clientID')->references('id')->on('clients');

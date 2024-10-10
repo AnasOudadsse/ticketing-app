@@ -25,7 +25,7 @@ class TicketController extends Controller
             'status' => $validated['status'],
             'attachement' => $validated['attachement'],
             'clientID' => $validated['clientID'],
-            'admin_id' => null,
+            'adminID' => null,
             'supportItID' => null
         ]);
 

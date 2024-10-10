@@ -24,7 +24,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/addUser', [UserController::class, 'store']);
 
 Route::prefix('tickets')->group(function () {
-    Route::post('/create', [TicketController::class, 'store']);
+    Route::post('/', [TicketController::class, 'store']);
     Route::get('/unassigned', [TicketController::class, 'listUnassignedTickets']);
     Route::post('/{id}/reserve', [TicketController::class, 'reserveTicket']);
     Route::post('/{id}/assign', [TicketController::class, 'assignTicketByAdmin']);
