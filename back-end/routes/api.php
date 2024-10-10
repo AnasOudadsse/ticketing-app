@@ -7,8 +7,6 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
-use App\Http\Controllers\UserController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -47,7 +45,6 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::post('/addUser', [UserController::class, 'store']);
 
 Route::prefix('tickets')->group(function () {
     Route::post('/', [TicketController::class, 'store']);
