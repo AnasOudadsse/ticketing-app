@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class localisation extends Model
 {
     use HasFactory;
+    protected $fillable = ['name'];
+    
     public function User(){
         return $this->hasMany(User::class);
     }
