@@ -5,12 +5,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NewTicket } from "./component/add-ticket/add-ticket";
 import TicketList from "./component/tickets-list/tickets-list";
 import Statistiques from "./component/statistiques/statistiques";
+import Header from "./component/header/header";
 
 
 function App() {
   return (
     <ChakraProvider>
         <SideBar />
+        <Header />
         <BrowserRouter>
           <Routes>
               <Route element={<NewTicket/>} path="newticket" />
