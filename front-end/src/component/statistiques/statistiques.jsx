@@ -1,7 +1,11 @@
 import { Fragment } from "react";
 
-const statistiques = () => {
+const Statistiques = () => {
     return (
-        <Fragment></Fragment>
+        <div className="bg-green-200 rounded w-48 h-36">
+
+        </div>
     );
 }
+
+export default Statistiques;
