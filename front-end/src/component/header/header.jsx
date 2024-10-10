@@ -10,12 +10,15 @@ const Header = () => {
       </div>
       <div className="flex items-center gap-16">
         <span className="flex gap-3">
-
-        <img width={50} height={50} src="https://png.pngtree.com/png-clipart/20240709/original/pngtree-casual-man-flat-design-avatar-profile-picture-vector-png-image_15526568.pnghttps://png.pngtree.com/png-clipart/20240709/original/pngtree-casual-man-flat-design-avatar-profile-picture-vector-png-image_15526568.png" />
-        <div>
-          <p>Mezrioui Hakim</p>
-          <p className="text-sm text-gray-400">admin</p>
-        </div>
+          <img
+            width={50}
+            height={50}
+            src="https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+          />
+          <div>
+            <p>Mezrioui Hakim</p>
+            <p className="text-sm text-gray-400">admin</p>
+          </div>
         </span>
         <FontAwesomeIcon icon={faAngleUp} />
       </div>
