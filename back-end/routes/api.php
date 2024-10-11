@@ -4,9 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
+use App\Http\Controllers\SpecialisationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +42,20 @@ Route::prefix('localisations')->group(function(){
     Route::delete('/{id}', [LocalisationController::class, 'destroy']);
 });
 
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::prefix('specialisations')->group(function(){
+    Route::get('/specialisations', [SpecialisationController::class, 'index']);
+    Route::post('/specialisations', [SpecialisationController::class, 'store']);
+    Route::get('/specialisations/{id}', [SpecialisationController::class, 'show']);
+    Route::put('/specialisations/{id}', [SpecialisationController::class, 'update']);
+    Route::delete('/specialisations/{id}', [SpecialisationController::class, 'destroy']); 
+});
+
+
 Route::prefix('problems')->group(function(){
     Route::get('/', [ProblemController::class, 'index']);
     Route::post('/', [ProblemController::class, 'store']);
@@ -47,17 +63,6 @@ Route::prefix('problems')->group(function(){
     Route::put('/{id}', [ProblemController::class, 'update']); 
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
 });
-
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-Route::get('/specialisations', [SpecialisationController::class, 'index']);
-Route::post('/specialisations', [SpecialisationController::class, 'store']);
-Route::get('/specialisations/{id}', [SpecialisationController::class, 'show']);
-Route::put('/specialisations/{id}', [SpecialisationController::class, 'update']);
-Route::delete('/specialisations/{id}', [SpecialisationController::class, 'destroy']);
 
 
 Route::prefix('tickets')->group(function () {
