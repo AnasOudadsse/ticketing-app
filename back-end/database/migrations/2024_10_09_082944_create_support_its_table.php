@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('support_its', function (Blueprint $table) {
             $table->id();
-            //$table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->unsignedBigInteger('supportIt_id');
             $table->foreign('supportIt_id')->references('id')->on('users');
             $table->timestamps();

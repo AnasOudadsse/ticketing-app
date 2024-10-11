@@ -7,6 +7,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
+use App\Http\Controllers\SpecialisationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -45,12 +46,19 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+Route::get('/specialisations', [SpecialisationController::class, 'index']);
+Route::post('/specialisations', [SpecialisationController::class, 'store']);
+Route::get('/specialisations/{id}', [SpecialisationController::class, 'show']);
+Route::put('/specialisations/{id}', [SpecialisationController::class, 'update']);
+Route::delete('/specialisations/{id}', [SpecialisationController::class, 'destroy']);
+
 
 Route::prefix('tickets')->group(function () {
     Route::post('/', [TicketController::class, 'store']);
     Route::get('/listTickets', [TicketController::class, 'listTickets']);
     Route::post('/{id}/reserve', [TicketController::class, 'reserveTicket']);
     Route::post('/{id}/assign', [TicketController::class, 'assignTicketByAdmin']);
+    Route::put('/{id}/close',[TicketController::class,'closeTicket']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
