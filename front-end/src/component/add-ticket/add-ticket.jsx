@@ -1,64 +1,136 @@
-import { Box, Button, Text, FormControl, FormLabel, Input, Select, Textarea, Heading, VStack } from "@chakra-ui/react";
-import React from "react";
+import { useState } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Textarea,
+  VStack,
+  useToast,
+} from "@chakra-ui/react";
+import axios from "axios";
 
-export const NewTicket = () => {
+export  const NewTicket = () => {
+  const [formData, setFormData] = useState({
+    problem_id: "",
+    description: "",
+    status: "",
+    attachement: "",
+    clientID: "",
+  });
 
-    return(
-    <Box p={50}  w={'full'} bg={'#F9F9FB'}>
-        <Heading maxW="600px" mx="auto" as='h1' size='xl' mb={4}>
-            New Ticket
-        </Heading>
-        <Box bg={'white'} borderRadius={15} p={50} maxW="600px" mx="auto" mt={10}>
-        <Heading as="h2" size="lg" mb={2}>
-            Create Quick Ticket
-        </Heading>
-        <Box mb={4} color="gray.500">
-            Write and address new queries and issues
-        </Box>
-        <VStack spacing={4} align="start">
+  const toast = useToast();
 
-            <FormControl isRequired>
-            <FormLabel>Subject</FormLabel>
-            <Input placeholder="Type Subject" />
-            </FormControl>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-            <FormControl isRequired>
-            <FormLabel>Request Ticket Type</FormLabel>
-            <Select placeholder="Choose Type">
-                <option value="bug">Bug</option>
-                <option value="feature">Equipment Problem</option>
-                <option value="support">Support</option>
-                <option value="support">Platform problem</option>
-            </Select>
-            </FormControl>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-            
-            <FormControl isRequired>
-            <FormLabel>Priority</FormLabel>
-            <Select placeholder="Select Status">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </Select>
-            </FormControl>
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/tickets", formData);
+      toast({
+        title: "Ticket Created",
+        description: "Your ticket has been created successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
 
-            
-            <FormControl>
-            <FormLabel>Description</FormLabel>
-            <Textarea placeholder="Type ticket issue here..." />
-            </FormControl>
+      // Reset the form after submission
+      setFormData({
+        problem_id: "",
+        description: "",
+        status: "",
+        attachement: "",
+        clientID: "",
+      });
+    } catch (error) {
+      console.error("There was an error creating the ticket:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create ticket. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
-            <FormControl>
-                <FormLabel>Attachment</FormLabel>
-                <Input type="file" />
-            </FormControl>
+  return (
+    <Box w={'700px'} mx="auto" mt={10}>
+      <VStack spacing={4} as="form" onSubmit={handleSubmit} align="start">
+        {/* Problem ID */}
+        <FormControl isRequired>
+          <FormLabel>Problem ID</FormLabel>
+          <Input
+            name="problem_id"
+            placeholder="Enter Problem ID"
+            value={formData.problem_id}
+            onChange={handleChange}
+          />
+        </FormControl>
 
-            
-            <Button colorScheme="green" width="full">
-            Send Ticket
-            </Button>
-        </VStack>
-        </Box>
+        {/* Description */}
+        <FormControl isRequired>
+          <FormLabel>Description</FormLabel>
+          <Textarea
+            name="description"
+            placeholder="Describe the issue"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </FormControl>
+
+        {/* Status */}
+        <FormControl isRequired>
+          <FormLabel>Status</FormLabel>
+          <Select
+            name="status"
+            placeholder="Select Status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="closed">Closed</option>
+          </Select>
+        </FormControl>
+
+        {/* Attachment */}
+        <FormControl>
+          <FormLabel>Attachment</FormLabel>
+          <Input
+            name="attachement"
+            placeholder="Attachment (URL)"
+            value={formData.attachement}
+            onChange={handleChange}
+          />
+        </FormControl>
+
+        {/* Client ID */}
+        <FormControl isRequired>
+          <FormLabel>Client ID</FormLabel>
+          <Input
+            name="clientID"
+            placeholder="Enter Client ID"
+            value={formData.clientID}
+            onChange={handleChange}
+          />
+        </FormControl>
+
+        {/* Submit Button */}
+        <Button type="submit" colorScheme="purple" width="full">
+          Create Ticket
+        </Button>
+      </VStack>
     </Box>
-    )
+  );
 }

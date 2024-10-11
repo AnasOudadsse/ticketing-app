@@ -29,7 +29,6 @@ class TicketController extends Controller
             'supportItID' => null
         ]);
 
-        //dd($ticket);
 
         return response()->json(['message' => 'Ticket créé avec succès', 'ticket' => $ticket], 201);
     }
