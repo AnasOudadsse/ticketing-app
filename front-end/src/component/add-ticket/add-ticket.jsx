@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -12,16 +12,42 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 
-export  const NewTicket = () => {
+export const NewTicket = () => {
   const [formData, setFormData] = useState({
     problem_id: "",
     description: "",
-    status: "",
+    status: "published",
     attachement: "",
-    clientID: "",
+    clientID: "1",
   });
 
+  const [problems, setProblems] = useState([]); // To store fetched problems
+  const [loading, setLoading] = useState(true); // For loading state
+
   const toast = useToast();
+
+  // Fetch problems from API when component mounts
+  useEffect(() => {
+    const fetchProblems = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/problems");
+        setProblems(response.data); // Assuming the API response returns a list of problems
+        setLoading(false); // Stop loading once data is fetched
+      } catch (error) {
+        console.error("Error fetching problems:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch problems from the server.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setLoading(false); // Stop loading even on error
+      }
+    };
+
+    fetchProblems();
+  }, [toast]); // Empty dependency array ensures it runs once on mount
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,17 +91,24 @@ export  const NewTicket = () => {
   };
 
   return (
-    <Box w={'700px'} mx="auto" mt={10}>
+    <Box w={"700px"} mx="auto" mt={10}>
       <VStack spacing={4} as="form" onSubmit={handleSubmit} align="start">
         {/* Problem ID */}
         <FormControl isRequired>
-          <FormLabel>Problem ID</FormLabel>
-          <Input
+          <FormLabel>Problem</FormLabel>
+          <Select
             name="problem_id"
-            placeholder="Enter Problem ID"
+            placeholder={loading ? "Loading problems..." : "Select Problem"}
             value={formData.problem_id}
             onChange={handleChange}
-          />
+            isDisabled={loading} // Disable select when loading
+          >
+            {problems.map((problem) => (
+              <option key={problem.id} value={problem.id}>
+                {problem.name} {/* Assuming each problem has a 'name' property */}
+              </option>
+            ))}
+          </Select>
         </FormControl>
 
         {/* Description */}
@@ -89,39 +122,12 @@ export  const NewTicket = () => {
           />
         </FormControl>
 
-        {/* Status */}
-        <FormControl isRequired>
-          <FormLabel>Status</FormLabel>
-          <Select
-            name="status"
-            placeholder="Select Status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="open">Open</option>
-            <option value="in_progress">In Progress</option>
-            <option value="closed">Closed</option>
-          </Select>
-        </FormControl>
-
         {/* Attachment */}
         <FormControl>
           <FormLabel>Attachment</FormLabel>
           <Input
+            type="file"
             name="attachement"
-            placeholder="Attachment (URL)"
-            value={formData.attachement}
-            onChange={handleChange}
-          />
-        </FormControl>
-
-        {/* Client ID */}
-        <FormControl isRequired>
-          <FormLabel>Client ID</FormLabel>
-          <Input
-            name="clientID"
-            placeholder="Enter Client ID"
-            value={formData.clientID}
             onChange={handleChange}
           />
         </FormControl>
@@ -133,4 +139,4 @@ export  const NewTicket = () => {
       </VStack>
     </Box>
   );
-}
+};
