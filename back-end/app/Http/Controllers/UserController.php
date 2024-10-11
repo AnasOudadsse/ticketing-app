@@ -33,9 +33,9 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password), 
             'role' => $request->role,
-            'fonction_id' => $request->fonction_id,
-            'departement_id' => $request->departement_id,
-            'localisation_id' => $request->localisation_id,
+            // 'fonction_id' => $request->fonction_id,
+            // 'departement_id' => $request->departement_id,
+            // 'localisation_id' => $request->localisation_id,
         ]);
 
         
