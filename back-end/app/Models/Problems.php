@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Problems extends Model
 {
     use HasFactory;
+    protected $fillable = ['name'];
     public function Ticket(){
         return $this->belongsTo(Ticket::class);
     }

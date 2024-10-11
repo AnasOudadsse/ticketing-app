@@ -29,12 +29,12 @@ class TicketController extends Controller
             'supportItID' => null
         ]);
 
-        dd($ticket);
+        //dd($ticket);
 
         return response()->json(['message' => 'Ticket créé avec succès', 'ticket' => $ticket], 201);
     }
 
-    public function listUnassignedTickets()
+    public function listTickets()
     {
         //$tickets = Ticket::whereNull('supportItID')->get();
         $tickets = Ticket::all();
@@ -70,11 +70,11 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'supportItID' => 'required|exists:support_its,id',
-            'clientID' => 'required|exists:admins,id',
+            'adminID' => 'required|exists:admins,id',
         ]);
 
         $ticket->supportItID = $validated['supportItID'];
-        $ticket->clientID = $validated['clientID'];
+        $ticket->adminID = $validated['adminID'];
         $ticket->status = 'assigné';
         $ticket->save();
 
