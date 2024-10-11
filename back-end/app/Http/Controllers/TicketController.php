@@ -84,11 +84,11 @@ class TicketController extends Controller
 {
     $ticket = Ticket::findOrFail($ticket_id);
 
-    if ($ticket->status === 'closed') {
+    if ($ticket->status === 'resolved') {
         return response()->json(['message' => 'Ce ticket est déjà clôturé'], 400);
     }
 
-    $ticket->status = 'closed';
+    $ticket->status = 'resolved';
     $ticket->save();
 
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);

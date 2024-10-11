@@ -87,18 +87,17 @@ export default function TicketList() {
 
   // Handle Tab Change
   const handleTabChange = (index) => {
-    let status = "all";
-    if (index === 1) status = "new";
-    else if (index === 2) status = "on-going";
-    else if (index === 3) status = "resolved";
-
-    setSelectedTab(status);
-
-    if (status === "all") {
-      setFilteredTickets(tickets); // Show all tickets
-    } else {
-      const filtered = tickets.filter((ticket) => ticket.status === status);
-      setFilteredTickets(filtered); // Filter based on status
+    if (index === 0) {
+      // All Tickets Tab: show all tickets
+      setFilteredTickets(tickets);
+    } else if (index === 1) {
+      // reserved Tab: show tickets with status 'reserved'
+      const filtered = tickets.filter(ticket => ticket.status === 'reserved');
+      setFilteredTickets(filtered);
+    } else if (index === 2) {
+      // Resolved Tab: show tickets with status 'resolved'
+      const filtered = tickets.filter(ticket => ticket.status === 'resolved');
+      setFilteredTickets(filtered);
     }
   };
 
@@ -119,7 +118,7 @@ export default function TicketList() {
             </MenuItem>
             <MenuItem>
               <Box boxSize={2} bg="orange.400" borderRadius="full" mr={2} />
-              On-Going Tickets
+              reserved Tickets
             </MenuItem>
             <MenuItem>
               <Box boxSize={2} bg="green.400" borderRadius="full" mr={2} />
@@ -133,7 +132,8 @@ export default function TicketList() {
           <option value="this-month">This Month</option>
         </Select>
         <Button colorScheme="purple" ml={4}>
-          New Ticket
+          <a href="newticket">New Ticket</a>
+          
         </Button>
       </Flex>
 
@@ -141,30 +141,35 @@ export default function TicketList() {
       <Tabs variant="enclosed-colored" onChange={handleTabChange}>
         <TabList>
           <Tab>All Tickets</Tab>
-          <Tab>New</Tab>
-          <Tab>On-Going</Tab>
+          <Tab>reserved</Tab>
           <Tab>Resolved</Tab>
         </TabList>
       </Tabs>
 
       {/* Ticket Items */}
       <VStack spacing={4} mt={6}>
-        {!loading && filteredTickets.length > 0 ? (
-          filteredTickets.map((ticket) => (
-            <TicketItem
-              key={ticket.id}
-              statusColor={ticket.status === "new" ? "blue.400" : ticket.status === "on-going" ? "orange.400" : "green.400"}
-              ticketNumber={ticket.ticketNumber}
-              priority={ticket.priority}
-              postedTime={ticket.postedTime}
-              name={ticket.name}
-              description={ticket.description}
-            />
-          ))
-        ) : (
-          <Text>No tickets found.</Text>
-        )}
-      </VStack>
+  {!loading && filteredTickets.length > 0 ? (
+    filteredTickets.map((ticket) => (
+      <TicketItem
+        key={ticket.id}
+        statusColor={
+          ticket.status === "new"
+            ? "blue.400"
+            : ticket.status === "reserved"
+            ? "orange.400"
+            : "green.400"
+        }
+        ticketNumber={ticket.ticketNumber}
+        priority={ticket.priority}
+        postedTime={ticket.postedTime}
+        name={ticket.name}
+        description={ticket.description}
+      />
+    ))
+  ) : (
+    <Text>No tickets found.</Text>
+  )}
+</VStack>
 
       {/* Pagination (if necessary) */}
       <Flex mt={8} justifyContent="center" alignItems="center">
