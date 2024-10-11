@@ -12,7 +12,7 @@ function App() {
     <ChakraProvider>
       <div className="flex w-full">
         <SideBar  />
-        <PieTicket />
+        {/* <PieTicket /> */}
         <BrowserRouter>
           <Routes>
             <Route element={<NewTicket />} path="newticket" />

@@ -7,6 +7,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
+use App\Http\Controllers\ProblemController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +40,14 @@ Route::prefix('localisations')->group(function(){
     Route::get('/{id}', [LocalisationController::class, 'show']); 
     Route::put('/{id}', [LocalisationController::class, 'update']); 
     Route::delete('/{id}', [LocalisationController::class, 'destroy']);
+});
+
+Route::prefix('problems')->group(function(){
+    Route::get('/', [ProblemController::class, 'index']);
+    Route::post('/', [ProblemController::class, 'store']);
+    Route::get('/{id}', [ProblemController::class, 'show']); 
+    Route::put('/{id}', [ProblemController::class, 'update']); 
+    Route::delete('/{id}', [ProblemController::class, 'destroy']);
 });
 
 
