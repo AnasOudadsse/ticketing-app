@@ -73,6 +73,7 @@ Route::prefix('tickets')->group(function () {
     Route::post('/{id}/assign', [TicketController::class, 'assignTicketByAdmin']);
     Route::put('/{id}/resolve',[TicketController::class,'closeTicket']);
     Route::get('/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
+    Route::get('/get/{id}', [TicketController::class, 'show']);
 
 });
 

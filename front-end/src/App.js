@@ -6,6 +6,7 @@ import { NewTicket } from "./component/add-ticket/add-ticket";
 import TicketList from "./component/tickets-list/tickets-list";
 import Statistiques from "./component/statistiques/statistiques";
 import PieTicket from "./component/pie-ticket/pieTicket";
+import { TicketView } from "./component/ticket-view/ticket-view";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
             <Route element={<NewTicket />} path="newticket" />
             <Route element={<TicketList />} path="ticketlist" />
             <Route element={<Statistiques />} path="statistiques" />
-            <Route element={<Statistiques />} path="statistiques" />
+            <Route element={<TicketView />} path="ticketview/:id" />
           </Routes>
         </BrowserRouter>
       </div>

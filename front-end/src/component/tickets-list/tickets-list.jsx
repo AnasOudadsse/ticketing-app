@@ -23,9 +23,17 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // TicketItem Component
 const TicketItem = ({ statusColor,problemName, ticketNumber, priority, postedTime, name, description, status }) => {
+  
+  const navigate = useNavigate();
+  
+  const handleOpenTicket = () => {
+    navigate(`/tickets/${ticketNumber}`); 
+  };
+  
   return (
     <Box p={5} w={'500px'} shadow="md" borderWidth="1px" rounded="md">
       <HStack>
@@ -51,7 +59,7 @@ const TicketItem = ({ statusColor,problemName, ticketNumber, priority, postedTim
         <Avatar name={name} src="https://bit.ly/broken-link" />
         <Text>{name}</Text>
         <Spacer />
-        <Button variant="link" colorScheme="purple">
+        <Button variant="link" colorScheme="purple" onClick={handleOpenTicket}>
           Open Ticket
         </Button>
       </HStack>
@@ -69,6 +77,7 @@ export default function TicketList() {
 
   console.log(tickets);
   console.log(problemName);
+
 
   
   // Fetch tickets from API
@@ -110,6 +119,9 @@ export default function TicketList() {
       setFilteredTickets(filtered);
     }
   };
+
+
+
 
   return (
     <Box mx="20" w={"1000px"} p={6}>

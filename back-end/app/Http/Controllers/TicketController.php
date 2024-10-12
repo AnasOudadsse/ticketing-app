@@ -59,6 +59,18 @@ class TicketController extends Controller
         return response()->json(['message' => 'Ticket réservé avec succès', 'ticket' => $ticket], 200);
     }
 
+    public function show($id)
+    {
+        $ticket = Ticket::with('problem')->find($id);
+
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket not found'], 404);
+        }
+
+        return response()->json($ticket);
+    }
+
+
     public function assignTicketByAdmin(Request $request, $ticket_id)
     {
         $ticket = Ticket::findOrFail($ticket_id);
