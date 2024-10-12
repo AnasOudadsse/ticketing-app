@@ -25,7 +25,7 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import axios from "axios";
 
 // TicketItem Component
-const TicketItem = ({ statusColor, ticketNumber, priority, postedTime, name, description }) => {
+const TicketItem = ({ statusColor,problem, ticketNumber, priority, postedTime, name, description }) => {
   return (
     <Box p={5} w={'800px'} shadow="md" borderWidth="1px" rounded="md">
       <HStack>
@@ -36,7 +36,7 @@ const TicketItem = ({ statusColor, ticketNumber, priority, postedTime, name, des
         <Text color="gray.500">Posted at {postedTime}</Text>
       </HStack>
       <Text fontWeight="bold" mt={2}>
-        How to deposit money to my portal?
+        {problem}
       </Text>
       <Text mt={2} noOfLines={2}>
         {description}
@@ -107,7 +107,7 @@ export default function TicketList() {
       <Flex mb={4} alignItems="center">
         <Input placeholder="Search for ticket" width="300px" />
         <Spacer />
-        <Menu>
+        {/* <Menu>
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
             Select Priority
           </MenuButton>
@@ -125,7 +125,7 @@ export default function TicketList() {
               Resolved Tickets
             </MenuItem>
           </MenuList>
-        </Menu>
+        </Menu> */}
         <Select ml={4} placeholder="This Week" width="150px">
           <option value="today">Today</option>
           <option value="this-week">This Week</option>
@@ -153,8 +153,8 @@ export default function TicketList() {
       <TicketItem
         key={ticket.id}
         statusColor={
-          ticket.status === "new"
-            ? "blue.400"
+          ticket.status === "published"
+            ? "red"
             : ticket.status === "reserved"
             ? "orange.400"
             : "green.400"

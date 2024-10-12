@@ -52,7 +52,7 @@ class TicketController extends Controller
             'supportItID' => 'required|exists:support_its,id',
         ]);
 
-        $ticket->supportItID = $validated['supportItID'];
+        $ticket->supportItID = $validated['supportItID'];   
         $ticket->status = 'reserved';
         $ticket->save();
 
