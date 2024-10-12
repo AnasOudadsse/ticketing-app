@@ -25,19 +25,25 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import axios from "axios";
 
 // TicketItem Component
-const TicketItem = ({ statusColor,problem, ticketNumber, priority, postedTime, name, description }) => {
+const TicketItem = ({ statusColor,problemName, ticketNumber, priority, postedTime, name, description, status }) => {
   return (
-    <Box p={5} w={'800px'} shadow="md" borderWidth="1px" rounded="md">
+    <Box p={5} w={'500px'} shadow="md" borderWidth="1px" rounded="md">
       <HStack>
         <Box bg={statusColor} boxSize={3} borderRadius="full" />
-        <Heading size="md">Ticket# {ticketNumber}</Heading>
+        <Flex gap={20}>
+          <Heading size="md">Ticket: #{ticketNumber}</Heading>
+          <Badge colorScheme={statusColor} >
+            {status}
+          </Badge>
+        </Flex>
         {priority && <Badge colorScheme="red">{priority}</Badge>}
         <Spacer />
-        <Text color="gray.500">Posted at {postedTime}</Text>
+        <Text color="gray.500">
+          Posted at {new Date(postedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
       </HStack>
-      <Text fontWeight="bold" mt={2}>
-        {problem}
-      </Text>
+
+      <Heading mt={3} size="sm">Problem: {problemName}</Heading>
       <Text mt={2} noOfLines={2}>
         {description}
       </Text>
@@ -57,16 +63,19 @@ export default function TicketList() {
   const [tickets, setTickets] = useState([]); // Store fetched tickets
   const [filteredTickets, setFilteredTickets] = useState([]); // Store filtered tickets based on tabs
   const [loading, setLoading] = useState(true); 
+  const [problemName, setProblemName] = useState("");
   const [selectedTab, setSelectedTab] = useState("all"); // Manage selected tab state
   const toast = useToast();
 
   console.log(tickets);
+  console.log(problemName);
+
   
   // Fetch tickets from API
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/tickets/listTickets");
+        const response = await axios.get("http://127.0.0.1:8000/api/tickets/getTicketsWithProblems");
         setTickets(response.data);
         setFilteredTickets(response.data); 
         setLoading(false);
@@ -85,6 +94,7 @@ export default function TicketList() {
     fetchTickets();
   }, [toast]);
 
+
   // Handle Tab Change
   const handleTabChange = (index) => {
     if (index === 0) {
@@ -102,7 +112,7 @@ export default function TicketList() {
   };
 
   return (
-    <Box mx="20" p={6}>
+    <Box mx="20" w={"1000px"} p={6}>
       {/* Search and Filters */}
       <Flex mb={4} alignItems="center">
         <Input placeholder="Search for ticket" width="300px" />
@@ -131,7 +141,7 @@ export default function TicketList() {
           <option value="this-week">This Week</option>
           <option value="this-month">This Month</option>
         </Select>
-        <Button colorScheme="purple" ml={4}>
+        <Button colorScheme="green" ml={4}>
           <a href="newticket">New Ticket</a>
           
         </Button>
@@ -154,14 +164,16 @@ export default function TicketList() {
         key={ticket.id}
         statusColor={
           ticket.status === "published"
-            ? "red"
+            ? "green"
             : ticket.status === "reserved"
-            ? "orange.400"
-            : "green.400"
+            ? "orange"
+            : "red"
         }
-        ticketNumber={ticket.ticketNumber}
+        status={ticket.status}
+        ticketNumber={ticket.id}
+        problemName={ticket?.problem?.name }
         priority={ticket.priority}
-        postedTime={ticket.postedTime}
+        postedTime={ticket.created_at}
         name={ticket.name}
         description={ticket.description}
       />
@@ -174,7 +186,7 @@ export default function TicketList() {
       {/* Pagination (if necessary) */}
       <Flex mt={8} justifyContent="center" alignItems="center">
         <Button variant="link">Previous</Button>
-        <Button mx={2} colorScheme="purple">
+        <Button mx={2} colorScheme="green">
           1
         </Button>
         <Button variant="link">2</Button>

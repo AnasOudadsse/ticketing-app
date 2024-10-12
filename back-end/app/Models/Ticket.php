@@ -12,9 +12,11 @@ class Ticket extends Model
         'problem_id', 'description', 'status', 'attachement', 'supportItID', 'adminID', 'clientID', 'resolutionDate'
     ];
 
-    public function Problem(){
-        return $this->hasMany(Ticket::class);
+    public function problem()
+    {
+        return $this->belongsTo(Problems::class, 'problem_id');
     }
+    
 
     public function client()
 {

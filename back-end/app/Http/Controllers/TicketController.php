@@ -93,4 +93,10 @@ class TicketController extends Controller
 
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
 }
+
+public function getTicketsWithProblems()
+{
+    $ticketsWithProblems = Ticket::with('problem')->get();
+    return $ticketsWithProblems;
+}
 }
