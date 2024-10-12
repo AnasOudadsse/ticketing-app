@@ -1,15 +1,11 @@
 import {
-  faArrowUpWideShort,
-  faU,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment } from "react";
 import StatistiquesCard from "../statistiques-card/statistiques-card";
 
 const Statistiques = () => {
   return (
-    <div className="flex justify-center gap-3">
+    <div className="flex w-full justify-between my-5 px-5">
       <StatistiquesCard
         icon={faUsers}
         title={"Total Users"}
