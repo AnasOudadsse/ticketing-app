@@ -75,7 +75,7 @@ export const TicketView = ({ ticketId }) => {
   }
 
   return (
-    <Box alignContent={'center'} maxW="800px" w={'500px'} mx="auto" mt={10} p={6} shadow="md" borderWidth="1px" rounded="md">
+    <Box alignContent={'center'} maxW="800px" w={'500px'} h={'fit-content'} mx="auto" mt={10} p={6} shadow="md" borderWidth="1px" rounded="md">
       {/* Ticket Info */}
       <Heading size="lg" mb={4}>
         Ticket# {ticket.id} - {ticket?.problem?.name}
