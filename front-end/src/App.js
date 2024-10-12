@@ -14,7 +14,8 @@ import HomeDashboard from "./component/home-dashboard/HomeDashboard";
 function App() {
   return (
     <ChakraProvider>
-      <div className="flex w-full bg-slate-100">
+      <div className="flex w-full">
+        <SideBar  />
         <BrowserRouter>
           <Routes>
             <Route element={<Dashboard />} path="dashboard">
@@ -22,7 +23,6 @@ function App() {
               <Route element={<TicketList />} path="ticketlist" />
             </Route>
             <Route element={<NewTicket />} path="newticket" />
-            <Route element={<Statistiques />} path="statistiques" />
             <Route element={<Statistiques />} path="statistiques" />
             <Route element={<Login />} path="login" />
           </Routes>

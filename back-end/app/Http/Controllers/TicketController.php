@@ -29,7 +29,6 @@ class TicketController extends Controller
             'supportItID' => null
         ]);
 
-        //dd($ticket);
 
         return response()->json(['message' => 'Ticket créé avec succès', 'ticket' => $ticket], 201);
     }
@@ -53,8 +52,8 @@ class TicketController extends Controller
             'supportItID' => 'required|exists:support_its,id',
         ]);
 
-        $ticket->supportItID = $validated['supportItID'];
-        $ticket->status = 'réservé';
+        $ticket->supportItID = $validated['supportItID'];   
+        $ticket->status = 'reserved';
         $ticket->save();
 
         return response()->json(['message' => 'Ticket réservé avec succès', 'ticket' => $ticket], 200);
@@ -75,9 +74,29 @@ class TicketController extends Controller
 
         $ticket->supportItID = $validated['supportItID'];
         $ticket->adminID = $validated['adminID'];
-        $ticket->status = 'assigné';
+        $ticket->status = 'assigned';
         $ticket->save();
 
         return response()->json(['message' => 'Ticket assigné par l\'admin avec succès', 'ticket' => $ticket], 200);
     }
+
+    public function closeTicket($ticket_id)
+{
+    $ticket = Ticket::findOrFail($ticket_id);
+
+    if ($ticket->status === 'resolved') {
+        return response()->json(['message' => 'Ce ticket est déjà clôturé'], 400);
+    }
+
+    $ticket->status = 'resolved';
+    $ticket->save();
+
+    return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
+}
+
+public function getTicketsWithProblems()
+{
+    $ticketsWithProblems = Ticket::with('problem')->get();
+    return $ticketsWithProblems;
+}
 }
