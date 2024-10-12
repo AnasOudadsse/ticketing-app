@@ -69,7 +69,7 @@ Route::prefix('problems')->group(function(){
 Route::prefix('tickets')->group(function () {
     Route::post('/', [TicketController::class, 'store']);
     Route::get('/listTickets', [TicketController::class, 'listTickets']);
-    Route::get('/{id}/reserve', [TicketController::class, 'reserveTicket']);
+    Route::post('/{id}/reserve', [TicketController::class, 'reserveTicket']);
     Route::post('/{id}/assign', [TicketController::class, 'assignTicketByAdmin']);
     Route::put('/{id}/resolve',[TicketController::class,'closeTicket']);
     Route::get('/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
