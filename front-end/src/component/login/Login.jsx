@@ -5,19 +5,23 @@ import { useState } from "react";
 
 const Login = () => {
   const { loading, sendRequest } = useHttp();
+  const [formData, setFormData] = useState({});
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("hello world");
+    console.log(formData);
 
     const request = {
-      url: "",
+      url: "http://127.0.0.1:8000/api/login",
       method: "POST",
-      body: {
-        username: e.target.username,
-        password: e.target.password,
-      },
+      body: JSON.stringify(formData),
       headers: {
         "Content-Type": "application/json",
       },
@@ -53,9 +57,10 @@ const Login = () => {
               icon={faEnvelope}
             />
             <input
+              onBlur={handleBlur}
               className="py-3 px-2 pl-10  w-96 rounded-md outline-none bg-gray-200 hover:bg-gray-300 text-xs text-gray-700 focus:bg-gray-300"
               placeholder="Entrer votre Mail"
-              name="username"
+              name="email"
             />
           </div>
           <div className="mb-3 relative">
@@ -64,6 +69,7 @@ const Login = () => {
               icon={faKey}
             />
             <input
+              onBlur={handleBlur}
               className="py-3 px-2 pl-10 w-96 rounded-md outline-none bg-gray-200 hover:bg-gray-300 text-xs text-gray-700 focus:bg-gray-300"
               placeholder="Entrer votre Password"
               name="password"
