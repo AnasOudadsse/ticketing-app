@@ -10,6 +10,7 @@ import Login from "./component/login/Login";
 import Header from "./component/header/header";
 import Dashboard from "./component/dashboard/dashboard";
 import HomeDashboard from "./component/home-dashboard/HomeDashboard";
+import { TicketView } from "./component/ticket-view/ticket-view";
 
 function App() {
   return (
