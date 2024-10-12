@@ -6,6 +6,10 @@ import { NewTicket } from "./component/add-ticket/add-ticket";
 import TicketList from "./component/tickets-list/tickets-list";
 import Statistiques from "./component/statistiques/statistiques";
 import PieTicket from "./component/pie-ticket/pieTicket";
+import Login from "./component/login/Login";
+import Header from "./component/header/header";
+import Dashboard from "./component/dashboard/dashboard";
+import HomeDashboard from "./component/home-dashboard/HomeDashboard";
 
 function App() {
   return (
@@ -18,7 +22,8 @@ function App() {
             </Route>
             <Route element={<NewTicket />} path="newticket" />
             <Route element={<Statistiques />} path="statistiques" />
-            <Route element={<Statistiques />} path="statistiques" />
+            <Route element={<Login />} path="login" />
+            <Route element={<TicketView />} path="ticketview/:id" />
           </Routes>
         </BrowserRouter>
     </ChakraProvider>
