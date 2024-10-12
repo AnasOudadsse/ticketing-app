@@ -10,9 +10,14 @@ import {
   Text,
   VStack,
   useToast,
+  useColorModeValue,
+  Icon,
+  Badge,
+
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { FaPrint, FaFileSignature } from "react-icons/fa"; // Icons for buttons
 
 export const TicketView = ({ ticketId }) => {
   const [ticket, setTicket] = useState(null); // Store fetched ticket
@@ -23,7 +28,7 @@ export const TicketView = ({ ticketId }) => {
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/tickets/${id}`);
+        const response = await axios.get(`http://127.0.0.1:8000/api/tickets/get/${id}`);
         setTicket(response.data);
       } catch (error) {
         console.error("Error fetching ticket:", error);
@@ -74,56 +79,107 @@ export const TicketView = ({ ticketId }) => {
     return <Text>Loading ticket...</Text>; // Show loading state while ticket is being fetched
   }
 
+
   return (
-    <Box maxW="800px" mx="auto" mt={10} p={6} shadow="md" borderWidth="1px" rounded="md">
-      {/* Ticket Info */}
-      <Heading size="lg" mb={4}>
-        Ticket# {ticket.id} - {ticket?.problem?.name}
+    <Box
+      maxW="800px"
+      w="full"
+      bg={"gray.50"}
+      borderWidth="1px"
+      rounded="lg"
+      boxShadow="lg"
+      p={8}
+      mx="auto"
+      mt={12}
+    >
+      {/* Ticket Header */}
+      <Heading size="lg" mb={6} textAlign="center">
+        Ticket #{ticket.id} - {ticket?.problem?.name}
       </Heading>
 
-      <VStack align="start" spacing={4}>
+      <VStack align="start" spacing={5}>
+        {/* Ticket Status */}
         <HStack>
           <Text fontWeight="bold">Status:</Text>
-          <Text>{ticket.status}</Text>
+          <Badge
+            colorScheme={
+              ticket.status === "published"
+                ? "blue"
+                : ticket.status === "resolved"
+                ? "green"
+                : "yellow"
+            }
+            p={2}
+            rounded="md"
+          >
+            {ticket.status}
+          </Badge>
         </HStack>
-        <HStack>
-          <Text fontWeight="bold">Priority:</Text>
-          <Text>{ticket.priority}</Text>
-        </HStack>
+
+        {/* Posted Time */}
         <HStack>
           <Text fontWeight="bold">Posted Time:</Text>
-          <Text>{new Date(ticket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          <Text>
+            {new Date(ticket.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}{" "}
+            h
+          </Text>
         </HStack>
+
+        {/* User Name */}
         <HStack>
           <Text fontWeight="bold">Name:</Text>
           <Text>{ticket.name}</Text>
         </HStack>
-        <Text fontWeight="bold">Description:</Text>
-        <Text>{ticket.description}</Text>
 
-        {/* Display image if available */}
+        {/* Ticket Description */}
+        <Box>
+          <Text fontWeight="bold" mb={1}>
+            Description:
+          </Text>
+          <Text p={3} bg={"gray.100"} rounded="md">
+            {ticket.description}
+          </Text>
+        </Box>
+
+        {/* Display Image */}
         {ticket.image && (
           <Box mt={4}>
-            <Image src={ticket.image} alt="Ticket Image" boxSize="300px" objectFit="cover" />
+            <Image src={ticket.image} alt="Ticket Image" boxSize="300px" objectFit="cover" rounded="md" />
           </Box>
         )}
 
         {/* Action Buttons */}
-        <Flex w="full" mt={6}>
+        <Flex w="full" mt={8} align="center">
           {/* Show Reserve button if status is published */}
           {ticket.status === "published" && (
-            <Button colorScheme="blue" onClick={handleReserve}>
+            <Button
+              colorScheme="blue"
+              onClick={handleReserve}
+              leftIcon={<Icon as={FaFileSignature} />}
+              mr={3}
+            >
               Reserve Ticket
             </Button>
           )}
 
-          <Spacer />
-
           {/* Show Print button if status is resolved */}
           {ticket.status === "resolved" && (
-            <Button colorScheme="green" onClick={handlePrint}>
-              Print Ticket
-            </Button>
+            <>
+              <Button
+                colorScheme="green"
+                onClick={handlePrint}
+                leftIcon={<Icon as={FaPrint} />}
+              >
+                Print Ticket
+              </Button>
+
+              {/* Show Assign button if the user is admin
+              {isAdmin && (
+                <Button colorScheme="purple" onClick={handleAssign} ml={4}>
+                  Assign Ticket
+                </Button>
+              )} */}
+            </>
           )}
         </Flex>
       </VStack>

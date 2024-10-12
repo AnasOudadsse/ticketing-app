@@ -19,8 +19,8 @@ function App() {
           <Routes>
             <Route element={<Dashboard />} path="dashboard">
               <Route element={<HomeDashboard />} path="" />
-              <Route element={<TicketList />} path="ticketlist" />
             </Route>
+            <Route element={<TicketList />} path="ticketlist" />
             <Route element={<NewTicket />} path="newticket" />
             <Route element={<Statistiques />} path="statistiques" />
             <Route element={<Login />} path="login" />

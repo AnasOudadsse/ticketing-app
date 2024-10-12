@@ -31,7 +31,7 @@ const TicketItem = ({ statusColor,problemName, ticketNumber, priority, postedTim
   const navigate = useNavigate();
   
   const handleOpenTicket = () => {
-    navigate(`/tickets/${ticketNumber}`); 
+    navigate(`/ticketview/${ticketNumber}`); 
   };
   
   return (
