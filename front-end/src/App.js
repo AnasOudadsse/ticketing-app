@@ -19,12 +19,12 @@ function App() {
           <Routes>
             <Route element={<Dashboard />} path="dashboard">
             <Route element={<HomeDashboard />} path="" />
-            </Route>
             <Route element={<TicketList />} path="ticketlist" />
             <Route element={<NewTicket />} path="newticket" />
             <Route element={<Statistiques />} path="statistiques" />
-            <Route element={<Login />} path="login" />
             <Route element={<TicketView />} path="ticketview/:id" />
+            </Route>
+            <Route element={<Login />} path="login" />
           </Routes>
         </BrowserRouter>
     </ChakraProvider>
