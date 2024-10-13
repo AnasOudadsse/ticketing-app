@@ -5,7 +5,7 @@ import StatistiquesCard from "../statistiques-card/statistiques-card";
 
 const Statistiques = () => {
   return (
-    <div className="flex w-full justify-between my-5 px-5">
+    <div className="flex w-full justify-between mx-auto my-5 gap-3">
       <StatistiquesCard
         icon={faUsers}
         title={"Total Users"}

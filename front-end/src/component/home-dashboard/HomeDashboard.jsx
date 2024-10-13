@@ -1,6 +1,7 @@
 import Header from "../header/header";
 import LineChartTicket from "../line-chart-ticket/lineChartTicket";
 import PieTicket from "../pie-ticket/pieTicket";
+import PieUsers from "../pie-users/pieUsers";
 import Statistiques from "../statistiques/statistiques";
 
 const HomeDashboard = () => {
@@ -8,9 +9,12 @@ const HomeDashboard = () => {
     <div className="w-full">
       <Header />
       <Statistiques />
-      <div className="w-full flex justify-between my-5">
+      <div className="w-full container m-auto flex justify-between my-5">
         <LineChartTicket />
-        <PieTicket />
+        <div className="w-78">
+          <PieTicket />
+          <PieUsers />
+        </div>
       </div>
     </div>
   );

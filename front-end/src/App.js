@@ -7,22 +7,24 @@ import Login from "./component/login/Login";
 import Dashboard from "./component/dashboard/dashboard";
 import HomeDashboard from "./component/home-dashboard/HomeDashboard";
 import { TicketView } from "./component/ticket-view/ticket-view";
+import UsersList from "./component/users-list/usersList";
 
 function App() {
   return (
     <ChakraProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Dashboard />} path="dashboard">
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Dashboard />} path="dashboard">
             <Route element={<HomeDashboard />} path="" />
             <Route element={<TicketList />} path="ticketlist" />
             <Route element={<NewTicket />} path="newticket" />
             <Route element={<Statistiques />} path="statistiques" />
             <Route element={<TicketView />} path="ticketview/:id" />
-            </Route>
-            <Route element={<Login />} path="login" />
-          </Routes>
-        </BrowserRouter>
+            <Route element={<UsersList />} path="usersList" />
+          </Route>
+          <Route element={<Login />} path="login" />
+        </Routes>
+      </BrowserRouter>
     </ChakraProvider>
   );
 }
