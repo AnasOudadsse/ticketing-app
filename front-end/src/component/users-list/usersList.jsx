@@ -189,7 +189,7 @@ const UsersList = () => {
   ];
 
   return (
-    <div className="w-full mx-auto h-screen">
+    <div className="w-full mx-auto">
         <Header />
         <div className="mt-10 flex justify-between">
             <input placeholder="Search ..." className="border border-slate-600 px-3 py-1 w-96 rounded" />
