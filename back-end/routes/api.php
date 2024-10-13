@@ -9,6 +9,7 @@ use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
+use App\Http\Controllers\SupportItSpecialisationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -55,6 +56,12 @@ Route::prefix('specialisations')->group(function(){
     Route::delete('/specialisations/{id}', [SpecialisationController::class, 'destroy']); 
 });
 
+Route::prefix('support-it-specialisations')->group(function(){
+    Route::post('/', [SupportItSpecialisationController::class, 'store']);
+    Route::get('/support-it/{support_it_id}', [SupportItSpecialisationController::class, 'showBySupportIt']);
+    Route::get('/specialisation/{specialisation_id}', [SupportItSpecialisationController::class, 'showBySpecialisation']);
+    Route::delete('/support-it-specialisations', [SupportItSpecialisationController::class, 'destroy']);
+});
 
 Route::prefix('problems')->group(function(){
     Route::get('/', [ProblemController::class, 'index']);
