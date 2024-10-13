@@ -18,8 +18,29 @@ export const NewTicket = () => {
     description: "",
     status: "published",
     attachement: "",
-    clientID: "1",
+    clientID: "",
   });
+
+  useEffect(() => {
+    
+    const storedClientID = localStorage.getItem("clientID"); // Get clientID from localStorage
+    if (storedClientID) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        clientID: storedClientID // Update clientID from localStorage
+
+      }));
+
+      console.log('stored true',storedClientID);
+
+    }
+
+    else {
+      console.log('stored false',storedClientID);
+
+    }
+  }, []); // 
+
 
   const [problems, setProblems] = useState([]); // To store fetched problems
   const [loading, setLoading] = useState(true); // For loading state
@@ -70,6 +91,9 @@ export const NewTicket = () => {
         isClosable: true,
       });
 
+      console.log(formData);
+      
+
       // Reset the form after submission
       setFormData({
         problem_id: "",
@@ -87,6 +111,8 @@ export const NewTicket = () => {
         duration: 5000,
         isClosable: true,
       });
+      console.log(formData);
+
     }
   };
 

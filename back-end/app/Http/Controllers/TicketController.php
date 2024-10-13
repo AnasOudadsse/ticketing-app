@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class TicketController extends Controller
 {
@@ -16,7 +17,7 @@ class TicketController extends Controller
             'description' => 'required|string',
             'status' => 'required|string',
             'attachement' => 'nullable|string',
-            'clientID' => 'required|exists:clients,id',
+            'clientID' => 'required|exists:clients,client_id',
         ]);
 
         $ticket = Ticket::create([
@@ -106,9 +107,41 @@ class TicketController extends Controller
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
 }
 
-public function getTicketsWithProblems()
+public function getTicketsWithProblems(Request $request)
 {
-    $ticketsWithProblems = Ticket::with('problem')->get();
-    return $ticketsWithProblems;
+    // Extract the token from the Authorization header
+    $token = $request->bearerToken();
+
+    // If no token is provided, return an unauthorized response
+    if (!$token) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Assuming you're using Sanctum or Passport, use the token to find the associated user
+    $accessToken = PersonalAccessToken::findToken($token);
+
+    // If the token is invalid, return an unauthorized response
+    if (!$accessToken) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Get the user associated with the token
+    $user = $accessToken->tokenable; // tokenable refers to the User model
+
+    // If the user is not found, return an unauthorized response
+    if (!$user) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Now you can check the user's role and return tickets accordingly
+    if ($user->role == 'admin' || $user->role == 'support_it') {
+        // If the user is admin or support IT, return all tickets with their associated problems
+        $ticketsWithProblems = Ticket::with('problem')->get();
+    } else {
+        // If the user is a client, return only their tickets with associated problems
+        $ticketsWithProblems = Ticket::with('problem')->where('clientID', $user->id)->get();
+    }
+
+    return response()->json($ticketsWithProblems);
 }
 }

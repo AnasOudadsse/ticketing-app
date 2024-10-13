@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('adminID')->nullable();
             $table->foreign('adminID')->references('id')->on('admins');
             $table->unsignedBigInteger('clientID');
-            $table->foreign('clientID')->references('id')->on('clients');
+            $table->foreign('clientID')->references('client_id')->on('clients');
             $table->timestamps();
             $table->timestamp('resolution_date')->nullable();
         });
