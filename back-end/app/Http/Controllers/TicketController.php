@@ -134,7 +134,7 @@ public function getTicketsWithProblems(Request $request)
     }
 
     // Now you can check the user's role and return tickets accordingly
-    if ($user->role == 'admin' || $user->role == 'support_it') {
+    if ($user->role == 'admin' || $user->role == 'supportIt') {
         // If the user is admin or support IT, return all tickets with their associated problems
         $ticketsWithProblems = Ticket::with('problem')->get();
     } else {

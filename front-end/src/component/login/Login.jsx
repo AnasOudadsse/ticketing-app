@@ -50,7 +50,7 @@ const Login = () => {
         const { id } = profileResponse.data; // Assume profileResponse.data contains the user's info including the clientID
 
         // Store clientID in localStorage
-        localStorage.setItem('clientID', id);
+        localStorage.setItem('id', id);
   
         
         navigate("/dashboard"); 

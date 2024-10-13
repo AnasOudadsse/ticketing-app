@@ -23,7 +23,7 @@ export const NewTicket = () => {
 
   useEffect(() => {
     
-    const storedClientID = localStorage.getItem("clientID"); // Get clientID from localStorage
+    const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
     if (storedClientID) {
       setFormData(prevFormData => ({
         ...prevFormData,

@@ -14,10 +14,11 @@ import {
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export const TicketView = ({ ticketId }) => {
+export const TicketView = ( ) => {
   const [ticket, setTicket] = useState(null); // Store fetched ticket
   const toast = useToast();
   const { id } = useParams();
+  const supportItID = localStorage.getItem('id');
 
   // Fetch ticket details when the component mounts
   useEffect(() => {
@@ -38,12 +39,40 @@ export const TicketView = ({ ticketId }) => {
     };
 
     fetchTicket();
-  }, [ticketId, toast]);
+  },[toast]);
 
   // Function to handle reserving a ticket
   const handleReserve = async () => {
     try {
-      await axios.put(`http://127.0.0.1:8000/api/tickets/${ticketId}/reserve`);
+      await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/reserve`, {
+        supportItID: supportItID  // Send the supportItID in the request body
+      });
+      toast({
+        title: "Success",
+        description: "The ticket has been reserved.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      // Optionally refetch ticket data to reflect the new status
+      setTicket({ ...ticket, status: 'reserved' });
+    } catch (error) {
+      console.error("Error reserving the ticket:", error);
+      toast({
+        title: "Error",
+        description: "Failed to reserve the ticket.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handlerResolve = async () => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
+        supportItID: supportItID  // Send the supportItID in the request body
+      });
       toast({
         title: "Success",
         description: "The ticket has been reserved.",
@@ -123,7 +152,7 @@ export const TicketView = ({ ticketId }) => {
           )}
 
           {ticket.status === "reserved" && (
-            <Button colorScheme="red"  >
+            <Button colorScheme="red" onClick={handlerResolve} >
               Close ticket
             </Button>
           )}
