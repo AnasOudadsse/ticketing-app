@@ -69,15 +69,19 @@ Route::prefix('problems')->group(function(){
     Route::get('/{id}', [ProblemController::class, 'show']); 
     Route::put('/{id}', [ProblemController::class, 'update']); 
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
+
 });
 
 
 Route::prefix('tickets')->group(function () {
     Route::post('/', [TicketController::class, 'store']);
     Route::get('/listTickets', [TicketController::class, 'listTickets']);
-    Route::get('/{id}/reserve', [TicketController::class, 'reserveTicket']);
+    Route::post('/{id}/reserve', [TicketController::class, 'reserveTicket']);
     Route::post('/{id}/assign', [TicketController::class, 'assignTicketByAdmin']);
     Route::put('/{id}/resolve',[TicketController::class,'closeTicket']);
+    Route::get('/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
+    Route::get('/get/{id}', [TicketController::class, 'show']);
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
