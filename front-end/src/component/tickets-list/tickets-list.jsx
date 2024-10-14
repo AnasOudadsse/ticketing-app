@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "../header/header";
 
 // Utility to check if a date is today, this week, or this month
 const isToday = (date) => {
@@ -39,12 +40,22 @@ const isThisWeek = (date) => {
 const isThisMonth = (date) => {
   const today = new Date();
   return (
-    date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
   );
 };
 
 // TicketItem Component
-const TicketItem = ({ statusColor, problemName, ticketNumber, priority, postedTime, name, description, status }) => {
+const TicketItem = ({
+  statusColor,
+  problemName,
+  ticketNumber,
+  priority,
+  postedTime,
+  name,
+  description,
+  status,
+}) => {
   const navigate = useNavigate();
 
   const handleOpenTicket = () => {
@@ -52,31 +63,46 @@ const TicketItem = ({ statusColor, problemName, ticketNumber, priority, postedTi
   };
 
   return (
-    <Box p={5} w={'500px'} shadow="md" borderWidth="1px" rounded="md">
-      <HStack>
-        <Box bg={statusColor} boxSize={3} borderRadius="full" />
-        <Flex gap={20}>
-          <Heading size="md">Ticket: #{ticketNumber}</Heading>
-          <Badge colorScheme={statusColor}>{status}</Badge>
-        </Flex>
-        {priority && <Badge colorScheme="red">{priority}</Badge>}
-        <Spacer />
-        <Text color="gray.500">
-          Posted at {new Date(postedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </Text>
-      </HStack>
+    <Fragment>
+      <Header />
+      <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
+        <HStack>
+          <Box bg={statusColor} boxSize={3} borderRadius="full" />
+          <Flex gap={20}>
+            <Heading size="md">Ticket: #{ticketNumber}</Heading>
+            <Badge colorScheme={statusColor}>{status}</Badge>
+          </Flex>
+          {priority && <Badge colorScheme="red">{priority}</Badge>}
+          <Spacer />
+          <Text color="gray.500">
+            Posted at{" "}
+            {new Date(postedTime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Text>
+        </HStack>
 
-      <Heading mt={3} size="sm">Problem: {problemName}</Heading>
-      <Text mt={2} noOfLines={2}>{description}</Text>
-      <HStack mt={4}>
-        <Avatar name={name} src="https://bit.ly/broken-link" />
-        <Text>{name}</Text>
-        <Spacer />
-        <Button variant="link" colorScheme="purple" onClick={handleOpenTicket}>
-          Open Ticket
-        </Button>
-      </HStack>
-    </Box>
+        <Heading mt={3} size="sm">
+          Problem: {problemName}
+        </Heading>
+        <Text mt={2} noOfLines={2}>
+          {description}
+        </Text>
+        <HStack mt={4}>
+          <Avatar name={name} src="https://bit.ly/broken-link" />
+          <Text>{name}</Text>
+          <Spacer />
+          <Button
+            variant="link"
+            colorScheme="purple"
+            onClick={handleOpenTicket}
+          >
+            Open Ticket
+          </Button>
+        </HStack>
+      </Box>
+    </Fragment>
   );
 };
 
@@ -93,7 +119,9 @@ export default function TicketList() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/tickets/getTicketsWithProblems");
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/tickets/getTicketsWithProblems"
+        );
         setTickets(response.data);
         setFilteredTickets(response.data); // Initially set all tickets
         setLoading(false);
@@ -144,10 +172,11 @@ export default function TicketList() {
 
     // Apply search term filter
     if (term) {
-      filtered = filtered.filter((ticket) =>
-        ticket?.name?.toLowerCase().includes(term) ||
-        ticket?.description?.toLowerCase().includes(term) ||
-        ticket?.problem?.name?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (ticket) =>
+          ticket?.name?.toLowerCase().includes(term) ||
+          ticket?.description?.toLowerCase().includes(term) ||
+          ticket?.problem?.name?.toLowerCase().includes(term)
       );
     }
 
@@ -175,55 +204,69 @@ export default function TicketList() {
   };
 
   return (
-    <Box mx="20" w={"1000px"} p={6}>
-      {/* Search and Filters */}
-      <Flex mb={4} alignItems="center">
-        <Input
-          placeholder="Search for ticket"
-          width="300px"
-          value={searchTerm}
-          onChange={handleSearch} // Handle search input
-        />
-        <Spacer />
-        <Select ml={4} placeholder="Select Time" width="150px" onChange={handleTimeFilter}>
-          <option value="today">Today</option>
-          <option value="this-week">This Week</option>
-          <option value="this-month">This Month</option>
-        </Select>
-        <Button colorScheme="green" ml={4}>
-          <a href="newticket">New Ticket</a>
-        </Button>
-      </Flex>
+    <Fragment>
+      <Header />
+      <Box mx="20" w={"1000px"} p={6}>
+        {/* Search and Filters */}
+        <Flex mb={4} alignItems="center">
+          <Input
+            placeholder="Search for ticket"
+            width="300px"
+            value={searchTerm}
+            onChange={handleSearch} // Handle search input
+          />
+          <Spacer />
+          <Select
+            ml={4}
+            placeholder="Select Time"
+            width="150px"
+            onChange={handleTimeFilter}
+          >
+            <option value="today">Today</option>
+            <option value="this-week">This Week</option>
+            <option value="this-month">This Month</option>
+          </Select>
+          <Button colorScheme="green" ml={4}>
+            <a href="newticket">New Ticket</a>
+          </Button>
+        </Flex>
 
-      {/* Tabs for Status Filter */}
-      <Tabs variant="enclosed-colored" onChange={handleTabChange}>
-        <TabList>
-          <Tab>All Tickets</Tab>
-          <Tab>Reserved</Tab>
-          <Tab>Resolved</Tab>
-        </TabList>
-      </Tabs>
+        {/* Tabs for Status Filter */}
+        <Tabs variant="enclosed-colored" onChange={handleTabChange}>
+          <TabList>
+            <Tab>All Tickets</Tab>
+            <Tab>Reserved</Tab>
+            <Tab>Resolved</Tab>
+          </TabList>
+        </Tabs>
 
-      {/* Ticket Items */}
-      <VStack spacing={4} mt={6}>
-        {!loading && filteredTickets.length > 0 ? (
-          filteredTickets.map((ticket) => (
-            <TicketItem
-              key={ticket.id}
-              statusColor={ticket.status === "published" ? "green" : ticket.status === "reserved" ? "orange" : "red"}
-              status={ticket.status}
-              ticketNumber={ticket.id}
-              problemName={ticket?.problem?.name}
-              priority={ticket.priority}
-              postedTime={ticket.created_at}
-              name={ticket.name}
-              description={ticket.description}
-            />
-          ))
-        ) : (
-          <Text>No tickets found.</Text>
-        )}
-      </VStack>
-    </Box>
+        {/* Ticket Items */}
+        <VStack spacing={4} mt={6}>
+          {!loading && filteredTickets.length > 0 ? (
+            filteredTickets.map((ticket) => (
+              <TicketItem
+                key={ticket.id}
+                statusColor={
+                  ticket.status === "published"
+                    ? "green"
+                    : ticket.status === "reserved"
+                    ? "orange"
+                    : "red"
+                }
+                status={ticket.status}
+                ticketNumber={ticket.id}
+                problemName={ticket?.problem?.name}
+                priority={ticket.priority}
+                postedTime={ticket.created_at}
+                name={ticket.name}
+                description={ticket.description}
+              />
+            ))
+          ) : (
+            <Text>No tickets found.</Text>
+          )}
+        </VStack>
+      </Box>
+    </Fragment>
   );
 }
