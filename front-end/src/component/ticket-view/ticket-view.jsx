@@ -20,6 +20,8 @@ export const TicketView = ( ) => {
   const { id } = useParams();
   const supportItID = localStorage.getItem('id');
 
+  console.log(ticket);
+  
   // Fetch ticket details when the component mounts
   useEffect(() => {
     const fetchTicket = async () => {
@@ -107,7 +109,7 @@ export const TicketView = ( ) => {
     <Box alignContent={'center'} maxW="800px" w={'500px'} h={'fit-content'} mx="auto" mt={10} p={6} shadow="md" borderWidth="1px" rounded="md">
       {/* Ticket Info */}
       <Heading size="lg" mb={4}>
-        Ticket# {ticket.id} - {ticket?.problem?.name}
+        Ticket #{ticket.id} - {ticket?.problem?.specification}
       </Heading>
 
       <VStack align="start" spacing={4}>
@@ -117,11 +119,11 @@ export const TicketView = ( ) => {
         </HStack>
         <HStack>
           <Text fontWeight="bold">Posted Time:</Text>
-          <Text>{new Date(ticket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} h</Text>
+          <Text>{new Date(ticket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}                                                                                                  </Text>
         </HStack>
         <HStack>
           <Text fontWeight="bold">Name:</Text>
-          <Text>{ticket.name}</Text>
+          <Text>{ticket.problem?.specification}</Text>
         </HStack>
         <Text fontWeight="bold">Description:</Text>
         <Text>{ticket.description}</Text>

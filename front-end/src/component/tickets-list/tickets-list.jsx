@@ -64,14 +64,6 @@ const TicketItem = ({
 
   return (
     <Fragment>
-      <Header
-        name={"Mezrioui Hakim"}
-        greeting={"Have a nice day"}
-        role={"super-admin"}
-        profile={
-          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
-        }
-      />
 
       <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
