@@ -66,6 +66,7 @@ Route::prefix('support-it-specialisations')->group(function(){
 
 Route::prefix('problems')->group(function(){
     Route::get('/', [ProblemController::class, 'index']);
+    Route::get('/getProblems', [ProblemController::class, 'getProblems']);
     Route::post('/', [ProblemController::class, 'store']);
     Route::get('/{id}', [ProblemController::class, 'show']); 
     Route::put('/{id}', [ProblemController::class, 'update']); 
