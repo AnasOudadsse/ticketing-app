@@ -1,21 +1,28 @@
-import { useState } from "react";
-import TabAddUser from "../tap-add-user/TabAddUser";
-import { Link } from "react-router-dom";
-import Header from "../header/header";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddUser = () => {
+const UpdateUser = () => {
   const [tab, setTab] = useState("admin");
+  const params = useParams();
+  const navigate = useNavigate();
 
-  const selectTab = (value) => {
-    setTab(value);
-    console.log(tab);
-  };
+  useEffect(() => {
+    setTab(params.role.toLowerCase());
+  }, []);
 
   return (
-    <div className="w-full">
-      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
-      <TabAddUser tabSelected={tab} onSelectTab={selectTab} />
-      <form className="rounded shadow py-10 mt-5 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5">
+    <div>
+      <div
+        onClick={() => navigate(-1)}
+        className="fixed top-0 left-0 z-10 h-screen w-full"
+        style={{ backgroundColor: "rgba(0, 0, 0, .5)" }}
+      ></div>
+      <form className="absolute top-24 left-1/4 z-40 rounded shadow py-10 mt-10 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5 bg-white">
+        <img
+          className="  h-28 mb-12"
+          src="https://um6ss.ma/wp-content/uploads/2024/02/UM6SS.png"
+          alt=""
+        />
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Name</label>
           <input className="block w-full px-2 py-1 outline-none rounded-md  border" />
@@ -117,4 +124,4 @@ const AddUser = () => {
   );
 };
 
-export default AddUser;
+export default UpdateUser;
