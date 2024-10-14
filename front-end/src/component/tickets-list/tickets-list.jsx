@@ -64,7 +64,6 @@ const TicketItem = ({
 
   return (
     <Fragment>
-      <Header />
       <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
@@ -123,7 +122,7 @@ export default function TicketList() {
           "http://127.0.0.1:8000/api/tickets/getTicketsWithProblems"
         );
         setTickets(response.data);
-        setFilteredTickets(response.data); // Initially set all tickets
+        setFilteredTickets(response.data);
         setLoading(false);
       } catch (error) {
         toast({
