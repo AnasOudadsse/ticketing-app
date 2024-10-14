@@ -3,6 +3,7 @@ import { faAdd, faCaretUp, faPencil, faTrash } from "@fortawesome/free-solid-svg
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
 import Header from "../header/header";
+import { Link } from "react-router-dom";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
 
@@ -150,6 +151,9 @@ const data = [
 ];
 
 const UsersList = () => {
+  
+  
+
   const columns = [
     {
       name: "name",
@@ -193,9 +197,9 @@ const UsersList = () => {
         <Header />
         <div className="mt-10 flex justify-between">
             <input placeholder="Search ..." className="border border-slate-600 px-3 py-1 w-96 rounded" />
-            <button className=" text-white bg-green-500 py-3 px-4 rounded hover:bg-green-600">
+            <Link to={"/tickets/adduser"} className=" text-white bg-green-500 py-3 px-4 rounded hover:bg-green-600">
                 <FontAwesomeIcon icon={faAdd} className="" />
-            </button>
+            </Link>
         </div>
       <DataTable
         columns={columns}

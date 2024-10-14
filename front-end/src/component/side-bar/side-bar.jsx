@@ -1,7 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { fatickets, faUsers, faTicket } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUsers, faTicket } from '@fortawesome/free-solid-svg-icons'
 import LinkSideBar from '../link-side-bar/link-side-bar';
-import { FaHome, FaUsers, FaTicketAlt } from "react-icons/fa";
+// import { FaHome, FaUsers, FaTicketAlt } from "react-icons/fa";
 import { Box } from '@chakra-ui/react';
 
 const SideBar = () => {
@@ -13,9 +12,9 @@ const SideBar = () => {
             <div className='flex justify-center pl-10'>
                 <ul className='w-full'>
                     <Box>
-                        <LinkSideBar link={"tickets"} title={"Dashboard"} icon={FaHome} />
-                        <LinkSideBar link={"tickets/usersList"} title={"Users"} icon={FaUsers}/>
-                        <LinkSideBar link={"tickets/ticketlist"} title={"Tickets"} icon={FaTicketAlt} />
+                        <LinkSideBar link={"tickets"} title={"Dashboard"} icon={faHome} />
+                        <LinkSideBar link={"tickets/usersList"} title={"Users"} icon={faUsers}/>
+                        <LinkSideBar link={"tickets/ticketlist"} title={"Tickets"} icon={faTicket} />
                     </Box>
                 </ul>
             </div>
