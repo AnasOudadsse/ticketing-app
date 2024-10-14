@@ -13,7 +13,7 @@ const SideBar = () => {
             <div className='flex justify-center pl-10'>
                 <ul className='w-full'>
                     <Box>
-                        <LinkSideBar link={"tickets"} title={"tickets"} icon={FaHome} />
+                        <LinkSideBar link={"tickets"} title={"Dashboard"} icon={FaHome} />
                         <LinkSideBar link={"tickets/usersList"} title={"Users"} icon={FaUsers}/>
                         <LinkSideBar link={"tickets/ticketlist"} title={"Tickets"} icon={FaTicketAlt} />
                     </Box>

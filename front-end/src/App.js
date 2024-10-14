@@ -8,6 +8,7 @@ import Dashboard from "./component/dashboard/dashboard";
 import HomeDashboard from "./component/home-dashboard/HomeDashboard";
 import { TicketView } from "./component/ticket-view/ticket-view";
 import UsersList from "./component/users-list/usersList";
+import AddUser from "./component/add-user/addUser";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route element={<Statistiques />} path="statistiques" />
             <Route element={<TicketView />} path="ticketview/:id" />
             <Route element={<UsersList />} path="usersList" />
+            <Route element={<AddUser />} path="addUser" />
           </Route>
           <Route element={<Login />} path="login" />
         </Routes>
