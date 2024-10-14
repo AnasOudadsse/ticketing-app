@@ -58,7 +58,7 @@ const LineChartTicket = () => {
     ],
   });
   return (
-    <div style={{width: "74em"}} className="shadow-md h-fit  flex flex-col gap-5 rounded-lg">
+    <div  className="shadow-md h-fit w-full mx-auto flex flex-col gap-5 rounded-lg">
       <div className="flex justify-between items-center gap-5 px-3 py-2 mt-2">
         <p className="text-xs font-bold">Title of Pie Tickets</p>
         <p className="bg-gray-200 px-5 py-1 rounded-xl text-xs">Something</p>

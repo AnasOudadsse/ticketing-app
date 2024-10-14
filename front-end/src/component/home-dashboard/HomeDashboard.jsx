@@ -6,10 +6,10 @@ import Statistiques from "../statistiques/statistiques";
 
 const HomeDashboard = () => {
   return (
-    <div className="w-full">
+    <div className="w-full 3xl:w-3/4 overflow-x-hidden">
       <Header />
       <Statistiques />
-      <div className="w-full container m-auto flex justify-between my-5">
+      <div className="w-full m-auto flex justify-between my-5">
         <LineChartTicket />
         <div className="w-78">
           <PieTicket />
