@@ -222,7 +222,7 @@ const UsersList = () => {
 
   return (
     <div className="w-full mx-auto">
-      <Header />
+      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
       <div className="mt-10 flex justify-between">
         <input
           placeholder="Search ..."

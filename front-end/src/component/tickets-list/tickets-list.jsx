@@ -64,6 +64,15 @@ const TicketItem = ({
 
   return (
     <Fragment>
+      <Header
+        name={"Mezrioui Hakim"}
+        greeting={"Have a nice day"}
+        role={"super-admin"}
+        profile={
+          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+        }
+      />
+
       <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
@@ -204,7 +213,14 @@ export default function TicketList() {
 
   return (
     <Fragment>
-      <Header />
+      <Header
+        name={"Mezrioui Hakim"}
+        greeting={"Have a nice day"}
+        role={"super-admin"}
+        profile={
+          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+        }
+      />
       <Box mx="20" w={"1000px"} p={6}>
         {/* Search and Filters */}
         <Flex mb={4} alignItems="center">

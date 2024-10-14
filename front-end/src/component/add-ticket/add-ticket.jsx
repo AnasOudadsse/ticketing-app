@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Header from "../header/header";
 
 export const NewTicket = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export const NewTicket = () => {
   useEffect(() => {
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
     if (storedClientID) {
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
         clientID: storedClientID, // Update clientID from localStorage
       }));
@@ -40,7 +41,9 @@ export const NewTicket = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/problems/getProblems");
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/problems/getProblems"
+        );
         setProblems(response.data); // Directly set the grouped problems
         setLoading(false); // Stop loading once data is fetched
       } catch (error) {
@@ -71,7 +74,10 @@ export const NewTicket = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/tickets", formData);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/tickets",
+        formData
+      );
       toast({
         title: "Ticket Created",
         description: "Your ticket has been created successfully.",
@@ -101,57 +107,67 @@ export const NewTicket = () => {
   };
 
   return (
-    <Box w={"700px"} mx="auto" mt={10}>
-      <VStack spacing={4} as="form" onSubmit={handleSubmit} align="start">
-        {/* Problem ID */}
-        <FormControl isRequired>
-          <FormLabel>Problem</FormLabel>
-          <Select
-            name="problem_id"
-            placeholder={loading ? "Loading problems..." : "Select Problem"}
-            value={formData.problem_id}
-            onChange={handleChange}
-            isDisabled={loading} // Disable select when loading
-          >
-            {/* Render optgroups based on problem type */}
-            {Object.keys(problems).map((type) => (
-              <optgroup key={type} label={type}>
-                {problems[type].map((problem) => (
-                  <option key={problem.id} value={problem.id}>
-                    {problem.name} {problem.specification ? `- ${problem.specification}` : ''}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </Select>
-        </FormControl>
+    <Fragment>
+      <Header
+        name={"Mezrioui Hakim"}
+        greeting={"Have a nice day"}
+        role={"super-admin"}
+        profile={
+          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+        }
+      />
 
-        {/* Description */}
-        <FormControl isRequired>
-          <FormLabel>Description</FormLabel>
-          <Textarea
-            name="description"
-            placeholder="Describe the issue"
-            value={formData.description}
-            onChange={handleChange}
-          />
-        </FormControl>
+      <Box w={"700px"} mx="auto" mt={10}>
+        <VStack spacing={4} as="form" onSubmit={handleSubmit} align="start">
+          {/* Problem ID */}
+          <FormControl isRequired>
+            <FormLabel>Problem</FormLabel>
+            <Select
+              name="problem_id"
+              placeholder={loading ? "Loading problems..." : "Select Problem"}
+              value={formData.problem_id}
+              onChange={handleChange}
+              isDisabled={loading} // Disable select when loading
+            >
+              {/* Render optgroups based on problem type */}
+              {Object.keys(problems).map((type) => (
+                <optgroup key={type} label={type}>
+                  {problems[type].map((problem) => (
+                    <option key={problem.id} value={problem.id}>
+                      {problem.name}{" "}
+                      {problem.specification
+                        ? `- ${problem.specification}`
+                        : ""}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </Select>
+          </FormControl>
 
-        {/* Attachment */}
-        <FormControl>
-          <FormLabel>Attachment</FormLabel>
-          <Input
-            type="file"
-            name="attachement"
-            onChange={handleChange}
-          />
-        </FormControl>
+          {/* Description */}
+          <FormControl isRequired>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              name="description"
+              placeholder="Describe the issue"
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </FormControl>
 
-        {/* Submit Button */}
-        <Button type="submit" colorScheme="purple" width="full">
-          Create Ticket
-        </Button>
-      </VStack>
-    </Box>
+          {/* Attachment */}
+          <FormControl>
+            <FormLabel>Attachment</FormLabel>
+            <Input type="file" name="attachement" onChange={handleChange} />
+          </FormControl>
+
+          {/* Submit Button */}
+          <Button type="submit" colorScheme="purple" width="full">
+            Create Ticket
+          </Button>
+        </VStack>
+      </Box>
+    </Fragment>
   );
 };

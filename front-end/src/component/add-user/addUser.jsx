@@ -13,7 +13,7 @@ const AddUser = () => {
 
   return (
     <div className="w-full">
-      <Header />
+      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
       <TabAddUser tabSelected={tab} onSelectTab={selectTab} />
       <form className="rounded shadow py-10 mt-5 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5">
         <div className="flex justify-between gap-3 items-center my-3">
