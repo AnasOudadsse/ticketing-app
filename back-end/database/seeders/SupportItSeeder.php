@@ -14,17 +14,17 @@ class SupportItSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('support_its')->insert([
-            [
-                'supportIt_id' => 1, // Correspond à l'ID d'un utilisateur existant dans la table 'users'
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'supportIt_id' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ]);
+        // DB::table('support_its')->insert([
+        //     [
+        //         'supportIt_id' => 1, // Correspond à l'ID d'un utilisateur existant dans la table 'users'
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'supportIt_id' => 2,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]
+        // ]);
     }
 }
