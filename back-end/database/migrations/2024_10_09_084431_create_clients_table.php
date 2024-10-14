@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            //$table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('users');
             $table->timestamps();
