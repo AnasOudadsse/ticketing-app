@@ -14,8 +14,6 @@ const useHttp = () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    return;
-
     const data = await response.json();
 
     await applayData(data);
