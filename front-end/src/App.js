@@ -14,7 +14,7 @@ function App() {
     <ChakraProvider>
       <BrowserRouter>
         <Routes>
-          <Route element={<Dashboard />} path="dashboard">
+          <Route element={<Dashboard />} path="tickets">
             <Route element={<HomeDashboard />} path="" />
             <Route element={<TicketList />} path="ticketlist" />
             <Route element={<NewTicket />} path="newticket" />

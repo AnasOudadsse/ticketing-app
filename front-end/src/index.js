@@ -13,7 +13,7 @@ axios.interceptors.request.use(
       config.headers.Authorization = `${tokenType} ${token}`;
     }
 
-    return config;
+    return config;  
   },
   function (error) {
     return Promise.reject(error);

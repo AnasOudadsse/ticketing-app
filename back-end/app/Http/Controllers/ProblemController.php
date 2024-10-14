@@ -17,6 +17,8 @@ class ProblemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'required',
+            'specification' => ''
         ]);
 
         $problem = Problems::create($validated);
