@@ -59,7 +59,7 @@ const TicketItem = ({
   const navigate = useNavigate();
 
   const handleOpenTicket = () => {
-    navigate(`/dashboard/ticketview/${ticketNumber}`);
+    navigate(`/tickets/ticketview/${ticketNumber}`);
   };
 
   return (

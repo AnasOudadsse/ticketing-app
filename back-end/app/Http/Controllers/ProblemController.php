@@ -59,4 +59,17 @@ class ProblemController extends Controller
         return response()->json([
             'message' => 'problem supprimé avec succès'
         ], 200);
-    }}
+    }
+
+    public function getProblems()
+    {
+        // Fetch all problems from the database
+        $problems = Problems::all();
+    
+        // Group the problems by type
+        $groupedProblems = $problems->groupBy('type');
+    
+        return response()->json($groupedProblems);
+    }
+
+}

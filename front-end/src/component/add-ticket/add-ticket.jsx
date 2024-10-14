@@ -22,27 +22,16 @@ export const NewTicket = () => {
   });
 
   useEffect(() => {
-    
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
     if (storedClientID) {
       setFormData(prevFormData => ({
         ...prevFormData,
-        clientID: storedClientID // Update clientID from localStorage
-
+        clientID: storedClientID, // Update clientID from localStorage
       }));
-
-      console.log('stored true',storedClientID);
-
     }
+  }, []);
 
-    else {
-      console.log('stored false',storedClientID);
-
-    }
-  }, []); // 
-
-
-  const [problems, setProblems] = useState([]); // To store fetched problems
+  const [problems, setProblems] = useState({}); // Store grouped problems from API
   const [loading, setLoading] = useState(true); // For loading state
 
   const toast = useToast();
@@ -51,8 +40,8 @@ export const NewTicket = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/problems");
-        setProblems(response.data); // Assuming the API response returns a list of problems
+        const response = await axios.get("http://127.0.0.1:8000/api/problems/getProblems");
+        setProblems(response.data); // Directly set the grouped problems
         setLoading(false); // Stop loading once data is fetched
       } catch (error) {
         console.error("Error fetching problems:", error);
@@ -68,7 +57,7 @@ export const NewTicket = () => {
     };
 
     fetchProblems();
-  }, [toast]); // Empty dependency array ensures it runs once on mount
+  }, [toast]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,9 +80,6 @@ export const NewTicket = () => {
         isClosable: true,
       });
 
-      console.log(formData);
-      
-
       // Reset the form after submission
       setFormData({
         problem_id: "",
@@ -111,8 +97,6 @@ export const NewTicket = () => {
         duration: 5000,
         isClosable: true,
       });
-      console.log(formData);
-
     }
   };
 
@@ -129,10 +113,15 @@ export const NewTicket = () => {
             onChange={handleChange}
             isDisabled={loading} // Disable select when loading
           >
-            {problems.map((problem) => (
-              <option key={problem.id} value={problem.id}>
-                {problem.name} {/* Assuming each problem has a 'name' property */}
-              </option>
+            {/* Render optgroups based on problem type */}
+            {Object.keys(problems).map((type) => (
+              <optgroup key={type} label={type}>
+                {problems[type].map((problem) => (
+                  <option key={problem.id} value={problem.id}>
+                    {problem.name} {problem.specification ? `- ${problem.specification}` : ''}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </Select>
         </FormControl>
