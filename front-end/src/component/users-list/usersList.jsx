@@ -6,13 +6,13 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Header from "../header/header";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
 
-const data = [
+const pre_data = [
   {
     id: 1,
     name: "Alice Johnson",
@@ -156,6 +156,22 @@ const data = [
 ];
 
 const UsersList = () => {
+  const [data, setData] = useState(pre_data);
+  const [dataF, setDataF] = useState(pre_data);
+
+  const handleSearch = (e) => {
+    const dataF = data.filter((enterprise) => {
+      if (
+        enterprise.name &&
+        enterprise.name.toLowerCase().includes(e.target.value.toLowerCase())
+      ) {
+        return enterprise;
+      }
+    });
+
+    setDataF([...dataF]);
+  };
+
   const navigate = useNavigate();
 
   const columns = [
@@ -211,6 +227,7 @@ const UsersList = () => {
         <input
           placeholder="Search ..."
           className="border border-slate-600 px-3 py-1 w-96 rounded"
+          onChange={handleSearch}
         />
         <Link
           to={"/tickets/adduser"}
@@ -221,7 +238,7 @@ const UsersList = () => {
       </div>
       <DataTable
         columns={columns}
-        data={data}
+        data={dataF}
         pagination
         sortIcon={<FontAwesomeIcon icon={faCaretUp} size="2xl" />}
         // selectableRowsComponent={Checkbox}
