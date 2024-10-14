@@ -1,9 +1,14 @@
 import DataTable from "react-data-table-component";
-import { faAdd, faCaretUp, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAdd,
+  faCaretUp,
+  faPencil,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
 import Header from "../header/header";
-import { Link } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
 
@@ -18,14 +23,14 @@ const data = [
   {
     id: 2,
     name: "Bob Smith",
-    role: "User",
+    role: "Client",
     fonction: "Software Engineer",
     departement: "Development",
   },
   {
     id: 3,
     name: "Charlie Brown",
-    role: "User",
+    role: "support",
     fonction: "Data Analyst",
     departement: "Analytics",
   },
@@ -151,8 +156,7 @@ const data = [
 ];
 
 const UsersList = () => {
-  
-  
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -179,11 +183,19 @@ const UsersList = () => {
       name: "actions",
       cell: (row) => (
         <Fragment>
-          <button onClick={() => {}} className="p-2 rounded hover:bg-orange-300 btn btn-info btn-sm text-white bg-orange-400">
+          <button
+            onClick={() => {
+              navigate(`updateuser/${row.role}`);
+            }}
+            className="p-2 rounded hover:bg-orange-300 btn btn-info btn-sm text-white bg-orange-400"
+          >
             <FontAwesomeIcon icon={faPencil} />
           </button>
           &nbsp;
-          <button onClick={() => {}} className="p-2 rounded hover:bg-red-600 btn btn-info btn-sm text-white bg-red-700">
+          <button
+            onClick={() => {}}
+            className="p-2 rounded hover:bg-red-600 btn btn-info btn-sm text-white bg-red-700"
+          >
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </Fragment>
@@ -194,13 +206,19 @@ const UsersList = () => {
 
   return (
     <div className="w-full mx-auto">
-        <Header />
-        <div className="mt-10 flex justify-between">
-            <input placeholder="Search ..." className="border border-slate-600 px-3 py-1 w-96 rounded" />
-            <Link to={"/tickets/adduser"} className=" text-white bg-green-500 py-3 px-4 rounded hover:bg-green-600">
-                <FontAwesomeIcon icon={faAdd} className="" />
-            </Link>
-        </div>
+      <Header />
+      <div className="mt-10 flex justify-between">
+        <input
+          placeholder="Search ..."
+          className="border border-slate-600 px-3 py-1 w-96 rounded"
+        />
+        <Link
+          to={"/tickets/adduser"}
+          className=" text-white bg-green-500 py-3 px-4 rounded hover:bg-green-600"
+        >
+          <FontAwesomeIcon icon={faAdd} className="" />
+        </Link>
+      </div>
       <DataTable
         columns={columns}
         data={data}
@@ -209,6 +227,8 @@ const UsersList = () => {
         // selectableRowsComponent={Checkbox}
         className="m-auto block mt-10"
       />
+
+      <Outlet />
     </div>
   );
 };
