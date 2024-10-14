@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use App\Exports\TicketsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class TicketController extends Controller
@@ -110,7 +112,7 @@ class TicketController extends Controller
 
 public function getTicketsWithProblems(Request $request)
 {
-    // Extract the token from the Authorization header
+
     $token = $request->bearerToken();
 
     // If no token is provided, return an unauthorized response
@@ -144,5 +146,12 @@ public function getTicketsWithProblems(Request $request)
     }
 
     return response()->json($ticketsWithProblems);
+}
+
+public function exportTicketsToExcel()
+{
+    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
+
+    return Excel::download(new TicketsExport, $fileName);
 }
 }

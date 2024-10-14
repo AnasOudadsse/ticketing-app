@@ -84,6 +84,8 @@ Route::prefix('tickets')->group(function () {
     Route::get('/get/{id}', [TicketController::class, 'show']);
 
 });
+Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
