@@ -7,7 +7,7 @@ import Statistiques from "../statistiques/statistiques";
 const HomeDashboard = () => {
   return (
     <div className="w-full 3xl:w-3/4 overflow-x-hidden">
-      <Header />
+      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
       <Statistiques />
       <div className="w-full m-auto flex justify-between my-5">
         <LineChartTicket />
