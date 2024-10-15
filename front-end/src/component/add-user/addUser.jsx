@@ -12,13 +12,6 @@ const AddUser = () => {
   };
 
   return (
-
-    <div className="w-full h-screen bg-slate-100">
-      <form className=" w-1/2 m-auto p-5">
-        <div>
-          <label>Name</label>
-          <input className="block w-full px-2 py-1 outline-none rounded-md" />
-
     <div className="w-full">
       <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
       <TabAddUser tabSelected={tab} onSelectTab={selectTab} />
@@ -124,3 +117,4 @@ const AddUser = () => {
   );
 };
 
+export default AddUser;
