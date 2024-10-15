@@ -65,11 +65,11 @@ const TicketItem = ({
   return (
     <Fragment>
 
-      <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
+      <Box p={5} w={"full"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
-          <Flex gap={20}>
-            <Heading size="md">Ticket: #{ticketNumber}</Heading>
+          <Heading size="md">Ticket: #{ticketNumber}</Heading>
+          <Flex justify={'center'} gap={20}>
             <Badge colorScheme={statusColor}>{status}</Badge>
           </Flex>
           {priority && <Badge colorScheme="red">{priority}</Badge>}
