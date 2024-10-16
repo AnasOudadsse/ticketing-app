@@ -10,6 +10,7 @@ use App\Http\Controllers\FonctionController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
+use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\SupportItSpecialisationController;
 /*
 |--------------------------------------------------------------------------
@@ -86,7 +87,11 @@ Route::prefix('tickets')->group(function () {
 
 });
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
-
+Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
+Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
+Route::get('users/roles',[StatistiqueController::class,'userRoles']);
+Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
+Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

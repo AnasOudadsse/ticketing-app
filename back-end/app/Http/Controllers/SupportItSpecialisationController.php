@@ -24,7 +24,7 @@ class SupportItSpecialisationController extends Controller
         ], 201);
     }
 
-    // Supprimer une relation entre un support IT et une spécialité
+    
     public function destroy(Request $request)
     {
         $validated = $request->validate([
