@@ -11,6 +11,7 @@ import UsersList from "./component/users-list/usersList";
 import AddUser from "./component/add-user/addUser";
 import UpdateUser from "./component/update-user/updateUser";
 import PrintTicket from "./component/print-ticket/PrintTicket";
+import ExportTickets from "./component/exportTickets/ExportTickets";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<Dashboard />} path="tickets">
+            <Route element={<ExportTickets />} path="exporttickets" />
             <Route element={<HomeDashboard />} path="" />
             <Route element={<TicketList />} path="ticketlist" />
             <Route element={<NewTicket />} path="newticket" />
