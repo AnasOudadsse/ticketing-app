@@ -48,6 +48,7 @@ Route::prefix('localisations')->group(function(){
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::put('/users/{id}', [AuthController::class, 'update']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::prefix('specialisations')->group(function(){
