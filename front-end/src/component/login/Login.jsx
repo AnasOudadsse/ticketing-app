@@ -11,7 +11,9 @@ const Login = () => {
   const [error, setError] = useState(""); // To handle and display login errors
   const navigate = useNavigate(); // Navigation hook for redirecting after login
 
-  const handleBlur = (e) => {
+  console.log(formData);
+  
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -53,7 +55,7 @@ const Login = () => {
         localStorage.setItem('id', id);
   
         
-        navigate("/dashboard"); 
+        navigate("/tickets"); 
       } else {
         setError("Login failed. Please check your credentials.");
       }
@@ -88,7 +90,7 @@ const Login = () => {
               icon={faEnvelope}
             />
             <input
-              onBlur={handleBlur}
+              onChange={handleChange}
               className="py-3 px-2 pl-10 w-96 rounded-md outline-none bg-gray-200 hover:bg-gray-300 text-xs text-gray-700 focus:bg-gray-300"
               placeholder="Enter your Email"
               name="email"
@@ -101,7 +103,7 @@ const Login = () => {
               icon={faKey}
             />
             <input
-              onBlur={handleBlur}
+              onChange={handleChange}
               className="py-3 px-2 pl-10 w-96 rounded-md outline-none bg-gray-200 hover:bg-gray-300 text-xs text-gray-700 focus:bg-gray-300"
               placeholder="Enter your Password"
               name="password"
