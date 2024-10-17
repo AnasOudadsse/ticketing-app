@@ -131,7 +131,7 @@ export const TicketView = () => {
       >
         {/* Ticket Info */}
         <Heading size="lg" mb={4}>
-          Ticket #{ticket.id} - {ticket?.problem?.specification}
+          Ticket #{ticket.id} - {ticket?.problem?.specification || ticket?.problem?.name}
         </Heading>
 
         <VStack align="start" spacing={4}>
@@ -150,7 +150,7 @@ export const TicketView = () => {
           </HStack>
           <HStack>
             <Text fontWeight="bold">Name:</Text>
-            <Text>{ticket.problem?.specification}</Text>
+            <Text>{ticket.problem?.name}</Text>
           </HStack>
           <Text fontWeight="bold">Description:</Text>
           <Text>{ticket.description}</Text>

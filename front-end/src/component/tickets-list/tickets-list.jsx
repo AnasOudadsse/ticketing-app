@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../header/header";
+import { formatDistanceToNow } from 'date-fns';
 
 // Utility to check if a date is today, this week, or this month
 const isToday = (date) => {
@@ -75,11 +76,9 @@ const TicketItem = ({
           {priority && <Badge colorScheme="red">{priority}</Badge>}
           <Spacer />
           <Text color="gray.500">
-            Posted at{" "}
-            {new Date(postedTime).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            Posted{" "}
+            {formatDistanceToNow(new Date(postedTime), { addSuffix: true })}
+
           </Text>
         </HStack>
 
@@ -262,7 +261,7 @@ export default function TicketList() {
                 }
                 status={ticket.status}
                 ticketNumber={ticket.id}
-                problemName={ticket?.problem?.name}
+                problemName={ticket?.problem?.specification || ticket?.problem?.name}
                 priority={ticket.priority}
                 postedTime={ticket.created_at}
                 name={ticket.name}
