@@ -56,6 +56,7 @@ const TicketItem = ({
   name,
   description,
   status,
+  client_name
 }) => {
   const navigate = useNavigate();
 
@@ -90,11 +91,12 @@ const TicketItem = ({
         </Text>
         <HStack mt={4}>
           <Avatar name={name} src="https://bit.ly/broken-link" />
-          <Text>{name}</Text>
+          <Text>{client_name}</Text>
+
           <Spacer />
           <Button
             variant="link"
-            colorScheme="purple"
+            colorScheme="purple"  
             onClick={handleOpenTicket}
           >
             Open Ticket
@@ -113,6 +115,9 @@ export default function TicketList() {
   const [timeFilter, setTimeFilter] = useState(""); // Time filter state
   const [selectedTab, setSelectedTab] = useState("all"); // Manage selected tab state
   const toast = useToast();
+
+  console.log(tickets);
+  
 
   // Fetch tickets from API
   useEffect(() => {
@@ -266,6 +271,7 @@ export default function TicketList() {
                 postedTime={ticket.created_at}
                 name={ticket.name}
                 description={ticket.description}
+                client_name={ticket.client_name}
               />
             ))
           ) : (
