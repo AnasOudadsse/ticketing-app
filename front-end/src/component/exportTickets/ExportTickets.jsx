@@ -15,7 +15,7 @@ const tickets = [
     supportIt: "adam bariz",
     adminID: 3,
     clientID: 10,
-    created_at: "2024-10-01T09:15:00Z",
+    created_at: "2024-10-01",
     updated_at: "2024-10-01T10:00:00Z",
     resolution_date: null,
   },
@@ -28,7 +28,7 @@ const tickets = [
     supportIt: "hamza",
     adminID: 4,
     clientID: 12,
-    created_at: "2024-10-02T10:30:00Z",
+    created_at: "2024-10-02",
     updated_at: "2024-10-04T15:00:00Z",
     resolution_date: null,
   },
@@ -41,7 +41,7 @@ const tickets = [
     supportIt: "anas oudadas",
     adminID: 2,
     clientID: 13,
-    created_at: "2024-09-28T11:45:00Z",
+    created_at: "2024-09-28",
     updated_at: "2024-09-30T09:30:00Z",
     resolution_date: "2024-09-30T09:30:00Z",
   },
@@ -54,7 +54,7 @@ const tickets = [
     supportIt: "mezrioui hakim",
     adminID: null,
     clientID: 14,
-    created_at: "2024-10-05T14:00:00Z",
+    created_at: "2024-10-05",
     updated_at: "2024-10-05T14:00:00Z",
     resolution_date: null,
   },
@@ -67,7 +67,7 @@ const tickets = [
     supportIt: "essabouni mouad",
     adminID: 3,
     clientID: 15,
-    created_at: "2024-10-06T08:00:00Z",
+    created_at: "2024-10-06",
     updated_at: "2024-10-08T12:00:00Z",
     resolution_date: null,
   },
@@ -80,7 +80,20 @@ const tickets = [
     supportIt: "kamal kadimi",
     adminID: 3,
     clientID: 15,
-    created_at: "2024-10-06T08:00:00Z",
+    created_at: "2024-10-06",
+    updated_at: "2024-10-08T12:00:00Z",
+    resolution_date: null,
+  },
+  {
+    id: 7,
+    problem_id: 105,
+    description: "Connexion réseau intermittente.",
+    status: "in_progress",
+    attachement: "network_log.txt",
+    supportIt: "anas sadikin",
+    adminID: 3,
+    clientID: 15,
+    created_at: "2024-10-20",
     updated_at: "2024-10-08T12:00:00Z",
     resolution_date: null,
   },
@@ -92,6 +105,8 @@ const ExportTickets = () => {
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
@@ -99,18 +114,27 @@ const ExportTickets = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    console.log(startDate);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+  };
 
   useEffect(() => {
     handleFilter();
-  }, [selectedCategory, search]);
+  }, [selectedCategory, search, startDate, endDate]);
 
   const handleFilter = () => {
     const ticketsFiltredByProblems = handleFilterByProblems(data);
     const ticketsFiltredBySearch = handleFiltredBySearch(
       ticketsFiltredByProblems
     );
+    const ticketsFiltredByDate = handleFiltredByDate(ticketsFiltredBySearch);
 
-    setDataF(ticketsFiltredBySearch);
+    setDataF(ticketsFiltredByDate);
   };
 
   const handleFilterByProblems = (values) => {
@@ -141,6 +165,26 @@ const ExportTickets = () => {
     } else if (resultat.length === 0 && search === "") {
       return values;
     }
+    return resultat;
+  };
+
+  const handleFiltredByDate = (values) => {
+    const resultat = values.filter((ticket) => {
+      const ticketDate = new Date(ticket.created_at);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start && end) {
+        return ticketDate >= start && ticketDate <= end;
+      } else if (start) {
+        return ticketDate >= start;
+      } else if (end) {
+        return ticketDate <= end;
+      }
+
+      return true; // Si aucune date n'est sélectionnée, on retourne toutes les valeurs
+    });
+
     return resultat;
   };
 
@@ -199,7 +243,7 @@ const ExportTickets = () => {
   ];
 
   return (
-    <div>
+    <div className="">
       <Header
         name={"Mezrioui Hakim"}
         greeting={"Have a nice day"}
@@ -229,18 +273,21 @@ const ExportTickets = () => {
           className="border border-slate-600 px-3 py-1 w-72 rounded"
           onChange={handleSearchChange}
         />
-        <input
-          type="date"
-          placeholder="Search ..."
-          className="border border-slate-600 px-3 py-1 w-72 rounded"
-          onChange={() => {}}
-        />
-        <input
-          type="date"
-          placeholder="Search ..."
-          className="border border-slate-600 px-3 py-1 w-72 rounded"
-          onChange={() => {}}
-        />
+        <span className="border border-slate-600 rounded">
+          <input
+            type="date"
+            placeholder="Search ..."
+            className="border-none  px-3 py-1 w-50 rounded outline-none"
+            onChange={handleStartDateChange}
+          />
+          -
+          <input
+            type="date"
+            placeholder="Search ..."
+            className="border-none px-3 py-1 w-50 rounded outline-none"
+            onChange={handleEndDateChange}
+          />
+        </span>
       </div>
       <DataTable
         columns={columns}

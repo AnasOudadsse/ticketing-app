@@ -3,9 +3,9 @@ import SideBar from "../side-bar/side-bar";
 
 const Dashboard = () => {
   return (
-    <div className="flex w-full gap-5">
+    <div className="flex w-full">
       <SideBar />
-      <div className="container mx-auto">
+      <div className="container px-20 mx-auto overflow-x-hidden">
         <Outlet />
       </div>
     </div>
