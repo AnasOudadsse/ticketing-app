@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import Header from "../header/header";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileImport } from "@fortawesome/free-solid-svg-icons";
 
 export const NewTicket = () => {
   const [formData, setFormData] = useState({
@@ -118,7 +120,7 @@ export const NewTicket = () => {
       />
 
       <Box w={"700px"} mx="auto" mt={10}>
-        <VStack spacing={4} as="form" onSubmit={handleSubmit} align="start">
+        <VStack spacing={4} as="form" className="rounded-md p-5 shadow" onSubmit={handleSubmit} align="start">
           {/* Problem ID */}
           <FormControl isRequired>
             <FormLabel>Problem</FormLabel>
@@ -158,12 +160,14 @@ export const NewTicket = () => {
 
           {/* Attachment */}
           <FormControl>
-            <FormLabel>Attachment</FormLabel>
-            <Input type="file" name="attachement" onChange={handleChange} />
+            <FormLabel htmlFor="file" className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded">
+              <FontAwesomeIcon icon={faFileImport} className="mr-3" />
+              Importer un fichier! </FormLabel>
+            <Input id="file" className="hidden" type="file" name="attachement" onChange={handleChange} />
           </FormControl>
 
           {/* Submit Button */}
-          <Button type="submit" colorScheme="purple" width="full">
+          <Button type="submit" colorScheme="green" width="full">
             Create Ticket
           </Button>
         </VStack>
