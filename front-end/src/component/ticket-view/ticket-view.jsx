@@ -99,13 +99,12 @@ export const TicketView = () => {
     }
   };
 
-  // Function to handle printing
   const handlePrint = () => {
-    window.print(); // Simple print functionality
+    window.print(); 
   };
 
   if (!ticket) {
-    return <Text>Loading ticket...</Text>; // Show loading state while ticket is being fetched
+    return <Text>Loading ticket...</Text>; 
   }
 
   return (

@@ -65,10 +65,10 @@ const TicketItem = ({
   return (
     <Fragment>
 
-      <Box p={5} w={"500px"} shadow="md" borderWidth="1px" rounded="md">
+      <Box p={5} w={"full"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
-          <Flex gap={20}>
+          <Flex gap={350} >
             <Heading size="md">Ticket: #{ticketNumber}</Heading>
             <Badge colorScheme={statusColor}>{status}</Badge>
           </Flex>
@@ -213,7 +213,7 @@ export default function TicketList() {
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
       />
-      <Box mx="20" w={"1000px"} p={6}>
+      <Box mx="20" maxW={'1100px'} w={"full"} p={6}>
         {/* Search and Filters */}
         <Flex mb={4} alignItems="center">
           <Input
