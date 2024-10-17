@@ -87,4 +87,67 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Logged out']);
     }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'sometimes|nullable|string|min:8',
+            'role' => 'sometimes|required|in:admin,client,supportIt',
+            'fonction_id' => 'sometimes|nullable|integer',
+            'departement_id' => 'sometimes|nullable|integer',
+            'localisation_id' => 'sometimes|nullable|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user->name = $request->get('name', $user->name);
+        $user->email = $request->get('email', $user->email);
+
+        if ($request->has('password') && $request->password) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->role = $request->get('role', $user->role);
+        $user->fonction_id = $request->get('fonction_id', $user->fonction_id);
+        $user->departement_id = $request->get('departement_id', $user->departement_id);
+        $user->localisation_id = $request->get('localisation_id', $user->localisation_id);
+
+        $user->save();
+
+        switch ($user->role) {
+            case 'admin':
+                if (!$user->admin) {
+                    Admin::create(['admin_id' => $user->id]);
+                }
+                break;
+
+            case 'client':
+                if (!$user->client) {
+                    Client::create(['client_id' => $user->id]);
+                }
+                break;
+
+            case 'supportIt':
+                if (!$user->supportIt) {
+                    SupportIT::create(['supportIt_id' => $user->id]);
+                }
+                break;
+        }
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user
+        ]);
+    }
+
 }
