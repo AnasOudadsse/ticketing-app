@@ -71,27 +71,28 @@ const TicketItem = ({
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
           <Flex gap={350} >
-            <Heading size="md">Ticket: #{ticketNumber}</Heading>
+            <Heading  size="md">Ticket: #{ticketNumber}</Heading>
             <Badge colorScheme={statusColor}>{status}</Badge>
           </Flex>
           {priority && <Badge colorScheme="red">{priority}</Badge>}
           <Spacer />
-          <Text color="gray.500">
+          <Text  color="gray.500">
             Posted{" "}
             {formatDistanceToNow(new Date(postedTime), { addSuffix: true })}
 
           </Text>
         </HStack>
 
-        <Heading mt={3} size="sm">
+        <Heading  my={5} size="sm">
           Problem: {problemName}
         </Heading>
-        <Text mt={2} noOfLines={2}>
+        <Text mb={4} mt={2} noOfLines={2}>
           {description}
         </Text>
+        <hr />
         <HStack mt={4}>
-          <Avatar name={name} />
-          <Text>{client_name}</Text>
+          <Avatar size={"md"}  mr={2} name={name} />
+          <Text color={"#7B7B7B"}>{client_name}</Text>
 
           <Spacer />
           <Button
@@ -217,7 +218,16 @@ export default function TicketList() {
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
       />
-      <Box mx="20" maxW={'1100px'} w={"full"} p={6}>
+      <Flex p={25} my={25} justify={'space-between'} >
+          <Heading size={"lg"}>
+              Ticket List
+          </Heading>
+
+          <Button colorScheme="green" >
+                <a href="newticket">New Ticket</a>
+          </Button>
+      </Flex>
+      <Box borderRadius={15} bg={'white'} p={25}  w={"full"}>
         {/* Search and Filters */}
         <Flex mb={4} alignItems="center">
           <Input
@@ -237,9 +247,6 @@ export default function TicketList() {
             <option value="this-week">This Week</option>
             <option value="this-month">This Month</option>
           </Select>
-          <Button colorScheme="green" ml={4}>
-            <a href="newticket">New Ticket</a>
-          </Button>
         </Flex>
 
         {/* Tabs for Status Filter */}

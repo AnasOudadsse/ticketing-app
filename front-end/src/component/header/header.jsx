@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Header = ({ name, greeting, profile, role }) => {
   return (
-    <div className="flex justify-between items-start w-full h-fit py-2 my-15">
+    <div className="flex justify-between items-start w-full h-fit p-5 my-15 bg-white ">
       <div className="flex flex-col gap-1">
         <h3>Hello {name}</h3>
         <p className="text-sm text-gray-500">{greeting}</p>

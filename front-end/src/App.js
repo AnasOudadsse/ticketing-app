@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Box, Flex } from "@chakra-ui/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NewTicket } from "./component/add-ticket/add-ticket";
 import TicketList from "./component/tickets-list/tickets-list";
@@ -17,6 +17,7 @@ function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
+      <Flex fontFamily={'inter'} w={'100%'} bg={"#F9F9FB"} >
         <Routes>
           <Route element={<Dashboard />} path="tickets">
             <Route element={<ExportTickets />} path="exporttickets" />
@@ -33,6 +34,7 @@ function App() {
           </Route>
           <Route element={<Login />} path="login" />
         </Routes>
+      </Flex>
       </BrowserRouter>
     </ChakraProvider>
   );
