@@ -94,6 +94,5 @@ Route::get('users/roles',[StatistiqueController::class,'userRoles']);
 Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
 Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// api.php
+Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'getUser']);

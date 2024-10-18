@@ -5,7 +5,7 @@ const Dashboard = () => {
   return (
     <div className="flex w-full">
       <SideBar />
-      <div className="container px-3 mx-auto overflow-x-hidden">
+      <div className="container px-1 mx-auto overflow-x-hidden">
         <Outlet />
       </div>
     </div>

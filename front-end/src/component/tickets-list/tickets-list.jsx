@@ -67,7 +67,7 @@ const TicketItem = ({
   return (
     <Fragment>
 
-      <Box p={5} w={"full"} shadow="md" borderWidth="1px" rounded="md">
+      <Box p={5} my={2} w={"full"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
           <Flex gap={350} >
@@ -209,7 +209,7 @@ export default function TicketList() {
   };
 
   return (
-    <Fragment>
+    <Fragment >
       <Header
         name={"Mezrioui Hakim"}
         greeting={"Have a nice day"}
@@ -218,73 +218,76 @@ export default function TicketList() {
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
       />
-      <Flex p={25} my={25} justify={'space-between'} >
-          <Heading size={"lg"}>
-              Ticket List
-          </Heading>
+      <Box px={25}>
 
-          <Button colorScheme="green" >
-                <a href="newticket">New Ticket</a>
-          </Button>
-      </Flex>
-      <Box borderRadius={15} bg={'white'} p={25}  w={"full"}>
-        {/* Search and Filters */}
-        <Flex mb={4} alignItems="center">
-          <Input
-            placeholder="Search for ticket"
-            width="300px"
-            value={searchTerm}
-            onChange={handleSearch} // Handle search input
-          />
-          <Spacer />
-          <Select
-            ml={4}
-            placeholder="Select Time"
-            width="150px"
-            onChange={handleTimeFilter}
-          >
-            <option value="today">Today</option>
-            <option value="this-week">This Week</option>
-            <option value="this-month">This Month</option>
-          </Select>
+        <Flex p={25}  my={25} justify={'space-between'} >
+            <Heading size={"lg"}>
+                Ticket List
+            </Heading>
+
+            <Button colorScheme="green" >
+                  <a href="newticket">New Ticket</a>
+            </Button>
         </Flex>
+        <Box borderRadius={15} bg={'white'} p={50}  w={"full"}>
+          {/* Search and Filters */}
+          <Flex mb={4} alignItems="center">
+            <Input
+              placeholder="Search for ticket"
+              width="300px"
+              value={searchTerm}
+              onChange={handleSearch} // Handle search input
+            />
+            <Spacer />
+            <Select
+              ml={4}
+              placeholder="Select Time"
+              width="150px"
+              onChange={handleTimeFilter}
+            >
+              <option value="today">Today</option>
+              <option value="this-week">This Week</option>
+              <option value="this-month">This Month</option>
+            </Select>
+          </Flex>
 
-        {/* Tabs for Status Filter */}
-        <Tabs variant="enclosed-colored" onChange={handleTabChange}>
-          <TabList>
-            <Tab>All Tickets</Tab>
-            <Tab>Reserved</Tab>
-            <Tab>Resolved</Tab>
-          </TabList>
-        </Tabs>
+          {/* Tabs for Status Filter */}
+          <Tabs variant="enclosed-colored" onChange={handleTabChange}>
+            <TabList>
+              <Tab>All Tickets</Tab>
+              <Tab>Reserved</Tab>
+              <Tab>Resolved</Tab>
+            </TabList>
+          </Tabs>
 
-        {/* Ticket Items */}
-        <VStack spacing={4} mt={6}>
-          {!loading && filteredTickets.length > 0 ? (
-            filteredTickets.map((ticket) => (
-              <TicketItem
-                key={ticket.id}
-                statusColor={
-                  ticket.status === "published"
-                    ? "green"
-                    : ticket.status === "reserved"
-                    ? "orange"
-                    : "red"
-                }
-                status={ticket.status}
-                ticketNumber={ticket.id}
-                problemName={ticket?.problem?.specification || ticket?.problem?.name}
-                priority={ticket.priority}
-                postedTime={ticket.created_at}
-                name={ticket.client_name}
-                description={ticket.description}
-                client_name={ticket.client_name}
-              />
-            ))
-          ) : (
-            <Text>No tickets found.</Text>
-          )}
-        </VStack>
+          {/* Ticket Items */}
+          <VStack spacing={4} mt={6}>
+            {!loading && filteredTickets.length > 0 ? (
+              filteredTickets.map((ticket) => (
+                <TicketItem
+                  key={ticket.id}
+                  statusColor={
+                    ticket.status === "published"
+                      ? "green"
+                      : ticket.status === "reserved"
+                      ? "orange"
+                      : "red"
+                  }
+                  status={ticket.status}
+                  ticketNumber={ticket.id}
+                  problemName={ticket?.problem?.specification || ticket?.problem?.name}
+                  priority={ticket.priority}
+                  postedTime={ticket.created_at}
+                  name={ticket.client_name}
+                  description={ticket.description}
+                  client_name={ticket.client_name}
+                />
+              ))
+            ) : (
+              <Text>No tickets found.</Text>
+            )}
+          </VStack>
+        </Box>
       </Box>
     </Fragment>
   );

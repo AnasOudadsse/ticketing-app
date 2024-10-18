@@ -120,7 +120,7 @@ export const TicketView = () => {
   return (
     <div>
       <Header
-        name={"Mezrioui Hakim"}
+        name={ticket.client_name}
         greeting={"Have a nice day"}
         role={"super-admin"}
         profile={

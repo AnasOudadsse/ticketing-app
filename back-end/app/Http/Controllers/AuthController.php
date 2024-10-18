@@ -150,4 +150,24 @@ class AuthController extends Controller
         ]);
     }
 
+    public function getUser(Request $request)
+{
+    // Load the authenticated user with their function using eager loading
+    $user = $request->user()->load('fonction');
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'role' => $user->role,
+        'profile_image' => $user->profile_image,
+        'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
+    ]);
+}
+
+
 }
