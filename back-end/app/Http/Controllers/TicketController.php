@@ -6,6 +6,8 @@ use App\Models\Client;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
+use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -65,12 +67,19 @@ class TicketController extends Controller
 
     public function show($id)
     {
-        $ticket = Ticket::with('problem')->find($id);
+        $ticket = Ticket::with(['problem', 'client'])->find($id);
 
         if (!$ticket) {
             return response()->json(['message' => 'Ticket not found'], 404);
         }
 
+        $client = User::find($ticket->clientID);
+
+        if (!$client) {
+            return response()->json(['message' => 'Client not found'], 404);
+        }
+    
+        $ticket->client_name = $client->name;
         return response()->json($ticket);
     }
 
@@ -115,7 +124,6 @@ public function getTicketsWithProblems(Request $request)
 
     $token = $request->bearerToken();
 
-    // If no token is provided, return an unauthorized response
     if (!$token) {
         return response()->json(['error' => 'Unauthorized'], 401);
     }
@@ -123,7 +131,6 @@ public function getTicketsWithProblems(Request $request)
     // Assuming you're using Sanctum or Passport, use the token to find the associated user
     $accessToken = PersonalAccessToken::findToken($token);
 
-    // If the token is invalid, return an unauthorized response
     if (!$accessToken) {
         return response()->json(['error' => 'Unauthorized'], 401);
     }
@@ -131,27 +138,42 @@ public function getTicketsWithProblems(Request $request)
     // Get the user associated with the token
     $user = $accessToken->tokenable; // tokenable refers to the User model
 
-    // If the user is not found, return an unauthorized response
-    if (!$user) {
-        return response()->json(['error' => 'Unauthorized'], 401);
-    }
+    if ($user->role === 'admin' || $user->role === 'supportIt') {
+        // Fetch all tickets with their associated problems
+        $tickets = Ticket::with(['problem', 'client'])->get();
+    
+        // Loop through each ticket and add the client's name
+        $tickets->transform(function ($ticket) {
+            $client = User::find($ticket->clientID); // Fetch client from User model
 
-    // Now you can check the user's role and return tickets accordingly
-    if ($user->role == 'admin' || $user->role == 'supportIt') {
-        // If the user is admin or support IT, return all tickets with their associated problems
-        $ticketsWithProblems = Ticket::with('problem')->get();
+            $blabla = 'client_name';
+    
+            // Add client_name to each ticket
+            $ticket->$blabla = $client->name;   
+
+            return $ticket;
+        });
+    
+        return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $ticketsWithProblems = Ticket::with('problem')->where('clientID', $user->id)->get();
+        $tickets = Ticket::with(['problem', 'client'])->where('clientID', $user->id)->get();
+    
+        $tickets->transform(function ($ticket) {
+            $client = User::find($ticket->clientID); // Fetch client from User model
+
+            $blabla = 'client_name';
+    
+            // Add client_name to each ticket
+            $ticket->$blabla = $client->name;   
+
+            return $ticket;
+        });
+        return response()->json($tickets, 200);
     }
+    
 
-    return response()->json($ticketsWithProblems);
-}
 
-public function exportTicketsToExcel()
-{
-    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
-
-    return Excel::download(new TicketsExport, $fileName);
+    return response()->json($tickets);
 }
 }
