@@ -20,9 +20,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role',['admin','supportIt','client']);
-            $table->foreignId('fonction_id')->constrained('fonctions')->onDelete('cascade');
-            $table->foreignId('departement_id')->constrained('departements')->onDelete('cascade');
-            $table->foreignId('localisation_id')->constrained('localisations')->onDelete('cascade');
+            $table->foreignId('fonction_id')->constrained('fonctions')->onDelete('cascade'); // si, it, planifiacation, scolarite, audio visual, communication, qualite, administration, addmision, achat, 
+            $table->foreignId('departement_id')->constrained('departements')->onDelete('cascade'); // um6ss, fmc, maf, fmd, efm, fmb, fm6sips, esm6iss, eim6p, em6sv
+            $table->foreignId('localisation_id')->constrained('localisations')->onDelete('cascade'); // Anfa 1: Batiment A, Batiment B, Batiment C, Batiment D, La ligue arab: Batiment A, Batiment B, Anfa 2: fsts
             $table->rememberToken();
             $table->timestamps();
         });
