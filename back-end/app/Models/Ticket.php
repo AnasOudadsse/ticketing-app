@@ -20,7 +20,7 @@ class Ticket extends Model
 
     public function client()
 {
-    return $this->belongsTo(Client::class, 'clientID');
+    return $this->belongsTo(Client::class);
 }
 
 public function admin()

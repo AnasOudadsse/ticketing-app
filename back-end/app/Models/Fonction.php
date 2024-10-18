@@ -13,4 +13,7 @@ class Fonction extends Model
     public function User(){
         return $this->hasMany(User::class);
     }
+    public function inventaire(){
+        return $this->hasMany(Inventaire::class);
+    }
 }

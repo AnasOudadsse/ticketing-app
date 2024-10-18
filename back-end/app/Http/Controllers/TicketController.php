@@ -6,8 +6,6 @@ use App\Models\Client;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
-use App\Models\User;
-use Illuminate\Foundation\Auth\User as AuthUser;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -119,9 +117,10 @@ class TicketController extends Controller
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
 }
 
+
 public function getTicketsWithProblems(Request $request)
 {
-
+    
     $token = $request->bearerToken();
 
     if (!$token) {
@@ -157,23 +156,16 @@ public function getTicketsWithProblems(Request $request)
         return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $tickets = Ticket::with(['problem', 'client'])->where('clientID', $user->id)->get();
-    
-        $tickets->transform(function ($ticket) {
-            $client = User::find($ticket->clientID); // Fetch client from User model
-
-            $blabla = 'client_name';
-    
-            // Add client_name to each ticket
-            $ticket->$blabla = $client->name;   
-
-            return $ticket;
-        });
-        return response()->json($tickets, 200);
+        $ticketsWithProblems = Ticket::with('problem')->where('clientID', $user->id)->get();
     }
-    
 
+    return response()->json($ticketsWithProblems);
+}
 
-    return response()->json($tickets);
+public function exportTicketsToExcel()
+{
+    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
+
+    return Excel::download(new TicketsExport, $fileName);
 }
 }
