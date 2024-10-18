@@ -7,10 +7,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\FonctionController;
+use App\Http\Controllers\InventaireController;
 use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
-use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\SupportItSpecialisationController;
 /*
 |--------------------------------------------------------------------------
@@ -52,11 +53,11 @@ Route::put('/users/{id}', [AuthController::class, 'update']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::prefix('specialisations')->group(function(){
-    Route::get('/specialisations', [SpecialisationController::class, 'index']);
-    Route::post('/specialisations', [SpecialisationController::class, 'store']);
-    Route::get('/specialisations/{id}', [SpecialisationController::class, 'show']);
-    Route::put('/specialisations/{id}', [SpecialisationController::class, 'update']);
-    Route::delete('/specialisations/{id}', [SpecialisationController::class, 'destroy']); 
+    Route::get('/', [SpecialisationController::class, 'index']);
+    Route::post('/', [SpecialisationController::class, 'store']);
+    Route::get('/{id}', [SpecialisationController::class, 'show']);
+    Route::put('/{id}', [SpecialisationController::class, 'update']);
+    Route::delete('/{id}', [SpecialisationController::class, 'destroy']); 
 });
 
 Route::prefix('support-it-specialisations')->group(function(){
@@ -93,6 +94,9 @@ Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
 Route::get('users/roles',[StatistiqueController::class,'userRoles']);
 Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
 Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
+
+Route::apiResource('inventaires', InventaireController::class);
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
