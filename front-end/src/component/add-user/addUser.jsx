@@ -4,17 +4,24 @@ import { Link } from "react-router-dom";
 import Header from "../header/header";
 
 const AddUser = () => {
-  const [tab, setTab] = useState("admin");
+  // const [tab, setTab] = useState("admin");
 
-  const selectTab = (value) => {
-    setTab(value);
-    console.log(tab);
-  };
+  // const selectTab = (value) => {
+  //   setTab(value);
+  //   console.log(tab);
+  // };
 
   return (
     <div className="w-full">
-      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
-      <TabAddUser tabSelected={tab} onSelectTab={selectTab} />
+      <Header
+        name={"Mezrioui Hakim"}
+        greeting={"Have a nice day"}
+        role={"super-admin"}
+        profile={
+          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+        }
+      />
+      {/* <TabAddUser tabSelected={tab} onSelectTab={selectTab} /> */}
       <form className="rounded shadow py-10 mt-5 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5">
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Name</label>
@@ -49,7 +56,7 @@ const AddUser = () => {
             <option value={"Biostar"}>Biostar</option>
           </select>
         </div> */}
-        {tab === "support" && (
+        {/* {tab === "support" && (
           <div className="flex justify-between gap-3 items-start my-3">
             <label className="w-32">Fonction</label>
             <div className="w-full">
@@ -79,19 +86,29 @@ const AddUser = () => {
               </div>
             </div>
           </div>
-        )}
+        )}  */}
 
-        {tab !== "admin" && (
-          <div className="flex justify-between gap-3 items-center my-3">
-            <label className="w-32">Departement</label>
-            <select className="rounded-md w-full px-2 py-2 bg-white border">
-              <option disabled>Select a Departement</option>
-              <option value={"Konosys"}>Konosys</option>
-              <option value={"Canvas"}>Canvas</option>
-              <option value={"Biostar"}>Biostar</option>
-            </select>
-          </div>
-        )}
+        <div className="flex justify-between gap-3 items-center my-3">
+          <label className="w-32">Fonction</label>
+          <select className="rounded-md w-full px-2 py-2 bg-white border">
+            <option disabled>Select a Fonction</option>
+            <option value={"Konosys"}>Konosys</option>
+            <option value={"Canvas"}>Canvas</option>
+            <option value={"Biostar"}>Biostar</option>
+          </select>
+        </div>
+
+        {/* {tab !== "admin" && ( */}
+        <div className="flex justify-between gap-3 items-center my-3">
+          <label className="w-32">Departement</label>
+          <select className="rounded-md w-full px-2 py-2 bg-white border">
+            <option disabled>Select a Departement</option>
+            <option value={"Konosys"}>Konosys</option>
+            <option value={"Canvas"}>Canvas</option>
+            <option value={"Biostar"}>Biostar</option>
+          </select>
+        </div>
+        {/* )} */}
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Localisation</label>
           <select className="rounded-md w-full px-2 py-2 bg-white border">

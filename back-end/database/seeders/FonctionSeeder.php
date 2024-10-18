@@ -26,13 +26,17 @@ class FonctionSeeder extends Seeder
      */
     private function getFonctionsData()
     {
-        return [
-            ['name' => 'Directeur'],
-            ['name' => 'Chef de projet'],
-            ['name' => 'Développeur'],
-            ['name' => 'Technicien IT'],
-            ['name' => 'Responsable RH'],
-            ['name' => 'Comptable'],
+        return             [
+                ['name' => 'SI'],
+                ['name' => 'IT'],
+                ['name' => 'Planification'],
+                ['name' => 'Scolarité'],
+                ['name' => 'Audio Visuel'],
+                ['name' => 'Communication'],
+                ['name' => 'Qualité'],
+                ['name' => 'Administration'],
+                ['name' => 'Admission'],
+                ['name' => 'Achat'],
         ];
     }
 }

@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
                 'email_verified_at' => now(),
-                'password' => Hash::make('password'), // Utiliser un mot de passe sécurisé
+                'password' => Hash::make('123456'), // Utiliser un mot de passe sécurisé
                 'role' => 'admin',
                 'fonction_id' => 1, // Assurez-vous que cette valeur correspond à une fonction existante
                 'departement_id' => 1, // Assurez-vous que cette valeur correspond à un département existant
