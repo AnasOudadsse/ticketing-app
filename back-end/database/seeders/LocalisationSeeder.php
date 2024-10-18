@@ -27,31 +27,13 @@ class LocalisationSeeder extends Seeder
     private function getLocalisationsData()
     {
         return [
-            [
-                'name' => 'New York',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Paris',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Tokyo',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Berlin',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'London',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ['name' => 'Anfa 1 - Batiment A', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Anfa 1 - Batiment B', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Anfa 1 - Batiment C', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Anfa 1 - Batiment D', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'La ligue arab - Batiment A', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'La ligue arab - Batiment B', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Anfa 2 - FSTS', 'created_at' => now(), 'updated_at' => now()],
         ];
     }
 }

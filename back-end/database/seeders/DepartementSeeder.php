@@ -27,11 +27,16 @@ class DepartementSeeder extends Seeder
     private function getDepartementsData()
     {
         return [
-            ['name' => 'Informatique'],
-            ['name' => 'Ressources Humaines'],
-            ['name' => 'Comptabilité'],
-            ['name' => 'Marketing'],
-            ['name' => 'Production'],
+            ['name' => 'UM6SS'],
+            ['name' => 'FMC'],
+            ['name' => 'MAF'],
+            ['name' => 'FMD'],
+            ['name' => 'EFM'],
+            ['name' => 'FMB'],
+            ['name' => 'FM6SIPS'],
+            ['name' => 'ESM6ISS'],
+            ['name' => 'EIM6P'],
+            ['name' => 'EM6SV'],
         ];
     }
 }
