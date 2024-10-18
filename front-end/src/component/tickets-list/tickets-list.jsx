@@ -90,7 +90,7 @@ const TicketItem = ({
           {description}
         </Text>
         <HStack mt={4}>
-          <Avatar name={name} src="https://bit.ly/broken-link" />
+          <Avatar name={name} />
           <Text>{client_name}</Text>
 
           <Spacer />
@@ -269,7 +269,7 @@ export default function TicketList() {
                 problemName={ticket?.problem?.specification || ticket?.problem?.name}
                 priority={ticket.priority}
                 postedTime={ticket.created_at}
-                name={ticket.name}
+                name={ticket.client_name}
                 description={ticket.description}
                 client_name={ticket.client_name}
               />

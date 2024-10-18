@@ -7,23 +7,25 @@ import {
   HStack,
   Image,
   Spacer,
+  Tag,
   Text,
   VStack,
+  Avatar,
+  IconButton,
   useToast,
 } from "@chakra-ui/react";
+import { FaPrint, FaDownload, FaHeart, FaShareAlt } from "react-icons/fa";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Header from "../header/header";
+import { formatDistanceToNow } from "date-fns";
 
 export const TicketView = () => {
-  const [ticket, setTicket] = useState(null); // Store fetched ticket
+  const [ticket, setTicket] = useState(null);
   const toast = useToast();
   const { id } = useParams();
   const supportItID = localStorage.getItem("id");
 
-  console.log(ticket);
-
-  // Fetch ticket details when the component mounts
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -32,7 +34,6 @@ export const TicketView = () => {
         );
         setTicket(response.data);
       } catch (error) {
-        console.error("Error fetching ticket:", error);
         toast({
           title: "Error",
           description: "Failed to fetch the ticket.",
@@ -42,15 +43,13 @@ export const TicketView = () => {
         });
       }
     };
-
     fetchTicket();
   }, [toast]);
 
-  // Function to handle reserving a ticket
   const handleReserve = async () => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/reserve`, {
-        supportItID: supportItID, // Send the supportItID in the request body
+        supportItID: supportItID,
       });
       toast({
         title: "Success",
@@ -59,10 +58,8 @@ export const TicketView = () => {
         duration: 5000,
         isClosable: true,
       });
-      // Optionally refetch ticket data to reflect the new status
       setTicket({ ...ticket, status: "reserved" });
     } catch (error) {
-      console.error("Error reserving the ticket:", error);
       toast({
         title: "Error",
         description: "Failed to reserve the ticket.",
@@ -73,25 +70,31 @@ export const TicketView = () => {
     }
   };
 
+  const getInitials = (name) => {
+    const nameParts = name.split(" ");
+    const initials = nameParts
+      .map(part => part.charAt(0).toUpperCase()) // Get the first letter of each part
+      .join(""); // Combine them
+    return initials.length > 2 ? initials.slice(0, 2) : initials; // Limit to 2 letters
+  };
+
   const handlerResolve = async () => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
-        supportItID: supportItID, // Send the supportItID in the request body
+        supportItID: supportItID,
       });
       toast({
         title: "Success",
-        description: "The ticket has been reserved.",
+        description: "The ticket has been resolved.",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
-      // Optionally refetch ticket data to reflect the new status
-      setTicket({ ...ticket, status: "reserved" });
+      setTicket({ ...ticket, status: "resolved" });
     } catch (error) {
-      console.error("Error reserving the ticket:", error);
       toast({
         title: "Error",
-        description: "Failed to reserve the ticket.",
+        description: "Failed to resolve the ticket.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -100,11 +103,18 @@ export const TicketView = () => {
   };
 
   const handlePrint = () => {
-    window.print(); 
+    window.print();
+  };
+
+  const downloadImage = () => {
+    const link = document.createElement("a");
+    link.href = ticket.image;
+    link.download = "ticket_image.jpg";
+    link.click();
   };
 
   if (!ticket) {
-    return <Text>Loading ticket...</Text>; 
+    return <Text>Loading ticket...</Text>;
   }
 
   return (
@@ -117,81 +127,97 @@ export const TicketView = () => {
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
       />
+      <Box textAlign="center" m={10}>
+        <Heading size="lg">Ticket Details</Heading>
+        <Text fontSize="md" color="gray.600" mt={2}>
+          Here are the full details of the ticket, including the problem, creator, and status.
+        </Text>
+      </Box>
       <Box
-        alignContent={"center"}
-        maxW="800px"
-        w={"500px"}
-        h={"fit-content"}
+        maxW="600px"
+        w="full"
         mx="auto"
         mt={10}
         p={6}
-        shadow="md"
+        shadow="lg"
         borderWidth="1px"
-        rounded="md"
+        rounded="lg"
+        bg="white"
       >
-        {/* Ticket Info */}
-        <Heading size="lg" mb={4}>
-          Ticket #{ticket.id} - {ticket?.problem?.specification || ticket?.problem?.name}
+        
+        <Flex align="center" mb={4}>
+        <Avatar
+          size="lg"
+          name={ticket.client_name}
+          bg="teal.500"
+        />
+          <Box ml={4}>
+            <Heading size="md">{ticket.client_name}</Heading>
+            <Text fontSize="sm" color="gray.500">
+              Ticket Creator
+            </Text>
+          </Box>
+        </Flex>
+
+        <Heading size="lg" mb={2}>
+          {ticket?.problem?.specification || ticket?.problem?.name}
         </Heading>
 
-        <VStack align="start" spacing={4}>
-          <HStack>
-            <Text fontWeight="bold">Status:</Text>
-            <Text>{ticket.status}</Text>
-          </HStack>
-          <HStack>
-            <Text fontWeight="bold">Posted Time:</Text>
-            <Text>
-              {new Date(ticket.created_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
-            </Text>
-          </HStack>
-          <HStack>
-            <Text fontWeight="bold">Name:</Text>
-            <Text>{ticket.problem?.name}</Text>
-          </HStack>
-          <Text fontWeight="bold">Description:</Text>
-          <Text>{ticket.description}</Text>
+        <Text fontSize="sm" color="gray.500" mb={4}>
+          {formatDistanceToNow(new Date(ticket.created_at), {
+            addSuffix: true,
+          })}
+        </Text>
 
-          {/* Display image if available */}
-          {ticket.image && (
-            <Box mt={4}>
-              <Image
-                src={ticket.image}
-                alt="Ticket Image"
-                boxSize="300px"
-                objectFit="cover"
-              />
-            </Box>
-          )}
+        <Text mb={4}>{ticket.description}</Text>
 
-          {/* Action Buttons */}
-          <Flex w="full" mt={6}>
-            {/* Show Reserve button if status is published */}
+        {ticket.image && (
+          <Box mt={4} textAlign="center">
+            <Image
+              src={ticket.image}
+              alt="Ticket Image"
+              boxSize="300px"
+              objectFit="cover"
+              cursor="pointer"
+              onClick={downloadImage} // Download image on click
+              rounded="md"
+            />
+            <IconButton
+              mt={2}
+              icon={<FaDownload />}
+              aria-label="Download Image"
+              onClick={downloadImage}
+              colorScheme="blue"
+              size="sm"
+            />
+          </Box>
+        )}
+
+        <HStack spacing={2} mt={6}>
+          <Tag colorScheme="green">{ticket?.problem?.type}</Tag>
+          <Tag colorScheme="yellow">{ticket?.problem?.specification || ticket?.problem?.name }</Tag>
+        </HStack>
+
+        <Flex mt={6} justifyContent="end" align="center">
+
+          <HStack spacing={4}>
             {ticket.status === "published" && (
-              <Button colorScheme="blue" onClick={handleReserve}>
+              <Button colorScheme="blue" onClick={handleReserve} size="sm">
                 Reserve Ticket
               </Button>
             )}
-
-            <Spacer />
-
-            {/* Show Print button if status is resolved */}
             {ticket.status === "resolved" && (
-              <Button colorScheme="green" onClick={handlePrint}>
+              <Button colorScheme="green" onClick={handlePrint} size="sm">
                 Print Ticket
               </Button>
             )}
-
             {ticket.status === "reserved" && (
-              <Button colorScheme="red" onClick={handlerResolve}>
-                Close ticket
+              <Button colorScheme="red" onClick={handlerResolve} size="sm">
+                Close Ticket
               </Button>
             )}
-          </Flex>
-        </VStack>
+          </HStack>
+        </Flex>
       </Box>
     </div>
   );
