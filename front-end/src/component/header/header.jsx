@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Avatar } from "@chakra-ui/react";
 import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import useHttp from "../customHook/useHttp";
 
 const Header = ({ greeting }) => {
@@ -23,7 +22,6 @@ const Header = ({ greeting }) => {
   }, []);
 
   const getData = (data) => {
-    console.log(data);
     setUser(data);
   };
 

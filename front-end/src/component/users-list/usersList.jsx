@@ -6,9 +6,10 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Header from "../header/header";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import useHttp from "../customHook/useHttp";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
 
@@ -156,8 +157,27 @@ const pre_data = [
 ];
 
 const UsersList = () => {
-  const [data, setData] = useState(pre_data);
-  const [dataF, setDataF] = useState(pre_data);
+  const [data, setData] = useState([]);
+  const [dataF, setDataF] = useState([]);
+  const { loading, sendRequest } = useHttp();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const request = {
+      url: "http://127.0.0.1:8000/api/users",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    sendRequest(request, getData);
+  }, []);
+
+  const getData = (data) => {
+    setData([...data.users]);
+    setDataF([...data.users]);
+  };
 
   const handleSearch = (e) => {
     const dataF = data.filter((enterprise) => {
@@ -222,7 +242,14 @@ const UsersList = () => {
 
   return (
     <div className="w-full mx-auto">
-      <Header name={"Mezrioui Hakim"} greeting={"Have a nice day"} role={"super-admin"} profile={"https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"}  />
+      <Header
+        name={"Mezrioui Hakim"}
+        greeting={"Have a nice day"}
+        role={"super-admin"}
+        profile={
+          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
+        }
+      />
       <div className="mt-10 flex justify-between">
         <input
           placeholder="Search ..."
@@ -236,6 +263,12 @@ const UsersList = () => {
           <FontAwesomeIcon icon={faAdd} className="" />
         </Link>
       </div>
+      {/* {loading && (
+        <div className="bg-indigo-500">
+          <svg class="animate-spin text-white h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
+          Loading ...
+        </div>
+      )} */}
       <DataTable
         columns={columns}
         data={dataF}

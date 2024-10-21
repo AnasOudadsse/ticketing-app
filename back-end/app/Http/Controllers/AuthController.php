@@ -19,7 +19,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,client,supportIt', 
+            'role' => 'required|in:admin,client,supportIt',
         ]);
 
         if ($validator->fails()) {
@@ -167,6 +167,12 @@ class AuthController extends Controller
         'profile_image' => $user->profile_image,
         'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
     ]);
+}
+
+function getUsers() {
+    $users = User::all();
+
+    return response()->json(["users" => $users]);
 }
 
 
