@@ -27,21 +27,21 @@ Route::prefix('fonctions')->group(function(){
     Route::post('/', [FonctionController::class, 'store']);
     Route::get('/{id}', [FonctionController::class, 'show']);
     Route::put('/{id}', [FonctionController::class, 'update']);
-    Route::delete('/{id}', [FonctionController::class, 'destroy']); 
+    Route::delete('/{id}', [FonctionController::class, 'destroy']);
 });
 Route::prefix('departements')->group(function(){
     Route::get('/', [DepartementController::class, 'index']);
     Route::post('/', [DepartementController::class, 'store']);
-    Route::get('/{id}', [DepartementController::class, 'show']); 
-    Route::put('/{id}', [DepartementController::class, 'update']); 
+    Route::get('/{id}', [DepartementController::class, 'show']);
+    Route::put('/{id}', [DepartementController::class, 'update']);
     Route::delete('/{id}', [DepartementController::class, 'destroy']);
 });
 
 Route::prefix('localisations')->group(function(){
     Route::get('/', [LocalisationController::class, 'index']);
     Route::post('/', [LocalisationController::class, 'store']);
-    Route::get('/{id}', [LocalisationController::class, 'show']); 
-    Route::put('/{id}', [LocalisationController::class, 'update']); 
+    Route::get('/{id}', [LocalisationController::class, 'show']);
+    Route::put('/{id}', [LocalisationController::class, 'update']);
     Route::delete('/{id}', [LocalisationController::class, 'destroy']);
 });
 
@@ -49,6 +49,7 @@ Route::prefix('localisations')->group(function(){
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::put('/users/{id}', [AuthController::class, 'update']);
+Route::get('/users', [AuthController::class, 'getUsers']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::prefix('specialisations')->group(function(){
@@ -56,7 +57,7 @@ Route::prefix('specialisations')->group(function(){
     Route::post('/', [SpecialisationController::class, 'store']);
     Route::get('/{id}', [SpecialisationController::class, 'show']);
     Route::put('/{id}', [SpecialisationController::class, 'update']);
-    Route::delete('/{id}', [SpecialisationController::class, 'destroy']); 
+    Route::delete('/{id}', [SpecialisationController::class, 'destroy']);
 });
 
 
@@ -64,8 +65,8 @@ Route::prefix('problems')->group(function(){
     Route::get('/', [ProblemController::class, 'index']);
     Route::get('/getProblems', [ProblemController::class, 'getProblems']);
     Route::post('/', [ProblemController::class, 'store']);
-    Route::get('/{id}', [ProblemController::class, 'show']); 
-    Route::put('/{id}', [ProblemController::class, 'update']); 
+    Route::get('/{id}', [ProblemController::class, 'show']);
+    Route::put('/{id}', [ProblemController::class, 'update']);
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
 
 });

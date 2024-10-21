@@ -14,34 +14,42 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     public function register(Request $request)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255|unique:users',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8|confirmed',
-        'role' => 'required|in:admin,supportIt,client',
-        'specialisation_id' => 'nullable|exists:specialisations,id',
-        'fonction_id' => 'required|exists:fonctions,id',
-        'departement_id' => 'required|exists:departements,id',
-        'localisation_id' => 'required|exists:localisations,id',
-    ]);
+    {
+        // Valider les données d'entrée
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:admin,client,supportIt', 
+        ]);
 
-    $specialisationId = $validatedData['role'] === 'supportIt' ? $validatedData['specialisation_id'] : null;
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-    // return response()->json($validatedData);
-    $user = User::create([
-        'name' => $validatedData['name'],
-        'email' => $validatedData['email'],
-        'password' => Hash::make($validatedData['password']),
-        'role' => $validatedData['role'],
-        'role_in_creation' => $validatedData['role'],
-        'specialisation_id' => $specialisationId,
-        'fonction_id' => $validatedData['fonction_id'],
-        'departement_id' => $validatedData['departement_id'],
-        'localisation_id' => $validatedData['localisation_id'],
-    ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'fonction_id' => $request->fonction_id,
+            'departement_id' => $request->departement_id,
+            'localisation_id' => $request->localisation_id,
+        ]);
+        switch ($user->role) {
+            case 'admin':
+                Admin::create(['admin_id' => $user->id]);
+                break;
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+            case 'client':
+                Client::create(['client_id' => $user->id]);
+                break;
+
+            case 'supportIt':
+                SupportIT::create(['supportIt_id' => $user->id]);
+                break;
+        }
+        $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([
         'access_token' => $token,
@@ -125,6 +133,12 @@ public function login(Request $request)
         'profile_image' => $user->profile_image,
         'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
     ]);
+}
+
+function getUsers() {
+    $users = User::all();
+
+    return response()->json(["users" => $users]);
 }
 
 
