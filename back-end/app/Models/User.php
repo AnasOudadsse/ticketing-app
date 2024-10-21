@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Ticket;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -20,7 +21,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password', 'role', 'fonction_id', 'departement_id', 'localisation_id'
+        'password', 'role','specialisation_id', 'fonction_id', 'departement_id', 'localisation_id',
+        "role_in_creation"
     ];
 
     /**
@@ -41,10 +43,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function client()
-    {
-        return $this->hasOne(Client::class);
-    }
     
     public function fonction()
     {
@@ -59,5 +57,17 @@ class User extends Authenticatable
     public function localisation()
     {
         return $this->belongsTo(Localisation::class);
+    }
+    public function createdTickets()
+    {
+        return $this->hasMany(Ticket::class, 'created_by');
+    }
+    public function reservedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
+    public function admin()
+    {
+        return $this->hasMany(Ticket::class, 'admin_id');
     }
 }
