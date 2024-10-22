@@ -89,12 +89,14 @@ Route::prefix('tickets')->group(function () {
     Route::get('/get/{id}', [TicketController::class, 'show']);
 
 });
+
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
 Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
 Route::get('users/roles',[StatistiqueController::class,'userRoles']);
 Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
 Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
+Route::get('statistiques',[StatistiqueController::class,'statistiques']);
 
 Route::apiResource('inventaires', InventaireController::class);
 
