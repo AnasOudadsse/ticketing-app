@@ -123,6 +123,10 @@ export const NewTicket = () => {
         <VStack spacing={4} as="form" className="rounded-md p-5 shadow" onSubmit={handleSubmit} align="start">
           {/* Problem ID */}
           <FormControl isRequired>
+            <FormLabel>Title</FormLabel>
+            <Input placeholder="Title"  />
+          </FormControl>
+          <FormControl isRequired>
             <FormLabel>Problem</FormLabel>
             <Select
               name="problem_id"
