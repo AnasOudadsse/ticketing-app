@@ -52,7 +52,7 @@ class StatistiqueController extends Controller
         ]);
     }
     public function statusTickets(){
-        $publishedCount = Ticket::where('status', 'published')->count();
+        $publishedCount = Ticket::where('status', 'opened')->count();
         $reservedCount = Ticket::where('status', 'reserved')->count();
         $resolvedCount = Ticket::where('status', 'resolved')->count();
         $assignedCount = Ticket::where('status', 'assigned')->count();
