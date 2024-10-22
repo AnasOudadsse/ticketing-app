@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Problem;
 use App\Models\Problems;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,7 @@ class ProblemController extends Controller
 {
     public function index()
     {
-        $problems = Problems::all();
+        $problems = Problem::all();
         return response()->json($problems, 200);
     }
 
@@ -21,7 +22,7 @@ class ProblemController extends Controller
             'specification' => ''
         ]);
 
-        $problem = Problems::create($validated);
+        $problem = Problem::create($validated);
 
         return response()->json([
             'message' => 'problemt créé avec succès',
@@ -31,13 +32,13 @@ class ProblemController extends Controller
 
     public function show($id)
     {
-        $problem = Problems::findOrFail($id);
+        $problem = Problem::findOrFail($id);
         return response()->json($problem, 200);
     }
 
     public function update(Request $request, $id)
     {
-        $problem = Problems::findOrFail($id);
+        $problem = Problem::findOrFail($id);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -53,7 +54,7 @@ class ProblemController extends Controller
 
     public function destroy($id)
     {
-        $problem = Problems::findOrFail($id);
+        $problem = Problem::findOrFail($id);
         $problem->delete();
 
         return response()->json([
@@ -64,7 +65,7 @@ class ProblemController extends Controller
     public function getProblems()
     {
         // Fetch all problems from the database
-        $problems = Problems::all();
+        $problems = Problem::all();
     
         // Group the problems by type
         $groupedProblems = $problems->groupBy('type');

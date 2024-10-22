@@ -3,66 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Admin;
-use App\Models\Client;
-use App\Models\SupportIT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        // Valider les données d'entrée
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,client,supportIt', 
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,supportIt,client',
+            'specialisation_ids' => 'nullable|array|required_if:role,supportIt',
+            'specialisation_ids.*' => 'exists:specialisations,id',
+            'fonction_id' => 'required|exists:fonctions,id',
+            'departement_id' => 'required|exists:departements,id',
+            'localisation_id' => 'required|exists:localisations,id',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'fonction_id' => $request->fonction_id,
-            'departement_id' => $request->departement_id,
-            'localisation_id' => $request->localisation_id,
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => $validatedData['role'],
+            'role_in_creation' => $validatedData['role'],
+            'fonction_id' => $validatedData['fonction_id'],
+            'departement_id' => $validatedData['departement_id'],
+            'localisation_id' => $validatedData['localisation_id'],
         ]);
-        switch ($user->role) {
-            case 'admin':
-                Admin::create(['admin_id' => $user->id]);
-                break;
-
-            case 'client':
-                Client::create(['client_id' => $user->id]);
-                break;
-
-            case 'supportIt':
-                SupportIT::create(['supportIt_id' => $user->id]);
-                break;
+    
+        if ($validatedData['role'] === 'supportIt') {
+            $user->specialisations()->sync($validatedData['specialisation_ids']);
         }
         $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'access_token' => $token,
-        'token_type' => 'Bearer',
-    ]);
-}
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
 
 
 public function login(Request $request)
 {
-    // Validation des entrées
     $request->validate([
-        'email' => 'required|string|email', // Validation pour l'email
+        'email' => 'required|string|email',
         'password' => 'required|string',
     ]);
 
@@ -90,33 +75,43 @@ public function login(Request $request)
         return response()->json(['message' => 'Logged out successfully']);
     }
     public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+{
+    $validatedData = $request->validate([
+        'name' => 'sometimes|required|string|max:255|unique:users,name,' . $id,
+        'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'role' => 'sometimes|required|in:admin,supportIt,client',
+        'specialisation_ids' => 'nullable|array|required_if:role,supportIt',
+        'specialisation_ids.*' => 'exists:specialisations,id',
+        'fonction_id' => 'sometimes|required|exists:fonctions,id',
+        'departement_id' => 'sometimes|required|exists:departements,id',
+        'localisation_id' => 'sometimes|required|exists:localisations,id',
+    ]);
 
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255|unique:users,name,' . $user->id, // Ignore le nom actuel de l'utilisateur
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id, // Ignore l'email actuel
-            'password' => 'sometimes|nullable|string|min:8|confirmed',
-            'role' => 'sometimes|required|in:admin,supportIt,client',
-            'specialisation_id' => 'nullable|required_if:role,supportIt|exists:specialisations,id',
-            'fonction_id' => 'sometimes|required|exists:fonctions,id',
-            'departement_id' => 'sometimes|required|exists:departements,id',
-            'localisation_id' => 'sometimes|required|exists:localisations,id',
-        ]);
+    $user = User::findOrFail($id);
+    $user->name = $validatedData['name'] ?? $user->name;
+    $user->email = $validatedData['email'] ?? $user->email;
 
-        $user->update([
-            'name' => $validatedData['name'] ?? $user->name,
-            'email' => $validatedData['email'] ?? $user->email,
-            'password' => isset($validatedData['password']) ? Hash::make($validatedData['password']) : $user->password,
-            'role' => $validatedData['role'] ?? $user->role,
-            'specialisation_id' => $validatedData['role'] === 'supportIt' ? $validatedData['specialisation_id'] : null,
-            'fonction_id' => $validatedData['fonction_id'] ?? $user->fonction_id,
-            'departement_id' => $validatedData['departement_id'] ?? $user->departement_id,
-            'localisation_id' => $validatedData['localisation_id'] ?? $user->localisation_id,
-        ]);
-
-        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+    if (!empty($validatedData['password'])) {
+        $user->password = Hash::make($validatedData['password']);
     }
+    $user->role = $validatedData['role'] ?? $user->role;
+    $user->fonction_id = $validatedData['fonction_id'] ?? $user->fonction_id;
+    $user->departement_id = $validatedData['departement_id'] ?? $user->departement_id;
+    $user->localisation_id = $validatedData['localisation_id'] ?? $user->localisation_id;
+    $user->save();
+
+    if ($validatedData['role'] === 'supportIt' && isset($validatedData['specialisation_ids'])) {
+        $user->specialisations()->sync($validatedData['specialisation_ids']);
+    }
+    return response()->json([
+        'message' => 'User updated successfully',
+        'user' => $user
+    ]);
+}
+
+
+
     public function getUser(Request $request)
 {
     $user = $request->user()->load('fonction');

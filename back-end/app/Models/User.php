@@ -70,4 +70,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ticket::class, 'admin_id');
     }
+    public function specialisations()
+    {
+        return $this->belongsToMany(Specialisation::class, 'specialisation_user');
+    }
 }
