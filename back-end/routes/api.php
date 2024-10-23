@@ -82,6 +82,8 @@ Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTick
 //     Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTicket']);
 //     Route::put('/tickets/{ticketId}/close', [TicketController::class, 'closeTicket']);
 // });
+Route::get('/all-tickets', [TicketController::class, 'allTickets']);//pour test api
+
 
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);

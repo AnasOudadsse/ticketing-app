@@ -11,6 +11,12 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class TicketController extends Controller
 {
+    public function allTickets() {
+        $tickets = Ticket::all();
+
+        return response()->json(["tickets" => $tickets]);
+    }
+
     public function createTicket(Request $request)
     {
         $request->validate([

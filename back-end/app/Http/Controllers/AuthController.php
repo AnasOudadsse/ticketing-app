@@ -11,9 +11,10 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        // return response()->json($request);
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,supportIt,client',
             'specialisation_ids' => 'nullable|array|required_if:role,supportIt',
@@ -47,7 +48,7 @@ class AuthController extends Controller
 public function login(Request $request)
 {
     $request->validate([
-        'email' => 'required|string|email',
+        'email' => 'required|email',
         'password' => 'required|string',
     ]);
 

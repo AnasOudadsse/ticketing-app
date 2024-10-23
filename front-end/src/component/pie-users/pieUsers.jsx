@@ -1,7 +1,7 @@
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
@@ -32,17 +32,18 @@ const PieUsers = () => {
   const [data, setData] = useState([]);
 
   const [chartData, setChartData] = useState({
-    labels: Data.map((data) => data.year),
+    labels: data.map((data) => data.title),
     datasets: [
       {
-        label: "Users Gained ",
-        data: data.map((data) => Data.userGain),
-        backgroundColor: ["rgba(75,192,192,1)", "&quot;#ecf0f1", "#50AF95"],
-        borderColor: "black",
-        borderWidth: 2,
+        label: "Users",
+        data: data.map((user) => user.number),
+        backgroundColor: ["rgb(74 222 128)", "rgb(34 211 238)", "rgb(251 146 60)"],
+        borderColor: "white",
+        borderWidth: 0,
       },
     ],
   });
+
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -59,6 +60,17 @@ const PieUsers = () => {
 
   const getData = (data) => {
     setData(data);
+
+    setChartData((prevData) => ({
+      ...prevData,
+      labels: data.map((label) => label.title),
+      datasets: [
+        {
+          ...prevData.datasets[0],
+          data: data.map((user, index) => index!=3 && user.number), // Update the data for the pie chart
+        },
+      ],
+    }));
   };
 
   if (loading) {
@@ -74,15 +86,15 @@ const PieUsers = () => {
       <div className="flex gap-2 items-center">
         <div className="w-fit ml-4">
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-red-800"></div>
+            <div className="w-6 h-3 rounded bg-green-400"></div>
             <p>admin</p>
           </div>
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-green-800"></div>
+            <div className="w-6 h-3 rounded bg-orange-400"></div>
             <p>supportIt</p>
           </div>
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-blue-500"></div>
+            <div className="w-6 h-3 rounded bg-cyan-400"></div>
             <p>client</p>
           </div>
         </div>
