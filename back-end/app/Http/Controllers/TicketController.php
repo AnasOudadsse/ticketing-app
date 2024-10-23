@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -53,7 +54,7 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
-            'supportItID' => 'required|exists:support_its,id',
+            'supportItID' => 'required|exists:support_its.id',
         ]);
 
         $ticket->supportItID = $validated['supportItID'];   
@@ -160,12 +161,5 @@ public function getTicketsWithProblems(Request $request)
     }
 
     return response()->json($ticketsWithProblems);
-}
-
-public function exportTicketsToExcel()
-{
-    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
-
-    return Excel::download(new TicketsExport, $fileName);
 }
 }
