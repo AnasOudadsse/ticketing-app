@@ -1,7 +1,8 @@
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
 
@@ -27,23 +28,48 @@ const Data = [
 ];
 
 const PieUsers = () => {
+  const { loading, sendRequest } = useHttp();
+  const [data, setData] = useState([]);
+
   const [chartData, setChartData] = useState({
     labels: Data.map((data) => data.year),
     datasets: [
       {
         label: "Users Gained ",
-        data: Data.map((data) => data.userGain),
+        data: data.map((data) => Data.userGain),
         backgroundColor: ["rgba(75,192,192,1)", "&quot;#ecf0f1", "#50AF95"],
         borderColor: "black",
         borderWidth: 2,
       },
     ],
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const request = {
+      url: "http://127.0.0.1:8000/api/users/roles",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    sendRequest(request, getData);
+  }, []);
+
+  const getData = (data) => {
+    setData(data);
+  };
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <div className="shadow-md h-fit flex flex-col gap-5 rounded-lg py-4">
       <div className="px-3 py-2 mt-2">
-        <p className="text-xs font-bold">Users</p>
-        <h3 className="mt-2 text-4xl font-bold">1438</h3>
+        <p className="text-xs font-bold">{data[3]?.title}</p>
+        <h3 className="mt-2 text-4xl font-bold">{data[3]?.number}</h3>
       </div>
       <div className="flex gap-2 items-center">
         <div className="w-fit ml-4">

@@ -2,117 +2,133 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
-use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class TicketController extends Controller
 {
-    public function store(Request $request)
+    public function createTicket(Request $request)
     {
-        // dd($request->all());
-
-        $validated = $request->validate([
+        $request->validate([
+            'title' => 'required|string|max:255',
             'problem_id' => 'required|exists:problems,id',
             'description' => 'required|string',
-            'status' => 'required|string',
-            'attachement' => 'nullable|string',
-            'clientID' => 'required|exists:clients,client_id',
+            'attachement'=>'nullable'
         ]);
 
         $ticket = Ticket::create([
-            'problem_id' => $validated['problem_id'],
-            'description' => $validated['description'],
-            'status' => $validated['status'],
-            'attachement' => $validated['attachement'],
-            'clientID' => $validated['clientID'],
-            'adminID' => null,
-            'supportItID' => null
+            'title' => $request->title,
+            'problem_id' => $request->problem_id,
+            'description' => $request->description,
+            'attachement'=>$request->attachement,
+            // 'created_by' => Auth::id(),
+            'created_by'=> $request->created_by, // pour le test
+            'status' => 'opened',
         ]);
 
-
-        return response()->json(['message' => 'Ticket créé avec succès', 'ticket' => $ticket], 201);
+        return response()->json([
+            'message' => 'Ticket created successfully',
+            'ticket' => $ticket
+        ], 201);
     }
 
-    public function listTickets()
-    {
-        //$tickets = Ticket::whereNull('supportItID')->get();
-        $tickets = Ticket::all();
-        return response()->json($tickets, 200);
+    public function closeTicket(Request $request, $ticketId)
+{
+    $ticket = Ticket::findOrFail($ticketId);
+
+    if ($ticket->status !== 'opened') {
+        return response()->json(['message' => 'Ticket must be opened before closing'], 400);
     }
 
-    public function reserveTicket(Request $request, $ticket_id)
-    {
-        $ticket = Ticket::findOrFail($ticket_id);
+    // if (Auth::id() !== $ticket->created_by) {
+    //     return response()->json(['message' => 'You are not authorized to close this ticket'], 403);
+    // }
 
-        if ($ticket->supportItID) {
-            return response()->json(['message' => 'Ce ticket est déjà réservé'], 400);
+    $ticket->status = 'closed';
+    $ticket->save();
+
+    return response()->json([
+        'message' => 'Ticket closed successfully',
+        'ticket' => $ticket
+    ], 200);
+}
+
+    public function reserveTicket(Request $request, $ticketId)
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+
+        if ($ticket->status !== 'opened') {
+            return response()->json(['message' => 'Ticket is not available for reservation'], 400);
         }
 
         $validated = $request->validate([
-            'supportItID' => 'required|exists:support_its.id',
+            'supportItID' => 'required|exists:support_its,id',
         ]);
 
         $ticket->supportItID = $validated['supportItID'];   
         $ticket->status = 'reserved';
         $ticket->save();
 
-        return response()->json(['message' => 'Ticket réservé avec succès', 'ticket' => $ticket], 200);
+        return response()->json([
+            'message' => 'Ticket reserved successfully',
+            'ticket' => $ticket
+        ], 200);
     }
 
-    public function show($id)
-    {
-        $ticket = Ticket::with(['problem', 'client'])->find($id);
-
-        if (!$ticket) {
-            return response()->json(['message' => 'Ticket not found'], 404);
-        }
-
-        $client = User::find($ticket->clientID);
-
-        if (!$client) {
-            return response()->json(['message' => 'Client not found'], 404);
-        }
-    
-        $ticket->client_name = $client->name;
-        return response()->json($ticket);
-    }
-
-
-    public function assignTicketByAdmin(Request $request, $ticket_id)
-    {
-        $ticket = Ticket::findOrFail($ticket_id);
-
-        if ($ticket->supportItID) {
-            return response()->json(['message' => 'Ce ticket est déjà réservé'], 400);
-        }
-
-        $validated = $request->validate([
-            'supportItID' => 'required|exists:support_its,id',
-            'adminID' => 'required|exists:admins,id',
-        ]);
-
-        $ticket->supportItID = $validated['supportItID'];
-        $ticket->adminID = $validated['adminID'];
-        $ticket->status = 'assigned';
-        $ticket->save();
-
-        return response()->json(['message' => 'Ticket assigné par l\'admin avec succès', 'ticket' => $ticket], 200);
-    }
-
-    public function closeTicket($ticket_id)
+    public function assignTicket(Request $request, $ticketId)
 {
-    $ticket = Ticket::findOrFail($ticket_id);
+    $request->validate([
+        'reserved_by' => 'required|exists:users,id',
+        'admin_id' => 'required|exists:users,id'    //Juste pour le test en Insomnia
+    ]);
 
-    if ($ticket->status === 'resolved') {
-        return response()->json(['message' => 'Ce ticket est déjà clôturé'], 400);
+    $ticket = Ticket::findOrFail($ticketId);
+
+    // if (Auth::user()->role !== 'admin') {
+    //     return response()->json(['message' => 'Unauthorized action'], 403);
+    // }
+
+    if ($ticket->status !== 'opened') {
+        return response()->json(['message' => 'Ticket is not available for assignment'], 400);
+    }
+
+    $supportItUser = User::findOrFail($request->reserved_by);
+    
+    if ($supportItUser->role !== 'supportIt') {
+        return response()->json(['message' => 'Assigned user must be a supportIt'], 400);
+    }
+
+    $ticket->reserved_by = $request->reserved_by;
+    // $ticket->admin_id = Auth::id(); 
+    $ticket->admin_id = $request->admin_id;
+    $ticket->status = 'reserved';
+    $ticket->save();                             
+
+    return response()->json([
+        'message' => 'Ticket assigned successfully',
+        'ticket' => $ticket
+    ], 200);
+}
+
+public function resolveTicket(Request $request, $ticketId)
+{
+    
+    $ticket = Ticket::findOrFail($ticketId);
+
+    // if (Auth::user()->role !== 'supportIt' || Auth::id() !== $ticket->reserved_by) {
+    //     return response()->json(['message' => 'Unauthorized action'], 403);
+    // }   pour le test en insomnia
+
+    if ($ticket->status !== 'reserved') {
+        return response()->json(['message' => 'Ticket is not in a state to be resolved'], 400);
     }
 
     $ticket->status = 'resolved';
+    $ticket->resolution_date = now();
     $ticket->save();
 
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
@@ -161,5 +177,12 @@ public function getTicketsWithProblems(Request $request)
     }
 
     return response()->json($ticketsWithProblems);
+}
+
+public function exportTicketsToExcel()
+{
+    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
+
+    return Excel::download(new TicketsExport, $fileName);
 }
 }

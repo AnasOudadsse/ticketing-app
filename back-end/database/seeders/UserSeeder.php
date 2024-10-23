@@ -68,6 +68,20 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Mezrioui Hakim',
+                'email' => 'hmezrioui@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                'role' => 'admin',
+                'fonction_id' => 3,
+                'departement_id' => 3,
+                'localisation_id' => 3,
+                'remember_token' => Str::random(10),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
         ];
     }
 }

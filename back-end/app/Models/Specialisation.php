@@ -10,9 +10,8 @@ class Specialisation extends Model
     use HasFactory;
 
     protected $fillable = ['name'];
-
-    public function supportITs()
+    public function users()
     {
-        return $this->belongsToMany(SupportIt::class, 'support_its_specialisations');
+        return $this->belongsToMany(User::class, 'specialisation_user');
     }
 }
