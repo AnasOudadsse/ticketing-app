@@ -164,8 +164,7 @@ public function getTicketsWithProblems(Request $request)
 
             $blabla = 'client_name';
     
-            // Add client_name to each ticket
-            $ticket->$blabla = $client->name;   
+              $ticket->$blabla = $client->name;   
 
             return $ticket;
         });

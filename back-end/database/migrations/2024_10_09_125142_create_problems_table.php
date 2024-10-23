@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('problems', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('type');
+            $table->string('specification');
             $table->timestamps();
         });
     }
