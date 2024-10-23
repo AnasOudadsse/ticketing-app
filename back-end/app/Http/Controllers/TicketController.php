@@ -179,10 +179,5 @@ public function getTicketsWithProblems(Request $request)
     return response()->json($ticketsWithProblems);
 }
 
-public function exportTicketsToExcel()
-{
-    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
 
-    return Excel::download(new TicketsExport, $fileName);
-}
 }
