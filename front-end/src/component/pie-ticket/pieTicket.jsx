@@ -19,7 +19,7 @@ const Data = [
   {
     id: 3,
     state: "non-resolved",
-    number: 78888,k
+    number: 78888,
   },
   {
     id: 4,
