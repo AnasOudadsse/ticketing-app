@@ -138,6 +138,30 @@ public function resolveTicket(Request $request, $id)
 
     return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
 }
+public function getTickets(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role === 'client') {
+        $allTickets = Ticket::where('created_by', $user->id)->get();
+        $reservedTickets = Ticket::where('created_by', $user->id)
+                                 ->where('status', 'reserved')
+                                 ->get();
+        $resolvedTickets = Ticket::where('created_by', $user->id)
+                                 ->where('status', 'resolved')
+                                 ->get();
+    } else {
+        $allTickets = Ticket::all();
+        $reservedTickets = Ticket::where('status', 'reserved')->get();
+        $resolvedTickets = Ticket::where('status', 'resolved')->get();
+    }
+
+    return response()->json([
+        'all_tickets' => $allTickets,
+        'reserved_tickets' => $reservedTickets,
+        'resolved_tickets' => $resolvedTickets
+    ], 200);
+}
+
 
 
 public function getTicketsWithProblems(Request $request)
