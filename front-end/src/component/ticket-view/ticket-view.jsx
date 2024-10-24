@@ -72,14 +72,7 @@ export const TicketView = () => {
     }
   };
 
-  const getInitials = (name) => {
-    const nameParts = name.split(" ");
-    const initials = nameParts
-      .map(part => part.charAt(0).toUpperCase()) // Get the first letter of each part
-      .join(""); // Combine them
-    return initials.length > 2 ? initials.slice(0, 2) : initials; // Limit to 2 letters
-  };
-
+  
   const handlerResolve = async () => {
     try {
       await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
@@ -154,14 +147,17 @@ export const TicketView = () => {
           bg="teal.500"
         />
           <Box ml={4}>
-            <Heading size="md">{ticket.creator?.name}</Heading>
+            <Heading size="sm">{ticket.creator?.name}</Heading>
             <Text fontSize="sm" color="gray.500">
               Ticket Creator
             </Text>
+            
           </Box>
         </Flex>
 
-        <Flex justify={'space-between'}>
+        <hr />
+
+        <Flex mt={5} justify={'space-between'}>
           <Heading size="md" mb={2}>
             {ticket?.problem?.specification || ticket?.problem?.name}
           </Heading>

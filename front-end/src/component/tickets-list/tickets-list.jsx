@@ -257,7 +257,7 @@ export default function TicketList() {
           <Tabs variant="enclosed-colored" onChange={handleTabChange}>
             <TabList>
               <Tab>All Tickets</Tab>
-              <Tab>New</Tab>
+              <Tab>Opened</Tab>
               <Tab>Reserved</Tab>
               <Tab>Resolved</Tab>
             </TabList>
@@ -270,7 +270,7 @@ export default function TicketList() {
                 <TicketItem
                   key={ticket.id}
                   statusColor={
-                    ticket.status === "published"
+                    ticket.status === "opened"
                       ? "green"
                       : ticket.status === "reserved"
                       ? "orange"
