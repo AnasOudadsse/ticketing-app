@@ -75,22 +75,22 @@ Route::prefix('problems')->group(function(){
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
 
 });
-Route::post('/tickets', [TicketController::class, 'createTicket']);//pour test api
-Route::get('/tickets',[TicketController::class,'getTickets']);
-Route::post('/tickets/{ticketId}/reserve', [TicketController::class, 'reserveTicket']);//pour test
-Route::put('/tickets/{ticketId}/close', [TicketController::class, 'closeTicket']);//test
-Route::put('/tickets/{ticketId}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
-Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTicket']);
+Route::middleware('auth:sanctum')->post('/tickets', [TicketController::class, 'createTicket']);
+Route::get('tickets/get/{id}', [TicketController::class, 'getOneTicket']);
+Route::post('/tickets/{id}/reserve', [TicketController::class, 'reserveTicket']);//pour test
+Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);//test
+Route::put('/tickets/{id}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
+Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
+
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/tickets', [TicketController::class, 'createTicket']);
-//     Route::get('/tickets',[TicketController::class,'getTickets']);
-//     Route::post('/tickets/{ticketId}/reserve', [TicketController::class, 'reserveTicket']);
-//     Route::put('/tickets/{ticketId}/assign', [TicketController::class, 'assignTicket']);
-//     Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTicket']);
-//     Route::put('/tickets/{ticketId}/close', [TicketController::class, 'closeTicket']);
+//     Route::post('/tickets/{id}/reserve', [TicketController::class, 'reserveTicket']);
+//     Route::put('/tickets/{id}/assign', [TicketController::class, 'assignTicket']);
+//     Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
+//     Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);
 // });
 
-Route::get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
+Route::middleware('auth:sanctum')->get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
 Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);

@@ -24,7 +24,9 @@ export const TicketView = () => {
   const [ticket, setTicket] = useState(null);
   const toast = useToast();
   const { id } = useParams();
-  const supportItID = localStorage.getItem("id");
+  const logged_id = localStorage.getItem("id");
+
+  console.log(ticket);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -49,7 +51,7 @@ export const TicketView = () => {
   const handleReserve = async () => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/reserve`, {
-        supportItID: supportItID,
+        reserved_by: logged_id,
       });
       toast({
         title: "Success",
@@ -70,18 +72,11 @@ export const TicketView = () => {
     }
   };
 
-  const getInitials = (name) => {
-    const nameParts = name.split(" ");
-    const initials = nameParts
-      .map(part => part.charAt(0).toUpperCase()) // Get the first letter of each part
-      .join(""); // Combine them
-    return initials.length > 2 ? initials.slice(0, 2) : initials; // Limit to 2 letters
-  };
-
+  
   const handlerResolve = async () => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
-        supportItID: supportItID,
+      await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
+        resolved_by: logged_id,
       });
       toast({
         title: "Success",
@@ -120,7 +115,7 @@ export const TicketView = () => {
   return (
     <div>
       <Header
-        name={ticket.client_name}
+        name={ticket.creator?.name}
         greeting={"Have a nice day"}
         role={"super-admin"}
         profile={
@@ -147,30 +142,36 @@ export const TicketView = () => {
         
         <Flex align="center" mb={4}>
         <Avatar
-          size="lg"
-          name={ticket.client_name}
+          size="md"
+          name={ticket.creator?.name}
           bg="teal.500"
         />
           <Box ml={4}>
-            <Heading size="md">{ticket.client_name}</Heading>
+            <Heading size="sm">{ticket.creator?.name}</Heading>
             <Text fontSize="sm" color="gray.500">
               Ticket Creator
             </Text>
+            
           </Box>
         </Flex>
 
-        <Heading size="lg" mb={2}>
-          {ticket?.problem?.specification || ticket?.problem?.name}
-        </Heading>
+        <hr />
 
-        <Text fontSize="sm" color="gray.500" mb={4}>
-          {formatDistanceToNow(new Date(ticket.created_at), {
-            addSuffix: true,
-          })}
-        </Text>
+        <Flex mt={5} justify={'space-between'}>
+          <Heading size="md" mb={2}>
+            {ticket?.problem?.specification || ticket?.problem?.name}
+          </Heading>
 
-        <Text mb={4}>{ticket.description}</Text>
+          <Text fontSize="sm" color="gray.500" mb={4}>
+            {formatDistanceToNow(new Date(ticket.created_at), {
+              addSuffix: true,
+            })}
+          </Text>
 
+
+        </Flex>
+
+          <Text mb={4}>{ticket.description}</Text>
         {ticket.image && (
           <Box mt={4} textAlign="center">
             <Image
@@ -201,7 +202,7 @@ export const TicketView = () => {
         <Flex mt={6} justifyContent="end" align="center">
 
           <HStack spacing={4}>
-            {ticket.status === "published" && (
+            {ticket.status === "opened" && (
               <Button colorScheme="blue" onClick={handleReserve} size="sm">
                 Reserve Ticket
               </Button>
@@ -213,7 +214,7 @@ export const TicketView = () => {
             )}
             {ticket.status === "reserved" && (
               <Button colorScheme="red" onClick={handlerResolve} size="sm">
-                Close Ticket
+                Resolve Ticket
               </Button>
             )}
           </HStack>

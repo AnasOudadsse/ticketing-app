@@ -56,7 +56,7 @@ const TicketItem = ({
   name,
   description,
   status,
-  client_name
+  created_by
 }) => {
   const navigate = useNavigate();
 
@@ -72,7 +72,7 @@ const TicketItem = ({
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
           <Flex gap={350} >
             <Heading  size="md">Ticket: #{ticketNumber}</Heading>
-            <Badge colorScheme={statusColor}>{status}</Badge>
+            <Badge alignContent={'center'} colorScheme={statusColor}>{status}</Badge>
           </Flex>
           {priority && <Badge colorScheme="red">{priority}</Badge>}
           <Spacer />
@@ -91,8 +91,8 @@ const TicketItem = ({
         </Text>
         <hr />
         <HStack mt={4}>
-          <Avatar size={"md"}  mr={2} name={name} />
-          <Text color={"#7B7B7B"}>{client_name}</Text>
+          <Avatar size={"sm"}  mr={2} name={name} />
+          <Text color={"#7B7B7B"}>{created_by}</Text>
 
           <Spacer />
           <Button
@@ -163,7 +163,7 @@ export default function TicketList() {
   const handleTabChange = (index) => {
     let tab = "all";
     if (index === 1) {
-      tab = "new";
+      tab = "opened";
     } else if (index === 2) {
       tab = "reserved";
     } else if (index === 3) {
@@ -257,7 +257,7 @@ export default function TicketList() {
           <Tabs variant="enclosed-colored" onChange={handleTabChange}>
             <TabList>
               <Tab>All Tickets</Tab>
-              <Tab>New</Tab>
+              <Tab>Opened</Tab>
               <Tab>Reserved</Tab>
               <Tab>Resolved</Tab>
             </TabList>
@@ -270,7 +270,7 @@ export default function TicketList() {
                 <TicketItem
                   key={ticket.id}
                   statusColor={
-                    ticket.status === "published"
+                    ticket.status === "opened"
                       ? "green"
                       : ticket.status === "reserved"
                       ? "orange"
@@ -281,9 +281,9 @@ export default function TicketList() {
                   problemName={ticket?.problem?.specification || ticket?.problem?.name}
                   priority={ticket.priority}
                   postedTime={ticket.created_at}
-                  name={ticket.client_name}
+                  name={ticket.created_by}
                   description={ticket.description}
-                  client_name={ticket.client_name}
+                  created_by={ticket.created_by}
                 />
               ))
             ) : (
