@@ -71,12 +71,14 @@ Route::prefix('problems')->group(function(){
 
 });
 Route::post('/tickets', [TicketController::class, 'createTicket']);//pour test api
+Route::get('/tickets',[TicketController::class,'getTickets']);
 Route::post('/tickets/{ticketId}/reserve', [TicketController::class, 'reserveTicket']);//pour test
 Route::put('/tickets/{ticketId}/close', [TicketController::class, 'closeTicket']);//test
 Route::put('/tickets/{ticketId}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
 Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTicket']);
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/tickets', [TicketController::class, 'createTicket']);
+//     Route::get('/tickets',[TicketController::class,'getTickets']);
 //     Route::post('/tickets/{ticketId}/reserve', [TicketController::class, 'reserveTicket']);
 //     Route::put('/tickets/{ticketId}/assign', [TicketController::class, 'assignTicket']);
 //     Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTicket']);

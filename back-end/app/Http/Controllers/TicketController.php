@@ -23,8 +23,8 @@ class TicketController extends Controller
             'problem_id' => $request->problem_id,
             'description' => $request->description,
             'attachement'=>$request->attachement,
-            // 'created_by' => Auth::id(),
-            'created_by'=> $request->created_by, // pour le test
+            'created_by' => Auth::id(),
+            // 'created_by'=> $request->created_by, // pour le test
             'status' => 'opened',
         ]);
 
@@ -135,5 +135,29 @@ public function resolveTicket(Request $request, $ticketId)
         'ticket' => $ticket
     ], 200);
 }
+public function getTickets(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role === 'client') {
+        $allTickets = Ticket::where('created_by', $user->id)->get();
+        $reservedTickets = Ticket::where('created_by', $user->id)
+                                 ->where('status', 'reserved')
+                                 ->get();
+        $resolvedTickets = Ticket::where('created_by', $user->id)
+                                 ->where('status', 'resolved')
+                                 ->get();
+    } else {
+        $allTickets = Ticket::all();
+        $reservedTickets = Ticket::where('status', 'reserved')->get();
+        $resolvedTickets = Ticket::where('status', 'resolved')->get();
+    }
+
+    return response()->json([
+        'all_tickets' => $allTickets,
+        'reserved_tickets' => $reservedTickets,
+        'resolved_tickets' => $resolvedTickets
+    ], 200);
+}
+
 
 }
