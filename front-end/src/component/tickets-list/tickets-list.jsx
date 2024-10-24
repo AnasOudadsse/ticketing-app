@@ -163,8 +163,10 @@ export default function TicketList() {
   const handleTabChange = (index) => {
     let tab = "all";
     if (index === 1) {
-      tab = "reserved";
+      tab = "new";
     } else if (index === 2) {
+      tab = "reserved";
+    } else if (index === 3) {
       tab = "resolved";
     }
     setSelectedTab(tab);
@@ -255,6 +257,7 @@ export default function TicketList() {
           <Tabs variant="enclosed-colored" onChange={handleTabChange}>
             <TabList>
               <Tab>All Tickets</Tab>
+              <Tab>New</Tab>
               <Tab>Reserved</Tab>
               <Tab>Resolved</Tab>
             </TabList>

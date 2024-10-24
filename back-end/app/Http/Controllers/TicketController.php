@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Exports\TicketsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class TicketController extends Controller
 {
@@ -63,12 +65,11 @@ class TicketController extends Controller
             return response()->json(['message' => 'Ticket is not available for reservation'], 400);
         }
 
-        // if (Auth::user()->role !== 'supportIt') {
-        //     return response()->json(['message' => 'Unauthorized action'], 403);
-        // }
+        $validated = $request->validate([
+            'supportItID' => 'required|exists:support_its,id',
+        ]);
 
-        // $ticket->reserved_by = Auth::id();
-        $ticket->reserved_by=$request->reserved_by;//juste pour le test
+        $ticket->supportItID = $validated['supportItID'];   
         $ticket->status = 'reserved';
         $ticket->save();
 
@@ -130,10 +131,7 @@ public function resolveTicket(Request $request, $ticketId)
     $ticket->resolution_date = now();
     $ticket->save();
 
-    return response()->json([
-        'message' => 'Ticket resolved successfully',
-        'ticket' => $ticket
-    ], 200);
+    return response()->json(['message' => 'Ticket clôturé avec succès', 'ticket' => $ticket], 200);
 }
 public function getTickets(Request $request)
 {
@@ -157,6 +155,51 @@ public function getTickets(Request $request)
         'reserved_tickets' => $reservedTickets,
         'resolved_tickets' => $resolvedTickets
     ], 200);
+}
+
+
+
+public function getTicketsWithProblems(Request $request)
+{
+    
+    $token = $request->bearerToken();
+
+    if (!$token) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Assuming you're using Sanctum or Passport, use the token to find the associated user
+    $accessToken = PersonalAccessToken::findToken($token);
+
+    if (!$accessToken) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Get the user associated with the token
+    $user = $accessToken->tokenable; // tokenable refers to the User model
+
+    if ($user->role === 'admin' || $user->role === 'supportIt') {
+        // Fetch all tickets with their associated problems
+        $tickets = Ticket::with(['problem', 'client'])->get();
+    
+        // Loop through each ticket and add the client's name
+        $tickets->transform(function ($ticket) {
+            $client = User::find($ticket->clientID); // Fetch client from User model
+
+            $blabla = 'client_name';
+    
+              $ticket->$blabla = $client->name;   
+
+            return $ticket;
+        });
+    
+        return response()->json($tickets, 200);
+    } else {
+        // If the user is a client, return only their tickets with associated problems
+        $ticketsWithProblems = Ticket::with('problem')->where('clientID', $user->id)->get();
+    }
+
+    return response()->json($ticketsWithProblems);
 }
 
 

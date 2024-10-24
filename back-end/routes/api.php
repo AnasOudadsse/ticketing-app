@@ -85,6 +85,7 @@ Route::put('/tickets/{ticketId}/resolve', [TicketController::class, 'resolveTick
 //     Route::put('/tickets/{ticketId}/close', [TicketController::class, 'closeTicket']);
 // });
 
+Route::get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
 Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
