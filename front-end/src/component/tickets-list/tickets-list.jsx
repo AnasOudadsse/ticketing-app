@@ -163,7 +163,7 @@ export default function TicketList() {
   const handleTabChange = (index) => {
     let tab = "all";
     if (index === 1) {
-      tab = "new";
+      tab = "opened";
     } else if (index === 2) {
       tab = "reserved";
     } else if (index === 3) {

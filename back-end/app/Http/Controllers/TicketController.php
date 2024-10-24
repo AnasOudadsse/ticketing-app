@@ -52,7 +52,9 @@ class TicketController extends Controller
     // if (Auth::id() !== $ticket->created_by) {
     //     return response()->json(['message' => 'You are not authorized to close this ticket'], 403);
     // }
+    $closed_by = $request->closed_by;
 
+    $ticket->closed_by = $closed_by;
     $ticket->status = 'closed';
     $ticket->save();
 
@@ -71,10 +73,10 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
-            'supportItID' => 'required|exists:support_its,id',
+            'reserved_by' => 'required',
         ]);
 
-        $ticket->supportItID = $validated['supportItID'];   
+        $ticket->reserved_by = $validated['reserved_by'];   
         $ticket->status = 'reserved';
         $ticket->save();
 
@@ -132,6 +134,7 @@ public function resolveTicket(Request $request, $id)
         return response()->json(['message' => 'Ticket is not in a state to be resolved'], 400);
     }
 
+    $ticket->resolved_by = $request->resolved_by;
     $ticket->status = 'resolved';
     $ticket->resolution_date = now();
     $ticket->save();

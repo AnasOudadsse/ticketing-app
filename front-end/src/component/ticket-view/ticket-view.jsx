@@ -24,7 +24,7 @@ export const TicketView = () => {
   const [ticket, setTicket] = useState(null);
   const toast = useToast();
   const { id } = useParams();
-  const supportItID = localStorage.getItem("id");
+  const logged_id = localStorage.getItem("id");
 
   console.log(ticket);
 
@@ -51,7 +51,7 @@ export const TicketView = () => {
   const handleReserve = async () => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/reserve`, {
-        supportItID: supportItID,
+        reserved_by: logged_id,
       });
       toast({
         title: "Success",
@@ -82,8 +82,8 @@ export const TicketView = () => {
 
   const handlerResolve = async () => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
-        supportItID: supportItID,
+      await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
+        resolved_by: logged_id,
       });
       toast({
         title: "Success",
@@ -206,7 +206,7 @@ export const TicketView = () => {
         <Flex mt={6} justifyContent="end" align="center">
 
           <HStack spacing={4}>
-            {ticket.status === "published" && (
+            {ticket.status === "opened" && (
               <Button colorScheme="blue" onClick={handleReserve} size="sm">
                 Reserve Ticket
               </Button>
@@ -218,7 +218,7 @@ export const TicketView = () => {
             )}
             {ticket.status === "reserved" && (
               <Button colorScheme="red" onClick={handlerResolve} size="sm">
-                Close Ticket
+                Resolve Ticket
               </Button>
             )}
           </HStack>
