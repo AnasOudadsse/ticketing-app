@@ -26,6 +26,8 @@ export const TicketView = () => {
   const { id } = useParams();
   const supportItID = localStorage.getItem("id");
 
+  console.log(ticket);
+
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -120,7 +122,7 @@ export const TicketView = () => {
   return (
     <div>
       <Header
-        name={ticket.client_name}
+        name={ticket.creator?.name}
         greeting={"Have a nice day"}
         role={"super-admin"}
         profile={
@@ -147,30 +149,33 @@ export const TicketView = () => {
         
         <Flex align="center" mb={4}>
         <Avatar
-          size="lg"
-          name={ticket.client_name}
+          size="md"
+          name={ticket.creator?.name}
           bg="teal.500"
         />
           <Box ml={4}>
-            <Heading size="md">{ticket.client_name}</Heading>
+            <Heading size="md">{ticket.creator?.name}</Heading>
             <Text fontSize="sm" color="gray.500">
               Ticket Creator
             </Text>
           </Box>
         </Flex>
 
-        <Heading size="lg" mb={2}>
-          {ticket?.problem?.specification || ticket?.problem?.name}
-        </Heading>
+        <Flex justify={'space-between'}>
+          <Heading size="md" mb={2}>
+            {ticket?.problem?.specification || ticket?.problem?.name}
+          </Heading>
 
-        <Text fontSize="sm" color="gray.500" mb={4}>
-          {formatDistanceToNow(new Date(ticket.created_at), {
-            addSuffix: true,
-          })}
-        </Text>
+          <Text fontSize="sm" color="gray.500" mb={4}>
+            {formatDistanceToNow(new Date(ticket.created_at), {
+              addSuffix: true,
+            })}
+          </Text>
 
-        <Text mb={4}>{ticket.description}</Text>
 
+        </Flex>
+
+          <Text mb={4}>{ticket.description}</Text>
         {ticket.image && (
           <Box mt={4} textAlign="center">
             <Image

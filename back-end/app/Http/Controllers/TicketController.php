@@ -41,9 +41,9 @@ class TicketController extends Controller
         ], 201);
     }
 
-    public function closeTicket(Request $request, $ticketId)
+    public function closeTicket(Request $request, $id)
 {
-    $ticket = Ticket::findOrFail($ticketId);
+    $ticket = Ticket::findOrFail($id);
 
     if ($ticket->status !== 'opened') {
         return response()->json(['message' => 'Ticket must be opened before closing'], 400);
@@ -62,9 +62,9 @@ class TicketController extends Controller
     ], 200);
 }
 
-    public function reserveTicket(Request $request, $ticketId)
+    public function reserveTicket(Request $request, $id)
     {
-        $ticket = Ticket::findOrFail($ticketId);
+        $ticket = Ticket::findOrFail($id);
 
         if ($ticket->status !== 'opened') {
             return response()->json(['message' => 'Ticket is not available for reservation'], 400);
@@ -84,14 +84,14 @@ class TicketController extends Controller
         ], 200);
     }
 
-    public function assignTicket(Request $request, $ticketId)
+    public function assignTicket(Request $request, $id)
 {
     $request->validate([
         'reserved_by' => 'required|exists:users,id',
         'admin_id' => 'required|exists:users,id'    //Juste pour le test en Insomnia
     ]);
 
-    $ticket = Ticket::findOrFail($ticketId);
+    $ticket = Ticket::findOrFail($id);
 
     // if (Auth::user()->role !== 'admin') {
     //     return response()->json(['message' => 'Unauthorized action'], 403);
@@ -119,10 +119,10 @@ class TicketController extends Controller
     ], 200);
 }
 
-public function resolveTicket(Request $request, $ticketId)
+public function resolveTicket(Request $request, $id)
 {
     
-    $ticket = Ticket::findOrFail($ticketId);
+    $ticket = Ticket::findOrFail($id);
 
     // if (Auth::user()->role !== 'supportIt' || Auth::id() !== $ticket->reserved_by) {
     //     return response()->json(['message' => 'Unauthorized action'], 403);
@@ -181,6 +181,11 @@ public function getTicketsWithProblems(Request $request)
     }
 
     return response()->json($ticketsWithProblems);
+}
+
+public function getOneTicket($id){
+    $ticket = Ticket::with('problem', 'creator')->find($id);
+    return response()->json($ticket);
 }
 
 
