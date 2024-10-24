@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -20,13 +21,17 @@ class TicketController extends Controller
             'attachement'=>'nullable'
         ]);
 
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $ticket = Ticket::create([
             'title' => $request->title,
             'problem_id' => $request->problem_id,
             'description' => $request->description,
             'attachement'=>$request->attachement,
-            // 'created_by' => Auth::id(),
-            'created_by'=> $request->created_by, // pour le test
+            'created_by' => Auth::id(),
+            // 'created_by'=> $request->created_by, // pour le test
             'status' => 'opened',
         ]);
 
@@ -156,15 +161,15 @@ public function getTicketsWithProblems(Request $request)
 
     if ($user->role === 'admin' || $user->role === 'supportIt') {
         // Fetch all tickets with their associated problems
-        $tickets = Ticket::with(['problem', 'client'])->get();
+        $tickets = Ticket::with(['problem', 'creator'])->get();
     
         // Loop through each ticket and add the client's name
         $tickets->transform(function ($ticket) {
-            $client = User::find($ticket->clientID); // Fetch client from User model
+            $creator = User::find($ticket->created_by); // Fetch client from User model
 
-            $blabla = 'client_name';
+            $created_by = 'created_by';
     
-              $ticket->$blabla = $client->name;   
+              $ticket->$created_by = $creator->name;   
 
             return $ticket;
         });
@@ -172,7 +177,7 @@ public function getTicketsWithProblems(Request $request)
         return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $ticketsWithProblems = Ticket::with('problem')->where('clientID', $user->id)->get();
+        $ticketsWithProblems = Ticket::with('problem')->where('created_by', $user->id)->get();
     }
 
     return response()->json($ticketsWithProblems);
