@@ -12,6 +12,8 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
+use App\Http\Controllers\SupportspecialisationController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -59,6 +61,9 @@ Route::prefix('specialisations')->group(function(){
     Route::put('/{id}', [SpecialisationController::class, 'update']);
     Route::delete('/{id}', [SpecialisationController::class, 'destroy']);
 });
+
+Route::get('/supportitsSpecialisation', [SupportspecialisationController::class, 'getSupportItsWithSpecialisations']);
+Route::get('/specialisationsSupport', [SupportspecialisationController::class, 'getSpecialisationsWithSupportIts']);
 
 
 Route::prefix('problems')->group(function(){
