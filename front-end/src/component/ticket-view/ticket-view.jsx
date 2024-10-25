@@ -6,7 +6,6 @@ import {
   Heading,
   HStack,
   Image,
-  Spacer,
   Tag,
   Text,
   VStack,
@@ -14,7 +13,7 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import { FaPrint, FaDownload, FaHeart, FaShareAlt } from "react-icons/fa";
+import { FaPrint, FaDownload } from "react-icons/fa";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Header from "../header/header";
@@ -22,12 +21,41 @@ import { formatDistanceToNow } from "date-fns";
 
 export const TicketView = () => {
   const [ticket, setTicket] = useState(null);
+  const [userRole, setUserRole] = useState(""); // Store the user role
   const toast = useToast();
   const { id } = useParams();
   const logged_id = localStorage.getItem("id");
 
-  console.log(ticket);
+  console.log(userRole);
+  
+  // Fetch the user's role from the API
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const token = localStorage.getItem("accessToken"); // Get access token from localStorage
+        const response = await axios.get("http://127.0.0.1:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token in the request header
+          },
+        });
+        console.log('response' ,response.data);
+        
+        setUserRole(response.data.role); // Store user role in state
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user data.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    };
+    fetchUserRole();
+  }, [toast]);
 
+  // Fetch ticket details
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -46,7 +74,7 @@ export const TicketView = () => {
       }
     };
     fetchTicket();
-  }, [toast]);
+  }, [id, toast]);
 
   const handleReserve = async () => {
     try {
@@ -72,7 +100,6 @@ export const TicketView = () => {
     }
   };
 
-  
   const handlerResolve = async () => {
     try {
       await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
@@ -90,6 +117,30 @@ export const TicketView = () => {
       toast({
         title: "Error",
         description: "Failed to resolve the ticket.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleCloseTicket = async () => {
+    try {
+      await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/close`, {
+        closed_by: logged_id,
+      });
+      toast({
+        title: "Success",
+        description: "The ticket has been closed.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setTicket({ ...ticket, status: "closed" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to close the ticket.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -117,7 +168,7 @@ export const TicketView = () => {
       <Header
         name={ticket.creator?.name}
         greeting={"Have a nice day"}
-        role={"super-admin"}
+        role={userRole}
         profile={
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
@@ -139,39 +190,30 @@ export const TicketView = () => {
         rounded="lg"
         bg="white"
       >
-        
         <Flex align="center" mb={4}>
-        <Avatar
-          size="md"
-          name={ticket.creator?.name}
-          bg="teal.500"
-        />
+          <Avatar size="md" name={ticket.creator?.name} bg="teal.500" />
           <Box ml={4}>
             <Heading size="sm">{ticket.creator?.name}</Heading>
             <Text fontSize="sm" color="gray.500">
               Ticket Creator
             </Text>
-            
           </Box>
         </Flex>
 
         <hr />
 
-        <Flex mt={5} justify={'space-between'}>
+        <Flex mt={5} justify="space-between">
           <Heading size="md" mb={2}>
             {ticket?.problem?.specification || ticket?.problem?.name}
           </Heading>
-
           <Text fontSize="sm" color="gray.500" mb={4}>
             {formatDistanceToNow(new Date(ticket.created_at), {
               addSuffix: true,
             })}
           </Text>
-
-
         </Flex>
 
-          <Text mb={4}>{ticket.description}</Text>
+        <Text mb={4}>{ticket.description}</Text>
         {ticket.image && (
           <Box mt={4} textAlign="center">
             <Image
@@ -180,7 +222,7 @@ export const TicketView = () => {
               boxSize="300px"
               objectFit="cover"
               cursor="pointer"
-              onClick={downloadImage} // Download image on click
+              onClick={downloadImage}
               rounded="md"
             />
             <IconButton
@@ -196,26 +238,36 @@ export const TicketView = () => {
 
         <HStack spacing={2} mt={6}>
           <Tag colorScheme="green">{ticket?.problem?.type}</Tag>
-          <Tag colorScheme="yellow">{ticket?.problem?.specification || ticket?.problem?.name }</Tag>
+          <Tag colorScheme="yellow">
+            {ticket?.problem?.specification || ticket?.problem?.name}
+          </Tag>
         </HStack>
 
         <Flex mt={6} justifyContent="end" align="center">
-
           <HStack spacing={4}>
-            {ticket.status === "opened" && (
-              <Button colorScheme="blue" onClick={handleReserve} size="sm">
-                Reserve Ticket
+            {userRole === "client" && ticket.status === "opened" && (
+              <Button colorScheme="red" onClick={handleCloseTicket} size="sm">
+                Close Ticket
               </Button>
             )}
-            {ticket.status === "resolved" && (
-              <Button colorScheme="green" onClick={handlePrint} size="sm">
-                Print Ticket
-              </Button>
-            )}
-            {ticket.status === "reserved" && (
-              <Button colorScheme="red" onClick={handlerResolve} size="sm">
-                Resolve Ticket
-              </Button>
+            {["admin", "supportIt"].includes(userRole) && (
+              <>
+                {ticket.status === "opened" && (
+                  <Button colorScheme="blue" onClick={handleReserve} size="sm">
+                    Reserve Ticket
+                  </Button>
+                )}
+                {ticket.status === "resolved" && (
+                  <Button colorScheme="green" onClick={handlePrint} size="sm">
+                    Print Ticket
+                  </Button>
+                )}
+                {ticket.status === "reserved" && (
+                  <Button colorScheme="red" onClick={handlerResolve} size="sm">
+                    Resolve Ticket
+                  </Button>
+                )}
+              </>
             )}
           </HStack>
         </Flex>
