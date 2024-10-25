@@ -4,13 +4,14 @@ import useHttp from "../customHook/useHttp";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // for navigation after login
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 const Login = () => {
   const { loading, sendRequest } = useHttp();
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(""); // To handle and display login errors
   const navigate = useNavigate(); // Navigation hook for redirecting after login
-
+  const toast = useToast();
   console.log(formData);
   
   const handleChange = (e) => {
@@ -19,17 +20,31 @@ const Login = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setError(""); // Reset error before making the request
-  
-    const request = {
-      url: "http://127.0.0.1:8000/api/login",
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+
+      e.preventDefault();
+      setError(""); // Reset error before making the request
+      const request = {
+        url: "http://127.0.0.1:8000/api/login",
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        }}
+      toast({
+        title: "Logout successful",
+        description: "You've been logged out successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      toast({
+        title: "Error during login",
+        description: "eror",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    
   
     sendRequest(request, async  (response) => {
       console.log("Response received:", response); // Log the full response
