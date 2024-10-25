@@ -1,7 +1,8 @@
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
 
@@ -46,24 +47,56 @@ const PieTicket = () => {
   //       },
   //     ],
   //   };
+    const { loading, sendRequest } = useHttp();
+    const [data, setData] = useState([]);
 
-  const [chartData, setChartData] = useState({
-    labels: Data.map((data) => data.state),
-    datasets: [
-      {
-        label: "Tickets state",
-        data: Data.map((data) => data.number),
-        backgroundColor: [
-          "rgba(75,192,192,1)",
-          "&quot;#ecf0f1",
-          "#50AF95",
-          "#f3ba2f",
+    const [chartData, setChartData] = useState({
+      datasets: [
+        {
+          label: "Tickets state",
+          data: [],
+          backgroundColor: [
+            "rgba(75,192,192,1)",
+            "rgba(75,68,192,1)",
+            "rgba(30,192,70,1)",
+            "rgba(25,49,90,1)",
+          ],
+          borderColor: "black",
+          borderWidth: 0,
+        },
+      ],
+    });
+  
+  
+    useEffect(() => {
+      const token = localStorage.getItem("accessToken");
+      const request = {
+        url: "http://127.0.0.1:8000/api/ticketsStatus/count",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+  
+      sendRequest(request, getData);
+    }, []);
+  
+    const getData = (data) => {
+      setData(data);
+      console.log(data);
+  
+      setChartData((prevData) => ({
+        ...prevData,
+        datasets: [
+          {
+            ...prevData.datasets[0],
+            data: data.map((ticket) => ticket.number), // Update the data for the pie chart
+          },
         ],
-        borderColor: "black",
-        borderWidth: 2,
-      },
-    ],
-  });
+      }));
+    };
+
+
   return (
     <div className="shadow-md h-fit w-fit flex flex-col gap-5 rounded-lg">
       <div className="flex justify-between items-center gap-5 px-3 py-2 mt-2">
@@ -79,6 +112,7 @@ const PieTicket = () => {
                 display: true,
                 text: "Users Gained between 2016-2020",
               },
+
             },
           }}
         />

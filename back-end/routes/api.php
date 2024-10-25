@@ -89,6 +89,8 @@ Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
 //     Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
 //     Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);
 // });
+Route::get('/all-tickets', [TicketController::class, 'allTickets']);//pour test api
+
 
 Route::middleware('auth:sanctum')->get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
