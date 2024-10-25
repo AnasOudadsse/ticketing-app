@@ -92,7 +92,7 @@ const TicketItem = ({
         <hr />
         <HStack mt={4}>
           <Avatar size={"sm"}  mr={2} name={name} />
-          <Text color={"#7B7B7B"}>{created_by}</Text>
+          <Text color={"#7B7B7B"}>{name}</Text>
 
           <Spacer />
           <Button
@@ -281,7 +281,7 @@ export default function TicketList() {
                   problemName={ticket?.problem?.specification || ticket?.problem?.name}
                   priority={ticket.priority}
                   postedTime={ticket.created_at}
-                  name={ticket.created_by}
+                  name={ticket.creator.name}
                   description={ticket.description}
                   created_by={ticket.created_by}
                 />

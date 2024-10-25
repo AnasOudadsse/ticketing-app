@@ -204,7 +204,7 @@ public function getTicketsWithProblems(Request $request)
         return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $ticketsWithProblems = Ticket::with('problem')->where('created_by', $user->id)->get();
+        $ticketsWithProblems = Ticket::with('problem','creator')->where('created_by', $user->id)->get();
     }
 
     return response()->json($ticketsWithProblems);
