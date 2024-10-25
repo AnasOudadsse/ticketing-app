@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button } from "@chakra-ui/react";
+import { Avatar, Box, Button, Toast, useToast } from "@chakra-ui/react";
 import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useHttp from "../customHook/useHttp";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ greeting }) => {
   const [user, setUser] = useState({});
   const { loading, sendRequest } = useHttp();
+  const navigate = useNavigate()
+  const toast = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -28,7 +31,14 @@ const Header = ({ greeting }) => {
       const response = await axios.post("http://127.0.0.1:8000/api/logout")
         localStorage.removeItem("accessToken");
         localStorage.removeItem("id");
-        window.location.reload();
+        navigate('/login')
+        toast({
+          title: "Logout successful",
+          description: "You've been logged out successfully.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
 
     }catch(err){
       console.log(err)
