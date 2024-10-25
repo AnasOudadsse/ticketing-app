@@ -89,6 +89,24 @@ public function login(Request $request)
         ], 500);
     }
 }
+
+public function logout(Request $request)
+{
+    try {
+        // Revoke the user's current token
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'An error occurred during logout',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 public function update(Request $request, $id)
 {
     try {
