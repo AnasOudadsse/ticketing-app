@@ -78,5 +78,18 @@ class SpecialisationSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ];
+
+        DB::table('specialisations')->insert([
+            ['name' => 'konosys', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'canvas', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'infrastructure', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'demarage_cours', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'evalbox', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'biostar', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'catia', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'office', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'materiel', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
     }
 }

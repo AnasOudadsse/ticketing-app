@@ -170,8 +170,7 @@ public function getTicketsWithProblems(Request $request)
 
             $blabla = 'client_name';
     
-            // Add client_name to each ticket
-            $ticket->$blabla = $client->name;   
+              $ticket->$blabla = $client->name;   
 
             return $ticket;
         });
@@ -185,10 +184,5 @@ public function getTicketsWithProblems(Request $request)
     return response()->json($ticketsWithProblems);
 }
 
-public function exportTicketsToExcel()
-{
-    $fileName = 'tickets_export_' . date('Ymd_His') . '.xlsx';
 
-    return Excel::download(new TicketsExport, $fileName);
-}
 }

@@ -29,22 +29,22 @@ class SupportItSpecialisationSeeder extends Seeder
         return [
             [
                 'specialisation_id' => 1, // Assurez-vous que cette valeur existe dans la table `specialisations`
-                'support_it_id' => 1, // Assurez-vous que cette valeur existe dans la table `support_its`
+                'user_id' => 2, // Assurez-vous que cette valeur existe dans la table `support_its`
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            [
-                'specialisation_id' => 2,
-                'support_it_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'specialisation_id' => 3,
-                'support_it_id' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            // [
+            //     'specialisation_id' => 2,
+            //     'support_it_id' => 1,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ],
+            // [
+            //     'specialisation_id' => 3,
+            //     'support_it_id' => 2,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ],
         ];
     }
 }
