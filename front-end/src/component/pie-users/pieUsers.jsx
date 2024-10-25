@@ -6,37 +6,37 @@ import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
 
-const Data = [
-  {
-    id: 1,
-    year: 2016,
-    userGain: 80000,
-    userLost: 823,
-  },
-  {
-    id: 2,
-    year: 2017,
-    userGain: 45677,
-    userLost: 345,
-  },
-  {
-    id: 3,
-    year: 2018,
-    userGain: 78888,
-    userLost: 555,
-  },
-];
+// const Data = [
+//   {
+//     id: 1,
+//     year: 2016,
+//     userGain: 80000,
+//     userLost: 823,
+//   },
+//   {
+//     id: 2,
+//     year: 2017,
+//     userGain: 45677,
+//     userLost: 345,
+//   },
+//   {
+//     id: 3,
+//     year: 2018,
+//     userGain: 78888,
+//     userLost: 555,
+//   },
+// ];
 
 const PieUsers = () => {
   const { loading, sendRequest } = useHttp();
   const [data, setData] = useState([]);
 
   const [chartData, setChartData] = useState({
-    labels: Data.map((data) => data.year),
+    labels: data.map((data) => data.number),
     datasets: [
       {
         label: "Users Gained ",
-        data: data.map((data) => Data.userGain),
+        data: data.map((data) => data.number),
         backgroundColor: ["rgba(75,192,192,1)", "&quot;#ecf0f1", "#50AF95"],
         borderColor: "black",
         borderWidth: 2,
@@ -57,8 +57,9 @@ const PieUsers = () => {
     sendRequest(request, getData);
   }, []);
 
-  const getData = (data) => {
-    setData(data);
+  const getData = (d) => {
+    setData([...d]);
+    setChartData({...chartData, data: d.map((dd) => dd.number)})
   };
 
   if (loading) {
@@ -73,18 +74,22 @@ const PieUsers = () => {
       </div>
       <div className="flex gap-2 items-center">
         <div className="w-fit ml-4">
-          <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-red-800"></div>
-            <p>admin</p>
-          </div>
-          <div className="flex gap-3 items-center">
+          {data.map((d) => {
+            return (
+              <div className="flex gap-3 items-center">
+                <div className="w-6 h-3 rounded bg-red-800"></div>
+                <p>{d.title}</p>
+              </div>
+            );
+          })}
+          {/* <div className="flex gap-3 items-center">
             <div className="w-6 h-3 rounded bg-green-800"></div>
             <p>supportIt</p>
           </div>
           <div className="flex gap-3 items-center">
             <div className="w-6 h-3 rounded bg-blue-500"></div>
             <p>client</p>
-          </div>
+          </div> */}
         </div>
         <div style={{ height: "150px", width: "150px" }}>
           <Doughnut
