@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('attachement')->nullable();
             $table->enum('status', ['opened', 'reserved', 'resolved', 'closed'])->default('opened');
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');//client
             $table->foreignId('reserved_by')->nullable()->constrained('users')->onDelete('set null'); // supportIt reserve un ticket, peut être null au départ
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null'); // admin qui a assigné le ticket
             $table->timestamp('resolution_date')->nullable();
