@@ -12,8 +12,9 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:users',
+        try{
+            $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,supportIt,client',
@@ -54,10 +55,11 @@ class AuthController extends Controller
 
 public function login(Request $request)
 {
-    $request->validate([
-        'email' => 'required|string|email',
-        'password' => 'required|string',
-    ]);
+    try {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
         $user = User::where('email', $validatedData['email'])->first();
 
