@@ -168,6 +168,8 @@ export default function TicketList() {
       tab = "reserved";
     } else if (index === 3) {
       tab = "resolved";
+    } else if (index === 4) {
+      tab = "closed";
     }
     setSelectedTab(tab);
     applyFilters(searchTerm, timeFilter, tab);
@@ -260,6 +262,7 @@ export default function TicketList() {
               <Tab>Opened</Tab>
               <Tab>Reserved</Tab>
               <Tab>Resolved</Tab>
+              <Tab>Closed</Tab>
             </TabList>
           </Tabs>
 
@@ -273,6 +276,8 @@ export default function TicketList() {
                     ticket.status === "opened"
                       ? "green"
                       : ticket.status === "reserved"
+                      ? "yellow"
+                      :ticket.status === "resolved"
                       ? "orange"
                       : "red"
                   }
