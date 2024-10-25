@@ -170,7 +170,7 @@ public function update(Request $request, $id)
 
     public function getUser(Request $request)
 {
-    $user = $request->user()->load('fonction');
+    $user = $request->user()->load(['fonction', 'departement', 'localisation']);
 
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
@@ -181,8 +181,9 @@ public function update(Request $request, $id)
         'name' => $user->name,
         'email' => $user->email,
         'role' => $user->role,
-        'profile_image' => $user->profile_image,
         'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
+        'departement' => $user->departement ? $user->departement->name : 'No department assigned',
+        'localisation' => $user->localisation ? $user->localisation->name : 'No location assigned',
     ]);
 }
 
