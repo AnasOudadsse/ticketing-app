@@ -27,23 +27,43 @@ const Header = ({ greeting }) => {
   }, []);
   
   const handleLogout = async () => {
-    try{
-      const response = await axios.post("http://127.0.0.1:8000/api/logout")
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("id");
-        navigate('/login')
-        toast({
-          title: "Logout successful",
-          description: "You've been logged out successfully.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-    }catch(err){
-      console.log(err)
+    try {
+      const token = localStorage.getItem("accessToken");
+  
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/logout",
+        {}, // No request body required
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach token in headers
+          },
+        }
+      );
+  
+      // Clear localStorage and redirect to login
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("id");
+  
+      navigate("/login");
+  
+      toast({
+        title: "Logout successful",
+        description: "You've been logged out successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Logout failed",
+        description: "Unable to log out. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
-  }
+  };
   const getData = (data) => {
     setUser(data);
   };
@@ -69,7 +89,7 @@ const Header = ({ greeting }) => {
         <FontAwesomeIcon icon={faAngleUp} />
         {/* logout */}
         <Box>
-          <Button colorScheme="teal" variant="solid" onClick={handleLogout}>
+          <Button colorScheme="green" variant="solid" onClick={handleLogout}>
             Logout
           </Button>
         </Box>

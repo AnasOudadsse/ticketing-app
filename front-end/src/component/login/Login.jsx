@@ -1,91 +1,101 @@
 import { faEnvelope, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useHttp from "../customHook/useHttp";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // for navigation after login
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
 const Login = () => {
-  const { loading, sendRequest } = useHttp();
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false); // Loading state for button
   const [error, setError] = useState(""); // To handle and display login errors
   const navigate = useNavigate(); // Navigation hook for redirecting after login
   const toast = useToast();
-  console.log(formData);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Reset error before making the request
+    setLoading(true); // Start loading
 
-      e.preventDefault();
-      setError(""); // Reset error before making the request
-      const request = {
-        url: "http://127.0.0.1:8000/api/login",
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        }}
+    try {
+      // Send login request using axios
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const { access_token, token_type, role } = response.data;
+      console.log("Access Token:", access_token);
+
+      // Store token, token type, and role in localStorage
+      localStorage.setItem("accessToken", access_token);
+      localStorage.setItem("tokenType", token_type);
+      localStorage.setItem("role", role);
+
+      // Fetch the user's profile and store user ID in localStorage
+      const profileResponse = await axios.get(
+        "http://127.0.0.1:8000/api/user",
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      const { id } = profileResponse.data;
+      localStorage.setItem("id", id); // Store user ID
+
       toast({
-        title: "Logout successful",
-        description: "You've been logged out successfully.",
+        title: "Login successful",
+        description: "You are now logged in.",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
+
+      navigate("/tickets/ticketlist"); // Redirect to tickets
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      setError(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+
       toast({
         title: "Error during login",
-        description: "eror",
+        description: error.response?.data?.message || "An error occurred.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-    
-  
-    sendRequest(request, async  (response) => {
-      console.log("Response received:", response); // Log the full response
-  
-      if (response && response.access_token) {
-        console.log("Access Token:", response.access_token);
-  
-        // Store token and token type in localStorage
-        localStorage.setItem("accessToken", response.access_token);
-        localStorage.setItem("tokenType", response.token_type);
-
-
-          // After login, fetch the user's profile (this includes the clientID)
-        const profileResponse = await axios.get('http://127.0.0.1:8000/api/user', {
-          headers: {
-            Authorization: `Bearer ${response.access_token}`,
-          },
-        });
-
-        const { id } = profileResponse.data; // Assume profileResponse.data contains the user's info including the clientID
-
-        // Store clientID in localStorage
-        localStorage.setItem('id', id);
-  
-        
-        navigate("/tickets"); 
-      } else {
-        setError("Login failed. Please check your credentials.");
-      }
-    });
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   return (
     <div className="grid grid-cols-2 w-full">
       <div className="bg-gradient-to-r from-green-600 to-green-700 w-full h-screen gap-10 flex justify-start flex-col items-center rounded-br-full">
         <h1 className="mt-10 text-white font-bold text-3xl">New Here?</h1>
-        <p className="w-1/2 text-center text-white text-sm ">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem facilis
-          quasi nesciunt maiores! Nam, id consectetur! Hic esse, rem quidem
+        <p className="w-1/2 text-center text-white text-sm">
+        Lorem ipsum dolor sit amet consectetur adipisicing elitLorem ipsum dolor sit amet consectetur adipisicing elit.
         </p>
-        <img className="w-72 h-72 " src="/assets/images/login.png" alt="Login Visual" />
+        <img
+          className="w-72 h-72"
+          src="/assets/images/login.png"
+          alt="Login Visual"
+        />
       </div>
       <div className="w-full flex flex-col gap-36 items-center justify-start">
         <div className="text-center mt-9">
@@ -125,11 +135,12 @@ const Login = () => {
               type="password"
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error if login fails */}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="mt-5 text-center">
             <button
               type="submit"
               className="bg-gradient-to-r from-green-600 to-green-700 px-10 py-1 pb-2 text-white rounded-lg"
+              disabled={loading}
             >
               {loading ? "Logging in..." : "Login"}
             </button>
