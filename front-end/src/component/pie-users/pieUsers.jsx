@@ -1,49 +1,27 @@
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
-
-// const Data = [
-//   {
-//     id: 1,
-//     year: 2016,
-//     userGain: 80000,
-//     userLost: 823,
-//   },
-//   {
-//     id: 2,
-//     year: 2017,
-//     userGain: 45677,
-//     userLost: 345,
-//   },
-//   {
-//     id: 3,
-//     year: 2018,
-//     userGain: 78888,
-//     userLost: 555,
-//   },
-// ];
 
 const PieUsers = () => {
   const { loading, sendRequest } = useHttp();
   const [data, setData] = useState([]);
 
   const [chartData, setChartData] = useState({
-    labels: Data.map((data) => data.year),
+    labels: data.map((users) => users.title),
     datasets: [
       {
-        label: "Users Gained ",
-        data: data.map((data) => Data.userGain),
+        label: "Users Gained",
+        data: data.map((users) => users.number),
         backgroundColor: ["rgba(75,192,192,1)", "&quot;#ecf0f1", "#50AF95"],
         borderColor: "black",
-        borderWidth: 2,
+        borderWidth: 1,
       },
     ],
   });
-
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -58,8 +36,17 @@ const PieUsers = () => {
     sendRequest(request, getData);
   }, []);
 
-  const getData = (data) => {
-    setData(data);
+  const getData = (dataRec) => {
+    setData(dataRec);
+    setChartData({
+      ...chartData,
+      datasets: [
+        {
+          ...chartData.datasets,
+          data: dataRec.map((users, index) => index !== 3 && users.number),
+        },
+      ],
+    });
   };
 
   if (loading) {
@@ -85,7 +72,7 @@ const PieUsers = () => {
           <div className="flex gap-3 items-center">
             <div className="w-6 h-3 rounded bg-cyan-400"></div>
             <p>client</p>
-          </div> */}
+          </div>
         </div>
         <div style={{ height: "150px", width: "150px" }}>
           <Doughnut
