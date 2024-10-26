@@ -6,28 +6,28 @@ import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
 
-const Data = [
-  {
-    id: 1,
-    state: "open",
-    number: 80000,
-  },
-  {
-    id: 2,
-    state: "resolved",
-    number: 45677,
-  },
-  {
-    id: 3,
-    state: "non-resolved",
-    number: 78888,
-  },
-  {
-    id: 4,
-    state: "going",
-    number: 90000,
-  },
-];
+// const Data = [
+//   {
+//     id: 1,
+//     state: "open",
+//     number: 80000,
+//   },
+//   {
+//     id: 2,
+//     state: "resolved",
+//     number: 45677,
+//   },
+//   {
+//     id: 3,
+//     state: "non-resolved",
+//     number: 78888,
+//   },
+//   {
+//     id: 4,
+//     state: "going",
+//     number: 90000,
+//   },
+// ];
 
 const PieTicket = () => {
   //   const Data = {

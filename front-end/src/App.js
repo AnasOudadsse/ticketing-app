@@ -1,4 +1,4 @@
-import { ChakraProvider, Box, Flex } from "@chakra-ui/react";
+import { ChakraProvider, Flex } from "@chakra-ui/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NewTicket } from "./component/add-ticket/add-ticket";
 import TicketList from "./component/tickets-list/tickets-list";
@@ -12,29 +12,87 @@ import AddUser from "./component/add-user/addUser";
 import UpdateUser from "./component/update-user/updateUser";
 import PrintTicket from "./component/print-ticket/PrintTicket";
 import ExportTickets from "./component/exportTickets/ExportTickets";
+import RoleProtectedRoute from "./component/Route-Protection/RoleProtectiongRoute";
+import { ProtectedRoute } from "./component/Route-Protection/ProtectedRoute";
+import Unauthorized from "./component/Route-Protection/Unauthorized";
+import { ProfilePage } from "./component/Profile/Profile";
 
 function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
-      <Flex fontFamily={'inter'} w={'100%'} bg={"#F9F9FB"} >
-        <Routes>
-          <Route element={<Dashboard />} path="tickets">
-            <Route element={<ExportTickets />} path="exporttickets" />
-            <Route element={<HomeDashboard />} path="" />
-            <Route element={<TicketList />} path="ticketlist" />
-            <Route element={<NewTicket />} path="newticket" />
-            <Route element={<Statistiques />} path="statistiques" />
-            <Route element={<TicketView />} path="ticketview/:id" />
-            <Route element={<UsersList />} path="usersList">
-              <Route element={<UpdateUser />} path="updateuser/:role" />
+        <Flex fontFamily={"inter"} w={"100%"} bg={"#F9F9FB"}>
+          <Routes>
+            {/* Public Route */}
+            <Route path="login" element={<Login />} />
+            <Route path="/unauthorized" element={<Unauthorized/>} />
+            <Route path="/profile" element={<ProfilePage/>} />
+
+            {/* Protected Routes: Only accessible by authenticated users */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="tickets" element={<Dashboard />}>
+                {/* Admin-only routes */}
+                <Route
+                  path="exporttickets"
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                      <ExportTickets />
+                    </RoleProtectedRoute>
+                  }
+                />
+                <Route
+                  path=""
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                      <HomeDashboard />
+                    </RoleProtectedRoute>
+                  }
+                />
+                <Route
+                  path="usersList"
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                      <UsersList />
+                    </RoleProtectedRoute>
+                  }
+                >
+                  <Route
+                    path="updateuser/:role"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["admin"]}>
+                        <UpdateUser />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                </Route>
+                <Route
+                  path="addUser"
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                      <AddUser />
+                    </RoleProtectedRoute>
+                  }
+                />
+
+                {/* Routes accessible by all logged-in users */}
+                <Route path="ticketlist" element={<TicketList />} />
+                <Route path="newticket" element={<NewTicket />} />
+                <Route path="ticketview/:id" element={<TicketView />} />
+                <Route path="printticket" element={<PrintTicket />} />
+
+                {/* Admin or SupportIT roles */}
+                <Route
+                  path="statistiques"
+                  element={
+                    <RoleProtectedRoute allowedRoles={["admin", "supportIt"]}>
+                      <Statistiques />
+                    </RoleProtectedRoute>
+                  }
+                />
+              </Route>
             </Route>
-            <Route element={<PrintTicket />} path="printticket" />
-            <Route element={<AddUser />} path="addUser" />
-          </Route>
-          <Route element={<Login />} path="login" />
-        </Routes>
-      </Flex>
+          </Routes>
+        </Flex>
       </BrowserRouter>
     </ChakraProvider>
   );

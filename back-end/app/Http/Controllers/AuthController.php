@@ -55,8 +55,7 @@ class AuthController extends Controller
 
 public function login(Request $request)
 {
-    try{
-    $validatedData = $request->validate([
+    $request->validate([
         'email' => 'required|string|email',
         'password' => 'required|string',
     ]);
@@ -89,6 +88,24 @@ public function login(Request $request)
         ], 500);
     }
 }
+
+public function logout(Request $request)
+{
+    try {
+        // Revoke the user's current token
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'An error occurred during logout',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 public function update(Request $request, $id)
 {
     try {
@@ -152,7 +169,7 @@ public function update(Request $request, $id)
 
     public function getUser(Request $request)
 {
-    $user = $request->user()->load('fonction');
+    $user = $request->user()->load(['fonction', 'departement', 'localisation']);
 
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
@@ -163,8 +180,9 @@ public function update(Request $request, $id)
         'name' => $user->name,
         'email' => $user->email,
         'role' => $user->role,
-        'profile_image' => $user->profile_image,
         'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
+        'departement' => $user->departement ? $user->departement->name : 'No department assigned',
+        'localisation' => $user->localisation ? $user->localisation->name : 'No location assigned',
     ]);
 }
 
