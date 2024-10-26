@@ -56,12 +56,29 @@ class StatistiqueController extends Controller
         $reservedCount = Ticket::where('status', 'reserved')->count();
         $resolvedCount = Ticket::where('status', 'resolved')->count();
         $assignedCount = Ticket::where('status', 'assigned')->count();
+        $closedCount = Ticket::where('status', 'closed')->count();
 
         return response()->json([
-            'publishedCount'=>$publishedCount,
-            'reservedCount'=>$reservedCount,
-            'resolvedCount'=>$resolvedCount,
-            'assignedCount'=>$assignedCount
+            [
+                "title"=> "publishedCount",
+                'number'=>$publishedCount,
+            ],
+            [
+                "title"=> "reservedCount",
+                'number'=>$reservedCount,
+            ],
+            [
+                "title"=> "resolvedCount",
+                'number'=>$resolvedCount,
+            ],
+            [
+                "title"=> "assignedCount",
+                'number'=>$assignedCount
+            ],
+            [
+                "title"=> "closedCount",
+                'number'=>$closedCount
+            ]
         ]);
     }
     public function monthlyTickets(){

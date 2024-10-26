@@ -17,6 +17,7 @@ import { faFileImport } from "@fortawesome/free-solid-svg-icons";
 
 export const NewTicket = () => {
   const [formData, setFormData] = useState({
+    title: "",
     problem_id: "",
     description: "",
     status: "published",
@@ -24,6 +25,8 @@ export const NewTicket = () => {
     clientID: "",
   });
 
+  console.log(formData);
+  
   useEffect(() => {
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
     if (storedClientID) {
@@ -90,6 +93,7 @@ export const NewTicket = () => {
 
       // Reset the form after submission
       setFormData({
+        title: "",
         problem_id: "",
         description: "",
         status: "",
@@ -122,6 +126,15 @@ export const NewTicket = () => {
       <Box w={"700px"} mx="auto" mt={10}>
         <VStack spacing={4} as="form" className="rounded-md p-5 shadow" onSubmit={handleSubmit} align="start">
           {/* Problem ID */}
+          <FormControl isRequired>
+            <FormLabel>Title</FormLabel>
+            <Input
+              name="title" 
+              placeholder="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </FormControl>
           <FormControl isRequired>
             <FormLabel>Problem</FormLabel>
             <Select

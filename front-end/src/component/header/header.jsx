@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { Avatar } from "@chakra-ui/react";
+import { Avatar, Box, Button, Toast, useToast } from "@chakra-ui/react";
 import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useHttp from "../customHook/useHttp";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ greeting }) => {
   const [user, setUser] = useState({});
   const { loading, sendRequest } = useHttp();
+  const navigate = useNavigate()
+  const toast = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -18,9 +22,48 @@ const Header = ({ greeting }) => {
       },
     };
 
+    
     sendRequest(request, getData);
   }, []);
-
+  
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+  
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/logout",
+        {}, // No request body required
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach token in headers
+          },
+        }
+      );
+  
+      // Clear localStorage and redirect to login
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("id");
+  
+      navigate("/login");
+  
+      toast({
+        title: "Logout successful",
+        description: "You've been logged out successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Logout failed",
+        description: "Unable to log out. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
   const getData = (data) => {
     setUser(data);
   };
@@ -44,6 +87,12 @@ const Header = ({ greeting }) => {
           </div>
         </span>
         <FontAwesomeIcon icon={faAngleUp} />
+        {/* logout */}
+        <Box>
+          <Button colorScheme="green" variant="solid" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
       </div>
     </div>
   );

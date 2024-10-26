@@ -12,6 +12,8 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
+use App\Http\Controllers\SupportspecialisationController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -60,6 +62,9 @@ Route::prefix('specialisations')->group(function(){
     Route::delete('/{id}', [SpecialisationController::class, 'destroy']);
 });
 
+Route::get('/supportitsSpecialisation', [SupportspecialisationController::class, 'getSupportItsWithSpecialisations']);
+Route::get('/specialisationsSupport', [SupportspecialisationController::class, 'getSpecialisationsWithSupportIts']);
+
 
 Route::prefix('problems')->group(function(){
     Route::get('/', [ProblemController::class, 'index']);
@@ -70,13 +75,15 @@ Route::prefix('problems')->group(function(){
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
 
 });
-Route::post('/tickets', [TicketController::class, 'createTicket']);
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::post('/tickets', [TicketController::class, 'createTicket']);
-    Route::post('/tickets/{ticketId}/reserve', [TicketController::class, 'reserveTicket']);
-    Route::post('/tickets/{ticketId}/assign', [TicketController::class, 'assignTicket']);
-});
-
+Route::post('/tickets', [TicketController::class, 'createTicket']);
+Route::get('tickets/get/{id}', [TicketController::class, 'getOneTicket']);
+Route::post('/tickets/{id}/reserve', [TicketController::class, 'reserveTicket']);//pour test
+Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);//test
+Route::put('/tickets/{id}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
+Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
+Route::get('/all-tickets', [TicketController::class, 'allTickets']);//pour test api
+Route::get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
 Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
@@ -84,6 +91,8 @@ Route::get('users/roles',[StatistiqueController::class,'userRoles']);
 Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
 Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
 Route::get('statistiques',[StatistiqueController::class,'statistiques']);
+});
+
 
 
 
