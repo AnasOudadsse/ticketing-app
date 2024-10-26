@@ -89,7 +89,7 @@ const PieTicket = () => {
         ...prevData,
         datasets: [
           {
-            ...prevData.datasets[0],
+            ...prevData.datasets,
             data: data.map((ticket) => ticket.number), // Update the data for the pie chart
           },
         ],

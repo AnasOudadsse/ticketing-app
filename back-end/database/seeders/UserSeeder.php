@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('12345678'), // Mot de passe sécurisé
                     'role' => 'admin',
                     'role_in_creation' => 'admin',
-                    'fonction_id' => [1], // Assurez-vous que cette valeur correspond à une fonction existan[t]e
+                    'fonction_id' => 1, // Assurez-vous que cette valeur correspond à une fonction existan[t]e
                     'departement_id' => 1, // Assurez-vous que cette valeur correspond à un département existant
                     'localisation_id' => 1, // Assurez-vous que cette valeur correspond à une localisation existante
                 ],
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('12345678'),
                     'role' => 'supportIt',
                     'role_in_creation' => 'supportIt',
-                    'fonction_id' => [2],
+                    'fonction_id' => 2,
                     'departement_id' => 2,
                     'localisation_id' => 2,
                 ],
@@ -59,7 +59,7 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('12345678'),
                     'role' => 'client',
                     'role_in_creation' => 'client',
-                    'fonction_id' => [3],
+                    'fonction_id' => 3,
                     'departement_id' => 3,
                     'localisation_id' => 3,
                 ],
@@ -70,11 +70,11 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('12345678!123'),
                     'role' => 'admin',
                     'role_in_creation' => 'admin',
-                    'fonction_id' => [3],
+                    'fonction_id' => 3,
                     'departement_id' => 3,
                     'localisation_id' => 3,
                 ],
-            ]           
+            ]
 
         ];
     }

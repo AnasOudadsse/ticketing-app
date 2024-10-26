@@ -16,7 +16,7 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8', // i delete confirmed - hakim mezrioui
             'role' => 'required|in:admin,supportIt,client',
             'specialisation_ids' => 'nullable|array|required_if:role,supportIt',
             'specialisation_ids.*' => 'exists:specialisations,id',
@@ -34,7 +34,7 @@ class AuthController extends Controller
             'departement_id' => $validatedData['departement_id'],
             'localisation_id' => $validatedData['localisation_id'],
         ]);
-    
+
         if ($validatedData['role'] === 'supportIt') {
             $user->specialisations()->sync($validatedData['specialisation_ids']);
         }
