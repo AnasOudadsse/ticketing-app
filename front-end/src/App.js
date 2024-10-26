@@ -14,6 +14,8 @@ import PrintTicket from "./component/print-ticket/PrintTicket";
 import ExportTickets from "./component/exportTickets/ExportTickets";
 import RoleProtectedRoute from "./component/Route-Protection/RoleProtectiongRoute";
 import { ProtectedRoute } from "./component/Route-Protection/ProtectedRoute";
+import Unauthorized from "./component/Route-Protection/Unauthorized";
+import { ProfilePage } from "./component/Profile/Profile";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Routes>
             {/* Public Route */}
             <Route path="login" element={<Login />} />
+            <Route path="/unauthorized" element={<Unauthorized/>} />
+            <Route path="/profile" element={<ProfilePage/>} />
 
             {/* Protected Routes: Only accessible by authenticated users */}
             <Route element={<ProtectedRoute />}>
