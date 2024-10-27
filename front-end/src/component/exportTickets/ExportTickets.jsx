@@ -5,6 +5,7 @@ import Header from "../header/header";
 import DataTable from "react-data-table-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import useHttp from "../customHook/useHttp";
 const tickets = [
   {
     id: 1,
@@ -100,13 +101,33 @@ const tickets = [
 ];
 
 const ExportTickets = () => {
-  const [data, setData] = useState(tickets);
-  const [dataF, setDataF] = useState(tickets);
+  const [data, setData] = useState([]);
+  const [dataF, setDataF] = useState([]);
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const { sendRequest, loading } = useHttp();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const request = {
+      url: "http://127.0.0.1:8000/api/all-tickets",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    sendRequest(request, getData);
+  }, []);
+
+  const getData = (dataRec) => {
+    setData(dataRec.tickets);
+    setDataF(dataRec.tickets);
+    console.log(dataRec);
+  };
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
@@ -129,9 +150,7 @@ const ExportTickets = () => {
 
   const handleFilter = () => {
     const ticketsFiltredByProblems = handleFilterByProblems(data);
-    const ticketsFiltredBySearch = handleFiltredBySearch(
-      ticketsFiltredByProblems
-    );
+    const ticketsFiltredBySearch = handleFiltredBySearch(data);
     const ticketsFiltredByDate = handleFiltredByDate(ticketsFiltredBySearch);
 
     setDataF(ticketsFiltredByDate);
@@ -154,7 +173,7 @@ const ExportTickets = () => {
     const resultat = values.filter((ticket) => {
       if (
         search &&
-        ticket.supportIt.toLowerCase().includes(search.toLowerCase())
+        ticket.supportIt?.toLowerCase().includes(search.toLowerCase())
       ) {
         return ticket;
       }

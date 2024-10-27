@@ -3,6 +3,8 @@ import TabAddUser from "../tap-add-user/TabAddUser";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../header/header";
 import useHttp from "../customHook/useHttp";
+import { useToast } from "@chakra-ui/react";
+import useCheckValidation from "../customHook/useCheckValidation";
 
 const AddUser = () => {
   // const [tab, setTab] = useState("admin");
@@ -16,10 +18,32 @@ const AddUser = () => {
   const { sendRequest, loading } = useHttp();
   const navigate = useNavigate();
   const [specialisations, setSpecialisation] = useState([]);
+  const toast = useToast();
+  const { response, checkName, checkEmail, checkPassword, checkRole } =
+    useCheckValidation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    switch (name) {
+      case "name":
+        checkName(value);
+        break;
+      case "email":
+        checkEmail(value);
+        break;
+      case "password":
+        checkPassword(value);
+        break;
+      case "role":
+        checkRole(value);
+        if (value !== "supportIt") {
+          setFormData((prevData) => ({ ...prevData, specialisation: [] }));
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSpecialisationChange = (e) => {
@@ -44,6 +68,19 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const userForm = document.getElementById("userForm");
+    if (!userForm.checkValidity()) {
+      toast({
+        title: "Warning",
+        description: "The form is invalid",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const token = localStorage.getItem("accessToken");
 
     const request = {
@@ -60,8 +97,14 @@ const AddUser = () => {
   };
 
   const getData = (data) => {
-    // navigate("/tickets/usersList");
-    console.log(data);
+    toast({
+      title: "Success",
+      description: "The register succesfully.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+    navigate("/tickets/usersList");
   };
 
   return (
@@ -76,20 +119,34 @@ const AddUser = () => {
       />
       {/* <TabAddUser tabSelected={tab} onSelectTab={selectTab} /> */}
       <form
+        id="userForm"
         onSubmit={handleSubmit}
         className="rounded shadow py-10 mt-5 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5"
       >
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Name</label>
           <input
+            required
+            minLength={6}
             onBlur={handleChange}
             name="name"
             className="block w-full px-2 py-1 outline-none rounded-md  border"
           />
+          {/* <input
+            required
+            minLength={6}
+            onBlur={() => checkName(formData.name ?? "")} // Vous pouvez également passer directement la valeur ici
+            name="name"
+            onChange={handleChange}
+            className="block w-full px-2 py-1 outline-none rounded-md border"
+          /> */}
         </div>
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Email</label>
           <input
+            type="email"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            required
             onBlur={handleChange}
             name="email"
             className="block w-full px-2 py-1 outline-none rounded-md  border"
@@ -98,6 +155,8 @@ const AddUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Password</label>
           <input
+            required
+            minLength={8}
             onBlur={handleChange}
             name="password"
             className="block w-full px-2 py-1 outline-none rounded-md  border"
@@ -107,11 +166,14 @@ const AddUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Role</label>
           <select
+            required
             name="role"
             onChange={handleChange}
             className="rounded-md w-full px-2 py-2 bg-white border"
           >
-            <option disabled>Select a role</option>
+            <option selected disabled>
+              Select a role
+            </option>
             <option value={"admin"}>Admin</option>
             <option value={"supportIt"}>Support it</option>
             <option value={"client"}>Client</option>
@@ -122,6 +184,7 @@ const AddUser = () => {
           <div className="flex flex-col  w-fit  gap-3 items-center my-3">
             {/* <label className="w-32">Specialisation</label> */}
             {/* <select
+            required
               name="specialisation_id"
               className="rounded-md w-full px-2 py-2 bg-white border"
             >
@@ -174,27 +237,33 @@ const AddUser = () => {
             <label className="w-32">Fonction</label>
             <div className="w-full">
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Technicien Si</label>
               </div>
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Infra-structure</label>
               </div>
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Support-It</label>
               </div>
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Planification</label>
               </div>
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Finance</label>
               </div>
               <div className="w-full">
-                <input type="checkbox"></input>
+                <input
+                required type="checkbox"></input>
                 <label className="ml-3">Scolarité</label>
               </div>
             </div>
@@ -204,11 +273,14 @@ const AddUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Fonction</label>
           <select
+            required
             onBlur={handleChange}
             name="fonction_id"
             className="rounded-md w-full px-2 py-2 bg-white border"
           >
-            <option disabled>Select a Fonction</option>
+            <option selected disabled>
+              Select a Fonction
+            </option>
             <option value={1}>Konosys</option>
             <option value={2}>Canvas</option>
             <option value={3}>Biostar</option>
@@ -219,11 +291,14 @@ const AddUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Departement</label>
           <select
+            required
             onBlur={handleChange}
             name="departement_id"
             className="rounded-md w-full px-2 py-2 bg-white border"
           >
-            <option disabled>Select a Departement</option>
+            <option selected disabled>
+              Select a Departement
+            </option>
             <option value={1}>Konosys</option>
             <option value={2}>Canvas</option>
             <option value={3}>Biostar</option>
@@ -233,11 +308,14 @@ const AddUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Localisation</label>
           <select
+            required
             onBlur={handleChange}
             name="localisation_id"
             className="rounded-md w-full px-2 py-2 bg-white border"
           >
-            <option disabled>Select a Localisation</option>
+            <option selected disabled>
+              Select a Localisation
+            </option>
             <option value={1}>Anfa</option>
             <option value={2}>Ligue arab</option>
             <option value={3}>anas inboMail</option>

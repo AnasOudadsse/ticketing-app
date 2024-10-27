@@ -37,9 +37,11 @@ const PieUsers = () => {
   }, []);
 
   const getData = (dataRec) => {
+    console.log(dataRec);
     setData(dataRec);
     setChartData({
       ...chartData,
+      labels: dataRec.map((users, index) => index !== 3 && users.title),
       datasets: [
         {
           ...chartData.datasets,
@@ -62,15 +64,15 @@ const PieUsers = () => {
       <div className="flex gap-2 items-center">
         <div className="w-fit ml-4">
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-red-800"></div>
+            <div className="w-6 h-3 rounded" style={{backgroundColor: "#249cfb"}}></div>
             <p>admin</p>
           </div>
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-green-800"></div>
+            <div className="w-6 h-3 rounded" style={{backgroundColor: "#fc9030"}}></div>
             <p>supportIt</p>
           </div>
           <div className="flex gap-3 items-center">
-            <div className="w-6 h-3 rounded bg-cyan-400"></div>
+            <div className="w-6 h-3 rounded" style={{backgroundColor: "#fb4468"}}></div>
             <p>client</p>
           </div>
         </div>
