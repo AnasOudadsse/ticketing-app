@@ -19,7 +19,7 @@ const AddUser = () => {
   const navigate = useNavigate();
   const [specialisations, setSpecialisation] = useState([]);
   const toast = useToast();
-  const { response, checkName, checkEmail, checkPassword, checkRole } =
+  const { response, checkName, checkEmail, checkPassword, checkRole, checkFonction, checkDepartement, checkLocalisation } =
     useCheckValidation();
 
   const handleChange = (e) => {
@@ -36,10 +36,19 @@ const AddUser = () => {
         checkPassword(value);
         break;
       case "role":
-        checkRole(value);
+        // checkRole(value);
         if (value !== "supportIt") {
           setFormData((prevData) => ({ ...prevData, specialisation: [] }));
         }
+        break;
+      case "fonction_id":
+        checkFonction(value);
+        break;
+      case "departement_id":
+        checkDepartement(value);
+        break;
+      case "localisation_id":
+        checkLocalisation(value);
         break;
       default:
         break;
@@ -169,9 +178,10 @@ const AddUser = () => {
             required
             name="role"
             onChange={handleChange}
+            onBlur={(e) => checkRole(e.target.value)}
             className="rounded-md w-full px-2 py-2 bg-white border"
           >
-            <option selected disabled>
+            <option selected disabled value={null}>
               Select a role
             </option>
             <option value={"admin"}>Admin</option>

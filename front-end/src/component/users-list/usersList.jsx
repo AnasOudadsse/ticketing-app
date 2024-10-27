@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import {
   faAdd,
@@ -10,6 +11,7 @@ import { Fragment, useEffect, useState } from "react";
 import Header from "../header/header";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import useHttp from "../customHook/useHttp";
+import Swal from "sweetalert2";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
 
@@ -17,6 +19,7 @@ const UsersList = () => {
   const [data, setData] = useState([]);
   const [dataF, setDataF] = useState([]);
   const { loading, sendRequest } = useHttp();
+  const toast = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -47,6 +50,39 @@ const UsersList = () => {
     });
 
     setDataF([...dataF]);
+  };
+
+  const handleDeleteUser = async (id) => {
+    const response = await Swal.fire({
+      title: "Are you sure?",
+      icon: "question",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      showCancelButton: true,
+    });
+
+    if (response.isConfirmed) {
+      const token = localStorage.getItem("accessToken");
+
+      const request = {
+        url: `http://127.0.0.1:8000/api/drop-user/${id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      sendRequest(request, (dataRec) => {
+        toast({
+          title: "Success",
+          description: dataRec,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      });
+    }
   };
 
   const navigate = useNavigate();
@@ -86,7 +122,7 @@ const UsersList = () => {
           </button>
           &nbsp;
           <button
-            onClick={() => {}}
+            onClick={() => handleDeleteUser(row.id)}
             className="p-2 rounded hover:bg-red-600 btn btn-info btn-sm text-white bg-red-700"
           >
             <FontAwesomeIcon icon={faTrash} />

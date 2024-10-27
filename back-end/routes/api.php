@@ -91,6 +91,7 @@ Route::get('users/roles',[StatistiqueController::class,'userRoles']);
 Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
 Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
 Route::get('statistiques',[StatistiqueController::class,'statistiques']);
+Route::delete('drop-user/{user_id}',[AuthController::class,'dropUser']);
 });
 
 

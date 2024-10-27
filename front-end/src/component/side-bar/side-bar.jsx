@@ -21,7 +21,7 @@ import {
       <div className="min-w-60 bg-white w-60 h-screen sticky top-0 left-0">
         {/* Logo */}
         <div className="flex justify-center w-full h-40 grid grid-cols content-center">
-          <img src="/assets/images/logo.jpg" className="w-20 h-20" alt="Logo" />
+          <img src="/assets/images/UM6SS.webp" className="w-full h-16 px-4" alt="Logo" />
         </div>
   
         {/* Links */}

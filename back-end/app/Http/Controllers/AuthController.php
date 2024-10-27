@@ -193,5 +193,21 @@ function getUsers() {
     return response()->json(["users" => $users]);
 }
 
+function dropUser(Request $request, $user_id) {
+    $user_finded = User::find($user_id);
+
+    $user = $request->user();
+
+    if (!$user_finded) return response()->json("User not found");
+
+    if($user->role != "admin") {
+        return response()->json("You could not delete this user");
+    }
+
+    $user_finded->delete();
+
+    return response()->json("The user deleted succesfully");
+}
+
 
 }

@@ -41,11 +41,11 @@ const useCheckValidation = () => {
 
   const checkPassword = (value) => {
     setResponse("");
-    
+
     if (value.length === 0) {
-        setResponse("The password field is required");
+      setResponse("The password field is required");
     } else if (value.length < 8) {
-        console.log(value);
+      console.log(value);
       setResponse("Password should be at least 8 characters long");
     } else {
       const uppercasePattern = /[A-Z]/;
@@ -69,7 +69,7 @@ const useCheckValidation = () => {
 
   const checkRole = (value) => {
     setResponse("");
-    if (!value) {
+    if (value === null || value === "Select a role") {
       setResponse("Please select a role");
     } else {
       setResponse(null); // Clear the error if valid
@@ -85,8 +85,9 @@ const useCheckValidation = () => {
   };
 
   const checkFonction = (value) => {
+    console.log("fonction");
     setResponse("");
-    if (!value) {
+    if (!value || value === null || value === "Select a Fonction") {
       setResponse("Please select a function");
     } else {
       setResponse(null); // Clear the error if valid
@@ -95,8 +96,8 @@ const useCheckValidation = () => {
 
   const checkDepartement = (value) => {
     setResponse("");
-    if (!value) {
-      setResponse("Please select a function");
+    if (!value || value === null || value === "Select a Departement") {
+      setResponse("Please select a departement");
     } else {
       setResponse(null); // Clear the error if valid
     }
@@ -104,8 +105,8 @@ const useCheckValidation = () => {
 
   const checkLocalisation = (value) => {
     setResponse("");
-    if (!value) {
-      setResponse("Please select a function");
+    if (!value === null || value === "Select a Localisation") {
+      setResponse("Please select a localisation");
     } else {
       setResponse(null); // Clear the error if valid
     }
