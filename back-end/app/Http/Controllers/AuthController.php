@@ -14,7 +14,7 @@ class AuthController extends Controller
     {
         try{
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8', // i delete confirmed - hakim mezrioui
             'role' => 'required|in:admin,supportIt,client',
@@ -57,7 +57,7 @@ public function login(Request $request)
 {
     try {
     $validatedData = $request->validate([
-        'email' => 'required|string|email',
+        'email' => 'required|email',
         'password' => 'required|string',
     ]);
 
