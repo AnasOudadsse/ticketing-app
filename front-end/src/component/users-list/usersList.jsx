@@ -114,7 +114,7 @@ const UsersList = () => {
         <Fragment>
           <button
             onClick={() => {
-              navigate(`updateuser/${row.role}`);
+              navigate(`updateuser/${row.id}`);
             }}
             className="p-2 rounded hover:bg-orange-300 btn btn-info btn-sm text-white bg-orange-400"
           >

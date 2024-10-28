@@ -209,5 +209,15 @@ function dropUser(Request $request, $user_id) {
     return response()->json("The user deleted succesfully");
 }
 
+function fetchUser(Request $request, $id) {
+    $user = User::find($id);
+
+    $role = $request->user()->role;
+    if($role !== "admin") {
+        return "Sorry! you can't do this";
+    }
+
+    return response()->json($user);
+}
 
 }

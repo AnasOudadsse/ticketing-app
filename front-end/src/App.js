@@ -58,7 +58,7 @@ function App() {
                   }
                 >
                   <Route
-                    path="updateuser/:role"
+                    path="updateuser/:id"
                     element={
                       <RoleProtectedRoute allowedRoles={["admin"]}>
                         <UpdateUser />

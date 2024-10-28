@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useHttp from "../customHook/useHttp";
 
 const UpdateUser = () => {
-  const [roleUser, setRoleUser] = useState("");
+  const [user, setUser] = useState("");
   const params = useParams();
   const navigate = useNavigate();
+  const {sendRequest, loading} = useHttp();
+  const [departements, setDepartements] = useState();
 
   useEffect(() => {
-    setRoleUser(params.role);
+    // setRoleUser(params.role);
+    const id = params.id;
+    const token = localStorage.getItem("accessToken");
+
+    const request = {
+      url: `http://127.0.0.1:8000/api/user/${id}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    sendRequest(request, getData);
   }, []);
+
+  const getData = (dataRec) => {
+    setUser(dataRec);
+  }
 
   return (
     <div>
@@ -25,18 +45,11 @@ const UpdateUser = () => {
         />
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Name</label>
-          <input className="block w-full px-2 py-1 outline-none rounded-md  border" />
+          <input value={user.name} className="block w-full px-2 py-1 outline-none rounded-md  border" />
         </div>
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Email</label>
-          <input className="block w-full px-2 py-1 outline-none rounded-md  border" />
-        </div>
-        <div className="flex justify-between gap-3 items-center my-3">
-          <label className="w-32">Password</label>
-          <input
-            className="block w-full px-2 py-1 outline-none rounded-md  border"
-            type="password"
-          />
+          <input value={user.email} className="block w-full px-2 py-1 outline-none rounded-md  border" />
         </div>
 
         <div className="flex justify-between gap-3 items-center my-3">
@@ -51,13 +64,13 @@ const UpdateUser = () => {
             <option selected disabled value={null}>
               Select a role
             </option>
-            <option value={"admin"}>Admin</option>
-            <option value={"supportIt"}>Support it</option>
-            <option value={"client"}>Client</option>
+            <option selected={user.role === "admin"} value={"admin"}>Admin</option>
+            <option selected={user.role === "supportIt"} value={"supportIt"}>Support it</option>
+            <option selected={user.role === "client"} value={"client"}>Client</option>
           </select>
         </div>
 
-        {roleUser === "supportIt" && (
+        {user.role === "supportIt" && (
           <div className="flex justify-between gap-3 items-start my-3">
             <label className="w-32">Fonction</label>
             <div className="w-full">
@@ -92,10 +105,15 @@ const UpdateUser = () => {
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Departement</label>
           <select className="rounded-md w-full px-2 py-2 bg-white border">
-            <option disabled>Select a Departement</option>
-            <option value={"Konosys"}>Konosys</option>
-            <option value={"Canvas"}>Canvas</option>
-            <option value={"Biostar"}>Biostar</option>
+            <option selected value={null} disabled>Select a Departement</option>
+            {
+              departements.map((departement) => {
+
+                <option value={departement.id}>{departement.name}</option>
+              })
+            }
+            {/* <option value={"Canvas"}>Canvas</option>
+            <option value={"Biostar"}>Biostar</option> */}
           </select>
         </div>
 
