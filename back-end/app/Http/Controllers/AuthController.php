@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -192,6 +193,27 @@ function getUsers() {
 
     return response()->json(["users" => $users]);
 }
+
+
+// Example Laravel API endpoint to get user stats
+public function getUserStats(Request $request) {
+    dd($request);
+    $user = $request->user(); 
+
+    $ticketsCreated = Ticket::where('created_by', $user->id)->count();
+    $ticketsReserved = Ticket::where('reserved_by', $user->id)->count();
+    $ticketsResolved = Ticket::where('resolved_by', $user->id)->count();
+    $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
+
+    return response()->json([
+        'ticketsCreated' => $ticketsCreated,
+        'ticketsReserved' => $ticketsReserved,
+        'ticketsResolved' => $ticketsResolved,
+        'ticketsAssigned' => $ticketsAssigned,
+
+    ]);
+}
+
 
 
 }

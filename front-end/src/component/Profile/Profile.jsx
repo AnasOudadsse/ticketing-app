@@ -15,6 +15,7 @@ import {
   TagLabel,
   Flex,
   useToast,
+  Spinner
 } from "@chakra-ui/react";
 import { FaEnvelope, FaPhone, FaGlobe, FaUserTie, FaCheck } from "react-icons/fa";
 import Header from '../header/header';
@@ -23,6 +24,8 @@ import axios from 'axios';
 export const ProfilePage = () => {
 
     const [userData, setUserData] = useState()
+    const [stats, setStats] = useState({ ticketsHandled: 0, resolvedTickets: 0, performanceRating: "0 / 5.0" });
+    const [loading, setLoading] = useState(true);
     const toast = useToast();
 
   const fakeUserData = {
@@ -46,31 +49,75 @@ export const ProfilePage = () => {
 
 
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const fetchUser = async () => {
+        try {
+            const token = localStorage.getItem("accessToken");
+      
+            if (!token) {
+              console.error("Token is missing. Please log in.");
+            //   navigate("/login");
+              return;
+            }
+      
+            const response = await axios.get("http://127.0.0.1:8000/api/user", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            console.log('user :',response.data);
+            
+            setUserData(response.data);
+          } catch (error) {
+            console.error("Error fetching user:", error);
+            toast({
+              title: "Error",
+              description: "Failed to fetch user data.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+            // navigate("/login"); // Redirect to login if user fetching fails
+          }
+        };
+      
+        fetchUser();
+  }, [toast]);
+
+  useEffect(() => {
+    const fetchClientStats = async () => {
       try {
-        const token = localStorage.getItem("accessToken"); // Get access token from localStorage
-        const response = await axios.get("http://127.0.0.1:8000/api/user", {
+        const token = localStorage.getItem("accessToken"); // Use token for authorization
+        const response = await axios.get("http://127.0.0.1:8000/api/user/getUserStats", {
           headers: {
-            Authorization: `Bearer ${token}`, // Add token in the request header
+            Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+        console.log('stats :',response.data);
         
-        setUserData(response.data)
-        console.log('response' ,response.data);
+        setStats(response.data); // Save the data in state
       } catch (error) {
-        console.error("Error fetching user role:", error);
+        console.error("Error fetching stats:", error);
         toast({
           title: "Error",
-          description: "Failed to fetch user data.",
+          description: "Failed to fetch statistics.",
           status: "error",
           duration: 5000,
           isClosable: true,
         });
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
-    fetchUserRole();
+
+    fetchClientStats();
   }, [toast]);
+
+  if (loading) return(
+    <Flex w={'full'} h={'container.md'} justify={'center'} align={'center'}>
+        <Spinner size="lg" /> 
+    </Flex>
+    )
+  
 
   return (
     <Box w={'full'}>
@@ -129,21 +176,16 @@ export const ProfilePage = () => {
         <Divider my={6} />
 
         {/* Stats */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={6} textAlign="center">
+        <Grid templateColumns="repeat(2, 1fr)" gap={6} justifyContent={"space-around"} textAlign="center">
             <Box>
-            <Heading size="lg">{fakeUserData?.ticketsHandled}</Heading>
-            <Text color="gray.500">Tickets Handled</Text>
+            <Heading size="lg">{stats?.ticketsReserved}</Heading>
+            <Text color="gray.500">Tickets opened</Text>
             </Box>
             <Box>
-            <Heading size="lg">{fakeUserData?.resolvedTickets}</Heading>
+            <Heading size="lg">{stats?.ticketsResolved}</Heading>
             <Text color="gray.500">Resolved Tickets</Text>
             </Box>
-            <Box>
-            <Heading size="lg">{fakeUserData?.rating} / 5.0</Heading>
-            <Text color="gray.500">Performance Rating</Text>
-            </Box>
         </Grid>
-
         <Divider my={6} />
 
         {/* Recent Tickets */}

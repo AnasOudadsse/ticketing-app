@@ -83,6 +83,7 @@ Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);//te
 Route::put('/tickets/{id}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
 Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
 Route::get('/all-tickets', [TicketController::class, 'allTickets']);//pour test api
+
 Route::get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
 Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
 Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
@@ -107,3 +108,4 @@ Route::apiResource('inventaires', InventaireController::class);
 
 // api.php
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'getUser']);
+Route::middleware('auth:sanctum')->get('/user/getUserStats', [AuthController::class, 'getUserStats']);
