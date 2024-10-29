@@ -77,7 +77,7 @@ const Header = ({ greeting }) => {
     }
   };
 
-  if (loading) return <p>Loading user info...</p>;
+  if (loading) return null;
 
   return (
     <Flex

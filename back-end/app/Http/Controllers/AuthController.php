@@ -15,9 +15,9 @@ class AuthController extends Controller
     {
         try{
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8', // i delete confirmed - hakim mezrioui
             'role' => 'required|in:admin,supportIt,client',
             'specialisation_ids' => 'nullable|array|required_if:role,supportIt',
             'specialisation_ids.*' => 'exists:specialisations,id',
@@ -35,7 +35,7 @@ class AuthController extends Controller
             'departement_id' => $validatedData['departement_id'],
             'localisation_id' => $validatedData['localisation_id'],
         ]);
-    
+
         if ($validatedData['role'] === 'supportIt') {
             $user->specialisations()->sync($validatedData['specialisation_ids']);
         }
@@ -57,8 +57,8 @@ class AuthController extends Controller
 public function login(Request $request)
 {
     try {
-        $validatedData = $request->validate([
-        'email' => 'required|string|email',
+    $validatedData = $request->validate([
+        'email' => 'required|email',
         'password' => 'required|string',
     ]);
 
@@ -194,6 +194,32 @@ function getUsers() {
     return response()->json(["users" => $users]);
 }
 
+function dropUser(Request $request, $user_id) {
+    $user_finded = User::find($user_id);
+
+    $user = $request->user();
+
+    if (!$user_finded) return response()->json("User not found");
+
+    if($user->role != "admin") {
+        return response()->json("You could not delete this user");
+    }
+
+    $user_finded->delete();
+
+    return response()->json("The user deleted succesfully");
+}
+
+function fetchUser(Request $request, $id) {
+    $user = User::find($id);
+
+    $role = $request->user()->role;
+    if($role !== "admin") {
+        return "Sorry! you can't do this";
+    }
+
+    return response()->json($user);
+}
 
 // Example Laravel API endpoint to get user stats
 public function getUserStats(Request $request) {

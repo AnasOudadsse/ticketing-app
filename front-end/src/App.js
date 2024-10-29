@@ -17,6 +17,7 @@ import { ProtectedRoute } from "./component/Route-Protection/ProtectedRoute";
 import Unauthorized from "./component/Route-Protection/Unauthorized";
 import { ProfilePage } from "./component/Profile/Profile";
 
+
 function App() {
   return (
     <ChakraProvider>
@@ -57,7 +58,7 @@ function App() {
                   }
                 >
                   <Route
-                    path="updateuser/:role"
+                    path="updateuser/:id"
                     element={
                       <RoleProtectedRoute allowedRoles={["admin"]}>
                         <UpdateUser />

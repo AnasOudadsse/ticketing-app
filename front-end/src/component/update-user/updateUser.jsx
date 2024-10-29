@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useHttp from "../customHook/useHttp";
 
 const UpdateUser = () => {
-  const [tab, setTab] = useState("admin");
+  const [user, setUser] = useState("");
   const params = useParams();
   const navigate = useNavigate();
+  const {sendRequest, loading} = useHttp();
+  const [departements, setDepartements] = useState();
 
   useEffect(() => {
-    setTab(params.role.toLowerCase());
+    // setRoleUser(params.role);
+    const id = params.id;
+    const token = localStorage.getItem("accessToken");
+
+    const request = {
+      url: `http://127.0.0.1:8000/api/user/${id}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    sendRequest(request, getData);
   }, []);
+
+  const getData = (dataRec) => {
+    setUser(dataRec);
+  }
 
   return (
     <div>
@@ -17,7 +37,7 @@ const UpdateUser = () => {
         className="fixed top-0 left-0 z-10 h-screen w-full"
         style={{ backgroundColor: "rgba(0, 0, 0, .5)" }}
       ></div>
-      <form className="absolute top-24 left-1/4 z-40 rounded shadow py-10 mt-10 my-auto block border-l-4 border-l-gray-600 w-1/2 m-auto p-5 bg-white">
+      <form className="absolute top-20 left-1/4 z-40 rounded shadow py-10 mt-10  border-l-4 border-l-gray-600 w-1/2 p-5 bg-white">
         <img
           className="  h-28 mb-12"
           src="https://um6ss.ma/wp-content/uploads/2024/02/UM6SS.png"
@@ -25,38 +45,32 @@ const UpdateUser = () => {
         />
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Name</label>
-          <input className="block w-full px-2 py-1 outline-none rounded-md  border" />
+          <input value={user.name} className="block w-full px-2 py-1 outline-none rounded-md  border" />
         </div>
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Email</label>
-          <input className="block w-full px-2 py-1 outline-none rounded-md  border" />
+          <input value={user.email} className="block w-full px-2 py-1 outline-none rounded-md  border" />
         </div>
+
         <div className="flex justify-between gap-3 items-center my-3">
-          <label className="w-32">Password</label>
-          <input
-            className="block w-full px-2 py-1 outline-none rounded-md  border"
-            type="password"
-          />
-        </div>
-        {/* <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Role</label>
-          <select className="rounded-md w-full px-2 py-2 bg-white border">
-            <option disabled>Select a role</option>
-            <option value={"admin"}>Admin</option>
-            <option value={"support_it"}>Support it</option>
-            <option value={"client"}>Client</option>
+          <select
+            required
+            name="role"
+            onChange={() => {}}
+            onBlur={(e) => {}}
+            className="rounded-md w-full px-2 py-2 bg-white border"
+          >
+            <option selected disabled value={null}>
+              Select a role
+            </option>
+            <option selected={user.role === "admin"} value={"admin"}>Admin</option>
+            <option selected={user.role === "supportIt"} value={"supportIt"}>Support it</option>
+            <option selected={user.role === "client"} value={"client"}>Client</option>
           </select>
-        </div> */}
-        {/* <div className="flex justify-between gap-3 items-center my-3">
-          <label className="w-32">Fonction</label>
-          <select className="rounded-md w-full px-2 py-2 bg-white border">
-            <option disabled>Select a role</option>
-            <option value={"Konosys"}>Konosys</option>
-            <option value={"Canvas"}>Canvas</option>
-            <option value={"Biostar"}>Biostar</option>
-          </select>
-        </div> */}
-        {tab === "support" && (
+        </div>
+
+        {user.role === "supportIt" && (
           <div className="flex justify-between gap-3 items-start my-3">
             <label className="w-32">Fonction</label>
             <div className="w-full">
@@ -88,17 +102,21 @@ const UpdateUser = () => {
           </div>
         )}
 
-        {tab !== "admin" && (
-          <div className="flex justify-between gap-3 items-center my-3">
-            <label className="w-32">Departement</label>
-            <select className="rounded-md w-full px-2 py-2 bg-white border">
-              <option disabled>Select a Departement</option>
-              <option value={"Konosys"}>Konosys</option>
-              <option value={"Canvas"}>Canvas</option>
-              <option value={"Biostar"}>Biostar</option>
-            </select>
-          </div>
-        )}
+        <div className="flex justify-between gap-3 items-center my-3">
+          <label className="w-32">Departement</label>
+          <select className="rounded-md w-full px-2 py-2 bg-white border">
+            <option selected value={null} disabled>Select a Departement</option>
+            {
+              departements.map((departement) => {
+
+                <option value={departement.id}>{departement.name}</option>
+              })
+            }
+            {/* <option value={"Canvas"}>Canvas</option>
+            <option value={"Biostar"}>Biostar</option> */}
+          </select>
+        </div>
+
         <div className="flex justify-between gap-3 items-center my-3">
           <label className="w-32">Localisation</label>
           <select className="rounded-md w-full px-2 py-2 bg-white border">

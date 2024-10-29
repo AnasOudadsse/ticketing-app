@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import {
   faAdd,
@@ -10,156 +11,15 @@ import { Fragment, useEffect, useState } from "react";
 import Header from "../header/header";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import useHttp from "../customHook/useHttp";
+import Swal from "sweetalert2";
 // import { Checkbox } from "@chakra-ui/react";
 // import ArrowDownWa
-
-const pre_data = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    role: "Admin",
-    fonction: "HR Manager",
-    departement: "Human Resources",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    role: "Client",
-    fonction: "Software Engineer",
-    departement: "Development",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    role: "support",
-    fonction: "Data Analyst",
-    departement: "Analytics",
-  },
-  {
-    id: 4,
-    name: "Diana Prince",
-    role: "Manager",
-    fonction: "Project Manager",
-    departement: "Operations",
-  },
-  {
-    id: 5,
-    name: "Ethan Hunt",
-    role: "Admin",
-    fonction: "IT Specialist",
-    departement: "IT",
-  },
-  {
-    id: 6,
-    name: "Fiona Glenn",
-    role: "User",
-    fonction: "Accountant",
-    departement: "Finance",
-  },
-  {
-    id: 7,
-    name: "George White",
-    role: "User",
-    fonction: "Marketing Coordinator",
-    departement: "Marketing",
-  },
-  {
-    id: 8,
-    name: "Hannah Blue",
-    role: "Manager",
-    fonction: "Customer Service Manager",
-    departement: "Customer Service",
-  },
-  {
-    id: 9,
-    name: "Ian Black",
-    role: "Admin",
-    fonction: "Chief Technical Officer",
-    departement: "Management",
-  },
-  {
-    id: 10,
-    name: "Jane Doe",
-    role: "User",
-    fonction: "Graphic Designer",
-    departement: "Design",
-  },
-  {
-    id: 1,
-    name: "Alice Johnson",
-    role: "Admin",
-    fonction: "HR Manager",
-    departement: "Human Resources",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    role: "User",
-    fonction: "Software Engineer",
-    departement: "Development",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    role: "User",
-    fonction: "Data Analyst",
-    departement: "Analytics",
-  },
-  {
-    id: 4,
-    name: "Diana Prince",
-    role: "Manager",
-    fonction: "Project Manager",
-    departement: "Operations",
-  },
-  {
-    id: 5,
-    name: "Ethan Hunt",
-    role: "Admin",
-    fonction: "IT Specialist",
-    departement: "IT",
-  },
-  {
-    id: 6,
-    name: "Fiona Glenn",
-    role: "User",
-    fonction: "Accountant",
-    departement: "Finance",
-  },
-  {
-    id: 7,
-    name: "George White",
-    role: "User",
-    fonction: "Marketing Coordinator",
-    departement: "Marketing",
-  },
-  {
-    id: 8,
-    name: "Hannah Blue",
-    role: "Manager",
-    fonction: "Customer Service Manager",
-    departement: "Customer Service",
-  },
-  {
-    id: 9,
-    name: "Ian Black",
-    role: "Admin",
-    fonction: "Chief Technical Officer",
-    departement: "Management",
-  },
-  {
-    id: 10,
-    name: "Jane Doe",
-    role: "User",
-    fonction: "Graphic Designer",
-    departement: "Design",
-  },
-];
 
 const UsersList = () => {
   const [data, setData] = useState([]);
   const [dataF, setDataF] = useState([]);
   const { loading, sendRequest } = useHttp();
+  const toast = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -192,6 +52,39 @@ const UsersList = () => {
     setDataF([...dataF]);
   };
 
+  const handleDeleteUser = async (id) => {
+    const response = await Swal.fire({
+      title: "Are you sure?",
+      icon: "question",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      showCancelButton: true,
+    });
+
+    if (response.isConfirmed) {
+      const token = localStorage.getItem("accessToken");
+
+      const request = {
+        url: `http://127.0.0.1:8000/api/drop-user/${id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      sendRequest(request, (dataRec) => {
+        toast({
+          title: "Success",
+          description: dataRec,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      });
+    }
+  };
+
   const navigate = useNavigate();
 
   const columns = [
@@ -221,7 +114,7 @@ const UsersList = () => {
         <Fragment>
           <button
             onClick={() => {
-              navigate(`updateuser/${row.role}`);
+              navigate(`updateuser/${row.id}`);
             }}
             className="p-2 rounded hover:bg-orange-300 btn btn-info btn-sm text-white bg-orange-400"
           >
@@ -229,7 +122,7 @@ const UsersList = () => {
           </button>
           &nbsp;
           <button
-            onClick={() => {}}
+            onClick={() => handleDeleteUser(row.id)}
             className="p-2 rounded hover:bg-red-600 btn btn-info btn-sm text-white bg-red-700"
           >
             <FontAwesomeIcon icon={faTrash} />
