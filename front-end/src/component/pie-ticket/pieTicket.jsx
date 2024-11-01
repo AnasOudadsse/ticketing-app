@@ -6,49 +6,9 @@ import useHttp from "../customHook/useHttp";
 
 Chart.register(CategoryScale);
 
-// const Data = [
-//   {
-//     id: 1,
-//     state: "open",
-//     number: 80000,
-//   },
-//   {
-//     id: 2,
-//     state: "resolved",
-//     number: 45677,
-//   },
-//   {
-//     id: 3,
-//     state: "non-resolved",
-//     number: 78888,
-//   },
-//   {
-//     id: 4,
-//     state: "going",
-//     number: 90000,
-//   },
-// ];
-
 const PieTicket = () => {
-  //   const Data = {
-  //     labels: ["Red", "Orange", "Blue"],
-  //     // datasets is an array of objects where each object represents a set of data to display corresponding to the labels above. for brevity, we'll keep it at one object
-  //     datasets: [
-  //       {
-  //         label: "Popularity of colours",
-  //         data: [55, 23, 96],
-  //         // you can set indiviual colors for each bar
-  //         backgroundColor: [
-  //           "rgba(255, 255, 255, 0.6)",
-  //           "rgba(255, 255, 255, 0.6)",
-  //           "rgba(255, 255, 255, 0.6)",
-  //         ],
-  //         borderWidth: 1,
-  //       },
-  //     ],
-  //   };
     const { loading, sendRequest } = useHttp();
-    const [data, setData] = useState([]);
+    // const [data, setData] = useState([]);
 
     const [chartData, setChartData] = useState({
       datasets: [
@@ -82,20 +42,25 @@ const PieTicket = () => {
     }, []);
   
     const getData = (data) => {
-      setData(data);
-      console.log(data);
+      // setData(data);
+      // console.log(data);
   
       setChartData((prevData) => ({
         ...prevData,
+        labels: data.map((ticket) => ticket.title),
+      
         datasets: [
           {
-            ...prevData.datasets[0],
+            ...prevData.datasets,
             data: data.map((ticket) => ticket.number), // Update the data for the pie chart
           },
         ],
       }));
     };
 
+    if(loading) {
+      return null;
+    }
 
   return (
     <div className="shadow-md h-fit w-fit flex flex-col gap-5 rounded-lg">

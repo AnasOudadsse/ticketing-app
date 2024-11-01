@@ -60,23 +60,23 @@ class StatistiqueController extends Controller
 
         return response()->json([
             [
-                "title"=> "publishedCount",
+                "title"=> "Tickets published",
                 'number'=>$publishedCount,
             ],
             [
-                "title"=> "reservedCount",
+                "title"=> "Tickets reserved",
                 'number'=>$reservedCount,
             ],
             [
-                "title"=> "resolvedCount",
+                "title"=> "Tickets resolved",
                 'number'=>$resolvedCount,
             ],
             [
-                "title"=> "assignedCount",
+                "title"=> "Tickets assigned",
                 'number'=>$assignedCount
             ],
             [
-                "title"=> "closedCount",
+                "title"=> "Tickets closed",
                 'number'=>$closedCount
             ]
         ]);
