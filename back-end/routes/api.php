@@ -109,3 +109,4 @@ Route::apiResource('inventaires', InventaireController::class);
 
 // api.php
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'getUser']);
+Route::get("authCheck", [AuthController::class, "authCheck"]);

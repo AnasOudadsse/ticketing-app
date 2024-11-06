@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -138,6 +139,7 @@ public function update(Request $request, $id)
 
         $user->save();
 
+        // return response()->json("toto");
         if ($validatedData['role'] === 'supportIt' && isset($validatedData['specialisation_ids'])) {
             $user->specialisations()->sync($validatedData['specialisation_ids']);
         }
@@ -170,21 +172,35 @@ public function update(Request $request, $id)
 
     public function getUser(Request $request)
 {
-    $user = $request->user()->load(['fonction', 'departement', 'localisation']);
+    try {
+        $user = $request->user()->load(['fonction', 'departement', 'localisation']);
 
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
+            'departement' => $user->departement ? $user->departement->name : 'No department assigned',
+            'localisation' => $user->localisation ? $user->localisation->name : 'No location assigned',
+        ]);
+    }  catch (\Exception $e) {
+        return response()->json($e->getMessage());
     }
+}
 
-    return response()->json([
-        'id' => $user->id,
-        'name' => $user->name,
-        'email' => $user->email,
-        'role' => $user->role,
-        'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
-        'departement' => $user->departement ? $user->departement->name : 'No department assigned',
-        'localisation' => $user->localisation ? $user->localisation->name : 'No location assigned',
-    ]);
+public function authCheck(Request $request) {
+    // $user = $request->user();
+    $user = Auth::user();
+    return  response()->json(['user' => $user]);
+    if (!$user) {
+        return response()->json(['message' => 'User not found', 'ok' => false], 404);
+        }
+    return response()->json(['message' => 'User authenticated', 'ok' => true], 200);
 }
 
 function getUsers() {
