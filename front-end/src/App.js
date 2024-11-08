@@ -16,6 +16,7 @@ import RoleProtectedRoute from "./component/Route-Protection/RoleProtectiongRout
 import { ProtectedRoute } from "./component/Route-Protection/ProtectedRoute";
 import Unauthorized from "./component/Route-Protection/Unauthorized";
 import { ProfilePage } from "./component/Profile/Profile";
+import AuthCheck from "./component/authCheck/AuthCheck";
 
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
         <Flex fontFamily={"inter"} w={"100%"} bg={"#F9F9FB"}>
           <Routes>
             {/* Public Route */}
+            
+            <Route path="" element={<AuthCheck />} />
             <Route path="login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized/>} />
             <Route path="/profile" element={<ProfilePage/>} />
