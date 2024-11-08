@@ -87,12 +87,15 @@ export const ProfilePage = () => {
     const fetchClientStats = async () => {
       try {
         const token = localStorage.getItem("accessToken"); // Use token for authorization
-        const response = await axios.get("http://127.0.0.1:8000/api/user/getUserStats", {
+        console.log("Access Token:", token);
+
+        const response = await axios.get("http://127.0.0.1:8000/api/getUserStats", {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,          },
         });
         console.log('stats :',response.data);
+        console.log('response :',response);
         
         setStats(response.data); // Save the data in state
       } catch (error) {
@@ -220,21 +223,6 @@ export const ProfilePage = () => {
         </VStack>
 
         <Divider my={6} />
-
-        {/* Interests */}
-        <VStack align="start" spacing={4}>
-            <Heading size="md">Interests</Heading>
-            <HStack spacing={2}>
-            {fakeUserData?.interests.map((interest) => (
-                <Badge key={interest} colorScheme="purple" px={3} py={1} rounded="md">
-                {interest}
-                </Badge>
-            ))}
-            </HStack>
-        </VStack>
-
-        <Divider my={6} />
-
         {/* Logout */}
         <Box mt={6} textAlign="center">
             <Button

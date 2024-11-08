@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -213,33 +213,40 @@ function dropUser(Request $request, $user_id) {
 function fetchUser(Request $request, $id) {
     $user = User::find($id);
 
-    $role = $request->user()->role;
-    if($role !== "admin") {
-        return "Sorry! you can't do this";
-    }
+    // $role = $request->user()->role;
+    // if($role !== "admin") {
+    //     return "Sorry! you can't do this";
+    // }
 
     return response()->json($user);
 }
 
-// Example Laravel API endpoint to get user stats
-public function getUserStats(Request $request) {
-    dd($request);
-    $user = $request->user(); 
+    // Example Laravel API endpoint to get user stats
+    public function getUserStats(Request $request) {
+        Log::info('Testing inside getUserStats.');
 
-    $ticketsCreated = Ticket::where('created_by', $user->id)->count();
-    $ticketsReserved = Ticket::where('reserved_by', $user->id)->count();
-    $ticketsResolved = Ticket::where('resolved_by', $user->id)->count();
-    $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
-
-    return response()->json([
-        'ticketsCreated' => $ticketsCreated,
-        'ticketsReserved' => $ticketsReserved,
-        'ticketsResolved' => $ticketsResolved,
-        'ticketsAssigned' => $ticketsAssigned,
-
-    ]);
-}
-
+        Log::info('Token:', [$request->bearerToken() ?? 'No token']);
+        Log::info('User:', [$request->user() ?? 'No user']);
+        
+    
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+    
+        $ticketsCreated = Ticket::where('created_by', $user->id)->count();
+        $ticketsReserved = Ticket::where('reserved_by', $user->id)->count();
+        $ticketsResolved = Ticket::where('resolved_by', $user->id)->count();
+        // $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
+    
+        return response()->json([
+            'ticketsCreated' => $ticketsCreated,
+            'ticketsReserved' => $ticketsReserved,
+            'ticketsResolved' => $ticketsResolved,
+            // 'ticketsAssigned' => $ticketsAssigned,
+        ]);
+    }
+    
 
 
 }
