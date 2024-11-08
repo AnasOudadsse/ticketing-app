@@ -30,10 +30,13 @@ function App() {
             <Route path="" element={<AuthCheck />} />
             <Route path="login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized/>} />
-            <Route path="/profile" element={<ProfilePage/>} />
 
             {/* Protected Routes: Only accessible by authenticated users */}
             <Route element={<ProtectedRoute />}>
+
+            <Route path="/profile" element={<ProfilePage/>} />
+
+
               <Route path="tickets" element={<Dashboard />}>
                 {/* Admin-only routes */}
                 <Route
@@ -44,6 +47,7 @@ function App() {
                     </RoleProtectedRoute>
                   }
                 />
+
                 <Route
                   path=""
                   element={
