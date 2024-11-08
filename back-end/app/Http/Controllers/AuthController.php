@@ -224,24 +224,40 @@ function fetchUser(Request $request, $id) {
 
     // Example Laravel API endpoint to get user stats
     public function getUserStats(Request $request) {
-
         $user = $request->user();
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        
+        // Allow only "Admin" or the user whose stats are being requested (assume user ID matches logged-in user)
+        if (!$user || !in_array($user->role, ['admin', 'supportIt'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
     
+        // Assuming 'Support IT' role requires stats visibility restriction
+        if ($user->role !== 'admin' && $user->id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+    
+        // Fetch stats
         $ticketsCreated = Ticket::where('created_by', $user->id)->count();
         $ticketsReserved = Ticket::where('reserved_by', $user->id)->count();
         $ticketsResolved = Ticket::where('resolved_by', $user->id)->count();
         // $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
+        
+        // Fetch recent tickets assigned or resolved by the user
+        $recentTickets = Ticket::where('resolved_by', $user->id)
+                                ->orWhere('reserved_by', $user->id)
+                                ->orderBy('updated_at', 'desc')
+                                ->take(4) // Limit to the 5 most recent tickets
+                                ->get();
     
         return response()->json([
             'ticketsCreated' => $ticketsCreated,
             'ticketsReserved' => $ticketsReserved,
             'ticketsResolved' => $ticketsResolved,
             // 'ticketsAssigned' => $ticketsAssigned,
+            'recentTickets' => $recentTickets, // Include recent tickets in response
         ]);
     }
+    
     
 
 

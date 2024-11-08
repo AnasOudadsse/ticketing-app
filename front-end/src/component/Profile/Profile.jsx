@@ -24,26 +24,13 @@ import axios from 'axios';
 export const ProfilePage = () => {
 
     const [userData, setUserData] = useState()
-    const [stats, setStats] = useState({ ticketsHandled: 0, resolvedTickets: 0, performanceRating: "0 / 5.0" });
+    const [stats, setStats] = useState({ 
+      ticketsHandled: 0, 
+      resolvedTickets: 0, 
+      recentTickets: []  
+    });
     const [loading, setLoading] = useState(true);
     const toast = useToast();
-
-  const fakeUserData = {
-    name: "John Doe",
-    role: "Support Agent",
-    profileImage: "https://via.placeholder.com/150",
-    departement: "IT Support",
-    email: "johndoe@example.com",
-    phone: "+1 (555) 123-4567",
-    localisation: "New York Office",
-    recentTickets: [
-      { id: 101, status: "Resolved", title: "PC not starting", priority: "High" },
-      { id: 102, status: "In Progress", title: "Email not syncing", priority: "Medium" },
-      { id: 103, status: "Open", title: "VPN Access issue", priority: "Low" },
-    ],
-    interests: ["Problem-solving", "Technical Support", "Customer Service"],
-  };
-
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -120,9 +107,9 @@ export const ProfilePage = () => {
   
 
   return (
-    <Box w={'full'}>
+    <Box w={'full'} >
         <Header/>
-        <Box maxW="700px" mx="auto" mt={10} p={6} bg="white" shadow="md" rounded="lg">
+        <Box transform={'scale(0.94)'} maxW="700px" mx="auto" p={6} bg="white" shadow="md" rounded="lg">
         {/* Header Section */}
         <HStack spacing={6} alignItems="center">
             <Avatar
@@ -165,7 +152,7 @@ export const ProfilePage = () => {
             </HStack>
             <HStack>
             <FaPhone />
-            <Text>{fakeUserData?.phone}</Text>
+            <Text>+ 222 4478596</Text>
             </HStack>
             <HStack>
             <FaGlobe />
@@ -173,61 +160,46 @@ export const ProfilePage = () => {
             </HStack>
         </VStack>
 
+        {userData?.role === "supportIt" && (
+    <>
         <Divider my={6} />
-
-        {/* Stats */}
-        <Grid templateColumns="repeat(2, 1fr)" gap={6} justifyContent={"space-around"} textAlign="center">
+        <Grid templateColumns="repeat(2, 1fr)" gap={6} textAlign="center">
             <Box>
-            <Heading size="lg">{stats?.ticketsReserved}</Heading>
-            <Text color="gray.500">Tickets opened</Text>
+                <Heading size="lg">{stats.ticketsReserved}</Heading>
+                <Text color="gray.500">Reserved Tickets</Text>
             </Box>
             <Box>
-            <Heading size="lg">{stats?.ticketsResolved}</Heading>
-            <Text color="gray.500">Resolved Tickets</Text>
+                <Heading size="lg">{stats.ticketsResolved}</Heading>
+                <Text color="gray.500">Resolved Tickets</Text>
             </Box>
         </Grid>
         <Divider my={6} />
-
-        {/* Recent Tickets */}
         <VStack align="start" spacing={4}>
             <Heading size="md">Recent Tickets</Heading>
-            {fakeUserData?.recentTickets.map((ticket) => (
-            <HStack
-                key={ticket.id}
-                w="full"
-                p={4}
-                bg="gray.100"
-                rounded="md"
-                justifyContent="space-between"
-            >
-                <Box>
-                <Text fontWeight="bold">{ticket.title}</Text>
-                <Badge colorScheme={
-                    ticket.status === "Resolved"
-                    ? "green"
-                    : ticket.status === "In Progress"
-                    ? "yellow"
-                    : "red"
-                }>
-                    {ticket.status}
-                </Badge>
-                </Box>
-                <Tag size="sm" colorScheme="red">
-                {ticket.priority} Priority
-                </Tag>
-            </HStack>
+            {stats.recentTickets.map((ticket) => (
+                <HStack key={ticket.id} w="full" p={4} bg="gray.100" rounded="md" justifyContent="space-between">
+                    <Box>
+                        <Text fontWeight="bold">{ticket.title}</Text>
+                        <Badge colorScheme={
+                            ticket.status === "resolved" ? "red" :
+                            ticket.status === "reserved" ? "yellow" : "black"
+                        }>
+                            {ticket.status}
+                        </Badge>
+                    </Box>
+                </HStack>
             ))}
         </VStack>
-
-        <Divider my={6} />
+    </>
+)}
         {/* Logout */}
-        <Box mt={6} textAlign="center">
+        <Box mt={10} textAlign="center">
             <Button
-            colorScheme="red"
-            size="lg"
+            colorScheme="green"
+            size="md"
             onClick={() => console.log("Logout clicked")}
             >
-            Logout
+            Reset Password
             </Button>
         </Box>
         </Box>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-export function RoleProtectedRoute({ children, allowedRoles }) {
+export default function RoleProtectedRoute({ children, allowedRoles }) {
     const userRole = localStorage.getItem('role');
 
     if (!allowedRoles.includes(userRole)) {
