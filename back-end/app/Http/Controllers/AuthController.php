@@ -224,12 +224,7 @@ function fetchUser(Request $request, $id) {
 
     // Example Laravel API endpoint to get user stats
     public function getUserStats(Request $request) {
-        Log::info('Testing inside getUserStats.');
 
-        Log::info('Token:', [$request->bearerToken() ?? 'No token']);
-        Log::info('User:', [$request->user() ?? 'No user']);
-        
-    
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);

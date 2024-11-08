@@ -36,9 +36,6 @@ export const ProfilePage = () => {
     email: "johndoe@example.com",
     phone: "+1 (555) 123-4567",
     localisation: "New York Office",
-    ticketsHandled: 76,
-    resolvedTickets: 72,
-    rating: 4.8,
     recentTickets: [
       { id: 101, status: "Resolved", title: "PC not starting", priority: "High" },
       { id: 102, status: "In Progress", title: "Email not syncing", priority: "Medium" },
@@ -134,7 +131,7 @@ export const ProfilePage = () => {
             name={userData?.name}
             />
             <VStack alignItems="start" gap={3}>
-            <Heading size={'lg'}>{userData?.name}, {userData?.role}</Heading>
+            <Heading size={'lg'}>{userData?.name}</Heading>
             <HStack>
                 <Tag colorScheme="blue">
                 <TagLabel>{userData?.departement}</TagLabel>
