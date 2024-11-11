@@ -25,7 +25,7 @@ export const NewTicket = () => {
     attachement: null, // Set as null initially for file upload
   });
 
-  console.log(formData);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
@@ -83,7 +83,7 @@ export const NewTicket = () => {
     formDataToSend.append("problem_id", formData.problem_id);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("status", formData.status);
-    formDataToSend.append("clientID", storedClientID);
+    formDataToSend.append("clientID", formData.clientID);
     formDataToSend.append("attachement", formData.attachement); // Attach file
   
     try {
