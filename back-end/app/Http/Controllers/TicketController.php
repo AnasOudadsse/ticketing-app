@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -177,6 +178,7 @@ public function getTicketsWithProblems(Request $request)
 {
     
     $token = $request->bearerToken();
+
 
     if (!$token) {
         return response()->json(['error' => 'Unauthorized'], 401);

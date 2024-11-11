@@ -67,7 +67,7 @@ class UserSeeder extends Seeder
                     'name' => 'Mezrioui Hakim',
                     'email' => 'hmezrioui@gmail.com',
                     'email_verified_at' => now(),
-                    'password' => Hash::make('12345678!123'),
+                    'password' => Hash::make('12345678'),
                     'role' => 'admin',
                     'role_in_creation' => 'admin',
                     'fonction_id' => 3,
