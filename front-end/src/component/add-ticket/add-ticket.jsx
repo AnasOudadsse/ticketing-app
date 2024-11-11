@@ -22,12 +22,11 @@ export const NewTicket = () => {
     problem_id: "",
     description: "",
     status: "published",
-    attachement: "",
-    clientID: "",
+    attachement: null, // Set as null initially for file upload
   });
 
-  const navigate = useNavigate();
-
+  console.log(formData);
+  
   useEffect(() => {
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
     if (storedClientID) {
@@ -69,29 +68,32 @@ export const NewTicket = () => {
   }, [toast]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value, // Use the first file for file input
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("problem_id", formData.problem_id);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("status", formData.status);
+    formDataToSend.append("clientID", storedClientID);
+    formDataToSend.append("attachement", formData.attachement); // Attach file
+  
     try {
       const token = localStorage.getItem("accessToken");
       console.log(token);
       const response = await axios.post(
         "http://127.0.0.1:8000/api/tickets",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token, // Replace with your actual token if needed
-          },
-        }
+        formData
       );
+  
       toast({
         title: "Ticket Created",
         description: "Your ticket has been created successfully.",
@@ -99,20 +101,19 @@ export const NewTicket = () => {
         duration: 5000,
         isClosable: true,
       });
-
-      // Reset the form after submission
+  
+      // Reset form
       setFormData({
         title: "",
         problem_id: "",
         description: "",
-        status: "",
-        attachement: "",
-        clientID: "",
+        status: "published",
+        attachement: null,
       });
 
       navigate("/tickets/ticketlist");
     } catch (error) {
-      console.error("There was an error creating the ticket:", error);
+      console.error("Error creating ticket:", error);
       toast({
         title: "Error",
         description: "Failed to create ticket. Please try again.",
@@ -135,13 +136,7 @@ export const NewTicket = () => {
       />
 
       <Box w={"700px"} mx="auto" mt={10}>
-        <VStack
-          spacing={4}
-          as="form"
-          className="rounded-md p-5 shadow"
-          onSubmit={handleSubmit}
-          align="start"
-        >
+        <VStack spacing={4} as="form" className="rounded-md p-5 shadow" onSubmit={handleSubmit} align="start">
           {/* Problem ID */}
           <FormControl isRequired>
             <FormLabel>Title</FormLabel>
@@ -159,9 +154,8 @@ export const NewTicket = () => {
               placeholder={loading ? "Loading problems..." : "Select Problem"}
               value={formData.problem_id}
               onChange={handleChange}
-              isDisabled={loading} // Disable select when loading
+              isDisabled={loading}
             >
-              {/* Render optgroups based on problem type */}
               {Object.keys(problems).map((type) => (
                 <optgroup key={type} label={type}>
                   {problems[type].map((problem) => (
@@ -177,7 +171,6 @@ export const NewTicket = () => {
             </Select>
           </FormControl>
 
-          {/* Description */}
           <FormControl isRequired>
             <FormLabel>Description</FormLabel>
             <Textarea
@@ -188,7 +181,6 @@ export const NewTicket = () => {
             />
           </FormControl>
 
-          {/* Attachment */}
           <FormControl>
             <FormLabel
               htmlFor="file"
@@ -206,7 +198,6 @@ export const NewTicket = () => {
             />
           </FormControl>
 
-          {/* Submit Button */}
           <Button type="submit" colorScheme="green" width="full">
             Create Ticket
           </Button>

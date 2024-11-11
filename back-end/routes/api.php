@@ -74,7 +74,7 @@ Route::prefix('problems')->group(function(){
     Route::put('/{id}', [ProblemController::class, 'update']);
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
 });
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tickets', [TicketController::class, 'createTicket']);
     Route::get('tickets/get/{id}', [TicketController::class, 'getOneTicket']);
     Route::post('/tickets/{id}/reserve', [TicketController::class, 'reserveTicket']);//pour test
@@ -109,3 +109,6 @@ Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'getUser
 
 Route::middleware('auth:sanctum')->get('/getUserStats', [AuthController::class, 'getUserStats']);
 Route::get("authCheck", [AuthController::class, "authCheck"]);
+
+
+Route::middleware('auth:sanctum')->get('/tickets/{id}/download-attachment', [TicketController::class, 'downloadAttachment']);
