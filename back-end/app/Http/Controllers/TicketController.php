@@ -25,29 +25,35 @@ class TicketController extends Controller
             'title' => 'required|string|max:255',
             'problem_id' => 'required|exists:problems,id',
             'description' => 'required|string',
-            'attachement'=>'nullable'
+            'attachement' => 'file', // Optional for now, since it might not always be included
         ]);
-
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+    
+        $attachementPath = null;
+    
+        // Check and store the file if it exists in the request
+        if ($request->hasFile('attachement')) {
+            // Save in public/attachments and store the relative path (not the full path)
+            $attachementPath = $request->file('attachement')->store('attachments', 'public');
         }
-
+    
         $ticket = Ticket::create([
             'title' => $request->title,
             'problem_id' => $request->problem_id,
             'description' => $request->description,
-            'attachement'=>$request->attachement,
-            'created_by' => Auth::id(),
-            // 'created_by'=> $request->created_by, // pour le test
+            'attachement' => $attachementPath, // Store relative path attachement
+            'created_by' => $request->clientID,
             'status' => 'opened',
         ]);
-
+    
         return response()->json([
             'message' => 'Ticket created successfully',
-            'ticket' => $ticket
+            'ticket' => $ticket,
+            'attachment_url' => $attachementPath ? asset('storage' . $attachementPath) : null,
         ], 201);
     }
-
+    
+    
+    
     public function closeTicket(Request $request, $id)
 {
     $ticket = Ticket::findOrFail($id);
@@ -224,4 +230,27 @@ public function getOneTicket($id){
 }
 
 
+public function downloadAttachment($id)
+{
+    $ticket = Ticket::find($id);
+
+    if (!$ticket || !$ticket->attachement) {
+        return response()->json(['message' => 'No attachment found'], 404);
+    }
+
+    // Locate the file within 'storage/app/public'
+    $filePath = storage_path('app/public/' . $ticket->attachement);
+
+    if (!file_exists($filePath)) {
+        return response()->json(['message' => 'File not found'], 404);
+    }
+
+    return response()->download($filePath, basename($filePath));
 }
+
+
+
+
+}
+
+

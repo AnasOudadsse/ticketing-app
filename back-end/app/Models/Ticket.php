@@ -19,6 +19,7 @@ class Ticket extends Model
         'reserved_by',
         'admin_id',
         'resolution_date',
+        'attachement',
     ];
     public function creator()
     {
