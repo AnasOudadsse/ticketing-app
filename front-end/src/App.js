@@ -18,7 +18,6 @@ import Unauthorized from "./component/Route-Protection/Unauthorized";
 import { ProfilePage } from "./component/Profile/Profile";
 import AuthCheck from "./component/authCheck/AuthCheck";
 
-
 function App() {
   return (
     <ChakraProvider>
@@ -26,27 +25,25 @@ function App() {
         <Flex fontFamily={"inter"} w={"100%"} bg={"#F9F9FB"}>
           <Routes>
             {/* Public Route */}
-            
+
             <Route path="" element={<AuthCheck />} />
             <Route path="login" element={<Login />} />
-            <Route path="/unauthorized" element={<Unauthorized/>} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* Protected Routes: Only accessible by authenticated users */}
             <Route element={<ProtectedRoute />}>
-
-            <Route path="/profile" element={<ProfilePage/>} />
-
+              <Route path="/profile" element={<ProfilePage />} />
 
               <Route path="tickets" element={<Dashboard />}>
                 {/* Admin-only routes */}
-                <Route
+                {/* <Route
                   path="exporttickets"
                   element={
                     <RoleProtectedRoute allowedRoles={["admin"]}>
                       <ExportTickets />
                     </RoleProtectedRoute>
                   }
-                />
+                /> */}
 
                 <Route
                   path=""
@@ -87,6 +84,7 @@ function App() {
                 <Route path="newticket" element={<NewTicket />} />
                 <Route path="ticketview/:id" element={<TicketView />} />
                 <Route path="printticket" element={<PrintTicket />} />
+                <Route path="exporttickets" element={<ExportTickets />} />
 
                 {/* Admin or SupportIT roles */}
                 <Route

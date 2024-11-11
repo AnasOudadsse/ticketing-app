@@ -27,7 +27,7 @@ class TicketController extends Controller
             'description' => 'required|string',
             'attachement'=>'nullable'
         ]);
-
+        
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
@@ -120,7 +120,7 @@ class TicketController extends Controller
     // $ticket->admin_id = Auth::id(); 
     $ticket->admin_id = $request->admin_id;
     $ticket->status = 'reserved';
-    $ticket->save();                             
+    $ticket->save();
 
     return response()->json([
         'message' => 'Ticket assigned successfully',
@@ -172,6 +172,27 @@ public function getTickets(Request $request)
     ], 200);
 }
 
+public function getTicketsByUser(Request $request) {
+    $user = $request->user();
+
+    if(!$user) return response()->json(['message' => 'Unauthorized'], 401);
+
+    if($user->role === "client") {
+        $tickets = Ticket::where("created_by", $user->id)->get();
+        return response()->json(["tickets" => $tickets]);
+    }
+    if($user->role === "supportIt") {
+        $tickets = Ticket::where("created_by", $user->id)
+        ->orWhere('resolved_by', $user->id)
+        ->get();
+        return response()->json(["tickets" => $tickets]);
+    }
+    if($user->role === "admin") {
+        $tickets = Ticket::all();
+        return response()->json(["tickets" => $tickets]);
+    }
+}
+
 
 
 public function getTicketsWithProblems(Request $request)
@@ -196,7 +217,7 @@ public function getTicketsWithProblems(Request $request)
 
     if ($user->role === 'admin' || $user->role === 'supportIt') {
         // Fetch all tickets with their associated problems
-        $tickets = Ticket::with(['problem', 'creator'])->get();
+        $tickets = Ticket::with(['problem', 'creator'])->orderby("created_at", "desc")->get();
     
         // Loop through each ticket and add the client's name
         $tickets->transform(function ($ticket) {
@@ -212,7 +233,7 @@ public function getTicketsWithProblems(Request $request)
         return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $ticketsWithProblems = Ticket::with('problem','creator')->where('created_by', $user->id)->get();
+        $ticketsWithProblems = Ticket::with('problem','creator')->where('created_by', $user->id)->orderBy('created_at', 'desc')->get();
     }
 
     return response()->json($ticketsWithProblems);
