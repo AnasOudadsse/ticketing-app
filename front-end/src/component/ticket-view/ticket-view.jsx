@@ -12,6 +12,7 @@
     Avatar,
     IconButton,
     useToast,
+    Icon,
   } from "@chakra-ui/react";
   import { FaPrint, FaDownload } from "react-icons/fa";
   import axios from "axios";
@@ -266,17 +267,22 @@
             </Tag>
           </HStack>
 
-          
-            <Box mt={4} textAlign="center">
-              <IconButton
-                mt={2}
-                icon={<FaDownload />}
-                aria-label="Download Attachment"
-                onClick={downloadImage}
-                colorScheme="blue"
+          {
+            ticket.attachement && (
+              <Box mt={4} textAlign="start">
+                <Button
                 size="sm"
-              />
-            </Box>
+                  title="Download Attachment"
+                  colorScheme="green"
+                  onClick={downloadImage}
+                >
+                    Download Attachement
+                  <Icon as={FaDownload} ml={3} />
+                </Button>
+              </Box>)
+          }
+
+          
 
 
           <Flex mt={6} justifyContent="end" align="center">
