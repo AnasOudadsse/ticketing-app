@@ -36,4 +36,6 @@ class Ticket extends Model
     public function problem(){
         return $this->belongsTo(Problem::class);
     }
+
+
 }

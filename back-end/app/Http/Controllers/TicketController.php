@@ -186,11 +186,13 @@ public function getTicketsByUser(Request $request) {
     if($user->role === "supportIt") {
         $tickets = Ticket::where("created_by", $user->id)
         ->orWhere('resolved_by', $user->id)
+        ->orWhere("reserved_by", $user->id)->with("supportIt")->with("creator")->with("problem")
         ->get();
+
         return response()->json(["tickets" => $tickets]);
     }
     if($user->role === "admin") {
-        $tickets = Ticket::all();
+        $tickets = Ticket::all()->With("supportIt")->with("creator")->with("problem")->get();
         return response()->json(["tickets" => $tickets]);
     }
 }

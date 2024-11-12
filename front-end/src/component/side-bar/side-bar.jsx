@@ -29,14 +29,14 @@ import {
           <ul className="w-full">
             <Box>
               {/* Dashboard: Admin-only */}
-              {(role === "admin" || role === "supportIt") && (
+              {(role === "admin") && (
                 <LinkSideBar link={"tickets"} title={"Dashboard"} icon={faHome} />
               )}
   
               {/* Users: Admin-only */}
               {role === "admin" && (
                 <LinkSideBar
-                  link={"tickets/usersList"}
+                  link={"tickets/usersLit"}
                   title={"Users"}
                   icon={faUsers}
                 />
