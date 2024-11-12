@@ -217,7 +217,7 @@ export default function TicketList() {
       <Header
         name={"Mezrioui Hakim"}
         greeting={"Have a nice day"}
-        role={"super-admin"}
+        role={"super-admin"}k
         profile={
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }

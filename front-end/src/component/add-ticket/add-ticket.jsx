@@ -14,6 +14,7 @@ import axios from "axios";
 import Header from "../header/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileImport } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export const NewTicket = () => {
   const [formData, setFormData] = useState({
@@ -23,8 +24,18 @@ export const NewTicket = () => {
     status: "published",
     attachement: null, // Set as null initially for file upload
   });
+
+  const navigate = useNavigate();
   
-  const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
+  useEffect(() => {
+    const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
+    if (storedClientID) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        clientID: storedClientID, // Update clientID from localStorage
+      }));
+    }
+  }, []);
 
   const [problems, setProblems] = useState({}); // Store grouped problems from API
   const [loading, setLoading] = useState(true); // For loading state
@@ -72,18 +83,15 @@ export const NewTicket = () => {
     formDataToSend.append("problem_id", formData.problem_id);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("status", formData.status);
-    formDataToSend.append("clientID", storedClientID);
+    formDataToSend.append("clientID", formData.clientID);
     formDataToSend.append("attachement", formData.attachement); // Attach file
   
     try {
+      const token = localStorage.getItem("accessToken");
+      console.log(token);
       const response = await axios.post(
         "http://127.0.0.1:8000/api/tickets",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
   
       toast({
@@ -102,6 +110,8 @@ export const NewTicket = () => {
         status: "published",
         attachement: null,
       });
+
+      navigate("/tickets/ticketlist");
     } catch (error) {
       console.error("Error creating ticket:", error);
       toast({
@@ -127,10 +137,11 @@ export const NewTicket = () => {
 
       <Box w={"700px"} mx="auto" mt={10}>
         <VStack spacing={4} as="form" className="rounded-md p-5 shadow" onSubmit={handleSubmit} align="start">
+          {/* Problem ID */}
           <FormControl isRequired>
             <FormLabel>Title</FormLabel>
             <Input
-              name="title" 
+              name="title"
               placeholder="title"
               value={formData.title}
               onChange={handleChange}
@@ -171,10 +182,20 @@ export const NewTicket = () => {
           </FormControl>
 
           <FormControl>
-            <FormLabel htmlFor="file" className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded">
+            <FormLabel
+              htmlFor="file"
+              className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded"
+            >
               <FontAwesomeIcon icon={faFileImport} className="mr-3" />
-              Importer un fichier! </FormLabel>
-            <Input id="file" className="hidden" type="file" name="attachement" onChange={handleChange} />
+              Importer un fichier!{" "}
+            </FormLabel>
+            <Input
+              id="file"
+              className="hidden"
+              type="file"
+              name="attachement"
+              onChange={handleChange}
+            />
           </FormControl>
 
           <Button type="submit" colorScheme="green" width="full">

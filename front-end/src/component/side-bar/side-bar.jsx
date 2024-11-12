@@ -50,13 +50,13 @@ import {
               />
   
               {/* Export Tickets: Admin-only */}
-              {role === "admin" && (
+              {/* {role === "admin" && ( */}
                 <LinkSideBar
                   link={"tickets/exporttickets"}
                   title={"Export Tickets"}
                   icon={faFileExport}
                 />
-              )}
+              {/* )} */}
             </Box>
           </ul>
         </div>

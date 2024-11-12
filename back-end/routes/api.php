@@ -31,6 +31,7 @@ Route::prefix('fonctions')->group(function(){
     Route::put('/{id}', [FonctionController::class, 'update']);
     Route::delete('/{id}', [FonctionController::class, 'destroy']);
 });
+
 Route::prefix('departements')->group(function(){
     Route::get('/', [DepartementController::class, 'index']);
     Route::post('/', [DepartementController::class, 'store']);
@@ -46,7 +47,6 @@ Route::prefix('localisations')->group(function(){
     Route::put('/{id}', [LocalisationController::class, 'update']);
     Route::delete('/{id}', [LocalisationController::class, 'destroy']);
 });
-
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -73,30 +73,28 @@ Route::prefix('problems')->group(function(){
     Route::get('/{id}', [ProblemController::class, 'show']);
     Route::put('/{id}', [ProblemController::class, 'update']);
     Route::delete('/{id}', [ProblemController::class, 'destroy']);
-    
 });
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware('auth:sanctum')->post('/tickets', [TicketController::class, 'createTicket']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/tickets', [TicketController::class, 'createTicket']);
     Route::get('tickets/get/{id}', [TicketController::class, 'getOneTicket']);
     Route::post('/tickets/{id}/reserve', [TicketController::class, 'reserveTicket']);//pour test
     Route::put('/tickets/{id}/close', [TicketController::class, 'closeTicket']);//test
     Route::put('/tickets/{id}/assign', [TicketController::class, 'assignTicket']);//aussi pour le test
     Route::put('/tickets/{id}/resolve', [TicketController::class, 'resolveTicket']);
     Route::get('/all-tickets', [TicketController::class, 'allTickets']);//pour test api
+    Route::get('/getTicketsByUser', [TicketController::class, 'getTicketsByUser']);//pour test api
     
     Route::get('/tickets/getTicketsWithProblems', [TicketController::class, 'getTicketsWithProblems']);
     Route::get('/tickets/export/excel', [TicketController::class, 'exportTicketsToExcel']);
     Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
     Route::get('tickets/count',[StatistiqueController::class,'allTicketsCount']);
     Route::get('users/roles',[StatistiqueController::class,'userRoles']);
-Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
-Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
-Route::get('statistiques',[StatistiqueController::class,'statistiques']);
-Route::delete('drop-user/{user_id}',[AuthController::class,'dropUser']);
-Route::get('user/{id}',[AuthController::class,'fetchUser']);
-// });
-
-
+    Route::get('ticketsStatus/count',[StatistiqueController::class,'statusTickets']);
+    Route::get('ticketsPerMonth',[StatistiqueController::class,'monthlyTickets']);
+    Route::get('statistiques',[StatistiqueController::class,'statistiques']);
+    Route::delete('drop-user/{user_id}',[AuthController::class,'dropUser']);
+    Route::get('user/{id}',[AuthController::class,'fetchUser']);
+});
 
 
 // Route::get('users/count',[StatistiqueController::class,'allUsersCount']);
