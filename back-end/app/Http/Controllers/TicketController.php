@@ -217,7 +217,7 @@ public function getTicketsWithProblems(Request $request)
 
     if ($user->role === 'admin' || $user->role === 'supportIt') {
         // Fetch all tickets with their associated problems
-        $tickets = Ticket::with(['problem', 'creator'])->orderby("created_at", "desc")->get();
+        $tickets = Ticket::with(['problem', 'creator', 'SupportIt'])->orderby("created_at", "desc")->get();
     
         // Loop through each ticket and add the client's name
         $tickets->transform(function ($ticket) {
