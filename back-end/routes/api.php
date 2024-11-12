@@ -114,4 +114,4 @@ Route::get("authCheck", [AuthController::class, "authCheck"]);
 Route::middleware('auth:sanctum')->get('/tickets/{id}/download-attachment', [TicketController::class, 'downloadAttachment']);
 
 
-Route::get('/getSuppotIts', [AuthController::class, 'getSupportIts']);
+Route::middleware('auth:sanctum')->get('/getSuppotIts', [AuthController::class, 'getSupportIts']);

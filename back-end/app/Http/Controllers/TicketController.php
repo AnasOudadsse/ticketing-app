@@ -99,14 +99,13 @@ class TicketController extends Controller
 {
     $request->validate([
         'reserved_by' => 'required|exists:users,id',
-        'admin_id' => 'required|exists:users,id'    //Juste pour le test en Insomnia
     ]);
 
     $ticket = Ticket::findOrFail($id);
 
-    // if (Auth::user()->role !== 'admin') {
-    //     return response()->json(['message' => 'Unauthorized action'], 403);
-    // }
+    if (Auth::user()->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized action'], 403);
+    }
 
     if ($ticket->status !== 'opened') {
         return response()->json(['message' => 'Ticket is not available for assignment'], 400);
@@ -119,8 +118,7 @@ class TicketController extends Controller
     }
 
     $ticket->reserved_by = $request->reserved_by;
-    // $ticket->admin_id = Auth::id(); 
-    $ticket->admin_id = $request->admin_id;
+    $ticket->admin_id = Auth::id(); 
     $ticket->status = 'reserved';
     $ticket->save();
 
