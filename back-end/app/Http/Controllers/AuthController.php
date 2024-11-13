@@ -180,9 +180,9 @@ public function update(Request $request, $id)
 }
 
 public function authCheck(Request $request) {
-    // $user = $request->user();
-    $user = Auth::user();
-    return  response()->json(['user' => $user]);
+    $user = $request->user();
+    // $user = Auth::user();
+
     if (!$user) {
         return response()->json(['message' => 'User not found', 'ok' => false], 404);
         }
