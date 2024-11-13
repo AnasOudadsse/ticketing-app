@@ -257,6 +257,13 @@ function fetchUser(Request $request, $id) {
             'recentTickets' => $recentTickets, // Include recent tickets in response
         ]);
     }
+
+
+    public function getSupportIts(){
+        $supportIt = User::where('role', 'supportIt')->get();
+
+        return response()->json($supportIt);
+    }
     
     
 

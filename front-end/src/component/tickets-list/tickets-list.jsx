@@ -56,7 +56,8 @@ const TicketItem = ({
   name,
   description,
   status,
-  created_by
+  created_by,
+  reserved_by
 }) => {
   const navigate = useNavigate();
 
@@ -64,15 +65,19 @@ const TicketItem = ({
     navigate(`/tickets/ticketview/${ticketNumber}`);
   };
 
+
+  
   return (
     <Fragment>
 
       <Box p={5} my={2} w={"full"} shadow="md" borderWidth="1px" rounded="md">
         <HStack>
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
-          <Flex gap={350} >
+          <Flex  gap={350} >
             <Heading  size="md">Ticket: #{ticketNumber}</Heading>
-            <Badge alignContent={'center'} colorScheme={statusColor}>{status}</Badge>
+            <Badge   alignContent={'center'} colorScheme={statusColor}>{status} {status === 'reserved' && (
+              <span>by</span>
+            )} {reserved_by}</Badge>
           </Flex>
           {priority && <Badge colorScheme="red">{priority}</Badge>}
           <Spacer />
@@ -289,6 +294,8 @@ export default function TicketList() {
                   name={ticket.creator.name}
                   description={ticket.description}
                   created_by={ticket.created_by}
+                  reserved_by={ticket?.support_it?.name}
+
                 />
               ))
             ) : (
