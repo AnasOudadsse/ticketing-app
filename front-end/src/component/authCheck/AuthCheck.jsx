@@ -24,9 +24,9 @@ const AuthCheck = () => {
   }, []);
 
   const getData = (dataRec) => {
-    console.log(dataRec);
     if (!dataRec.ok) navigate("login");
-    else navigate("tickets");
+    if(dataRec.role === "client" || dataRec.role === "supportIt") navigate("tickets/ticketlist");
+    else navigate("/tickets");
   };
 
   if (loading) {

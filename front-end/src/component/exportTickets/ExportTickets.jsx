@@ -41,6 +41,7 @@ const ExportTickets = () => {
   }, []);
 
   const getData1 = (dataRec) => {
+    console.log(dataRec);
     setData(dataRec.tickets);
     setDataF(dataRec.tickets);
   };
@@ -160,7 +161,7 @@ const ExportTickets = () => {
   const columns = [
     {
       name: "Problème",
-      selector: (row) => row.problem.name, // Correspond à la description du problème
+      selector: (row) => row.problem.name || "", // Correspond à la description du problème
       sortable: true,
     },
     {
@@ -170,7 +171,7 @@ const ExportTickets = () => {
     },
     {
       name: "Support IT",
-      selector: (row) => row["support_it"].name, // Correspond à l'ID du support IT
+      selector: (row) => row.support_it?.name || "", // Correspond à l'ID du support IT
       sortable: true,
     },
     // {
@@ -180,7 +181,7 @@ const ExportTickets = () => {
     // },
     {
       name: "Client",
-      selector: (row) => row.creator.name, // Correspond à l'ID du client
+      selector: (row) => row.creator.name || "", // Correspond à l'ID du client
       sortable: true,
     },
     {
@@ -209,7 +210,7 @@ const ExportTickets = () => {
             Choisir une catégorie
           </option>
           {problems.map((problem) => (
-            <option value={problem.id}>{problem.name}</option>
+            <option key={problem.id} value={problem.id}>{problem.name}</option>
           ))}
           <option value={""}>Autre</option>
         </select>

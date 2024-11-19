@@ -36,7 +36,7 @@ import {
               {/* Users: Admin-only */}
               {role === "admin" && (
                 <LinkSideBar
-                  link={"tickets/usersLit"}
+                  link={"tickets/usersList"}
                   title={"Users"}
                   icon={faUsers}
                 />

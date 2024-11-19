@@ -115,3 +115,4 @@ Route::middleware('auth:sanctum')->get('/tickets/{id}/download-attachment', [Tic
 
 
 Route::middleware('auth:sanctum')->get('/getSuppotIts', [AuthController::class, 'getSupportIts']);
+Route::get("/getinfo", [AuthController::class, "getInfo"]);
