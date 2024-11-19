@@ -32,48 +32,54 @@ class UserSeeder extends Seeder
             [
                 [
                     'name' => 'Admin User',
-                    'email' => 'admin@example.com',
+                    'email' => 'admin@gmail.com',
                     'email_verified_at' => now(),
                     'password' => Hash::make('12345678'), // Mot de passe sécurisé
                     'role' => 'admin',
                     'role_in_creation' => 'admin',
-                    'fonction_id' => 1, // Assurez-vous que cette valeur correspond à une fonction existan[t]e
+                    'fonction_id' => [1],
                     'departement_id' => 1, // Assurez-vous que cette valeur correspond à un département existant
                     'localisation_id' => 1, // Assurez-vous que cette valeur correspond à une localisation existante
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'name' => 'Support IT User',
-                    'email' => 'support@example.com',
+                    'email' => 'support@gmail.com',
                     'email_verified_at' => now(),
                     'password' => Hash::make('12345678'),
                     'role' => 'supportIt',
                     'role_in_creation' => 'supportIt',
-                    'fonction_id' => 2,
+                    'fonction_id' => [2],
                     'departement_id' => 2,
                     'localisation_id' => 2,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'name' => 'Client User',
-                    'email' => 'client@example.com',
+                    'email' => 'client@gmail.com',
                     'email_verified_at' => now(),
                     'password' => Hash::make('12345678'),
                     'role' => 'client',
                     'role_in_creation' => 'client',
-                    'fonction_id' => 3,
+                    'fonction_id' => [3],
                     'departement_id' => 3,
                     'localisation_id' => 3,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
-                [
-                    'name' => 'Mezrioui Hakim',
-                    'email' => 'hmezrioui@gmail.com',
-                    'email_verified_at' => now(),
-                    'password' => Hash::make('12345678!123'),
-                    'role' => 'admin',
-                    'role_in_creation' => 'admin',
-                    'fonction_id' => 3,
-                    'departement_id' => 3,
-                    'localisation_id' => 3,
-                ],
+                // [
+                //     'name' => 'Mezrioui Hakim',
+                //     'email' => 'hmezrioui@gmail.com',
+                //     'email_verified_at' => now(),
+                //     'password' => Hash::make('12345678'),
+                //     'role' => 'admin',
+                //     'role_in_creation' => 'admin',
+                //     'fonction_id' => 3,
+                //     'departement_id' => 3,
+                //     'localisation_id' => 3,
+                // ],
             ]
 
         ];

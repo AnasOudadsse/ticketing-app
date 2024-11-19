@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Exports\TicketsExport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -24,29 +25,31 @@ class TicketController extends Controller
             'title' => 'required|string|max:255',
             'problem_id' => 'required|exists:problems,id',
             'description' => 'required|string',
-            'attachement'=>'nullable'
+            'attachement' => 'file', // Optional for now, since it might not always be included
         ]);
 
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-
+    
         $ticket = Ticket::create([
             'title' => $request->title,
             'problem_id' => $request->problem_id,
             'description' => $request->description,
-            'attachement'=>$request->attachement,
-            'created_by' => Auth::id(),
-            // 'created_by'=> $request->created_by, // pour le test
+            'attachement' => $attachementPath, // Store relative path attachement
+            'created_by' => $request->clientID,
             'status' => 'opened',
         ]);
-
+    
         return response()->json([
             'message' => 'Ticket created successfully',
-            'ticket' => $ticket
+            'ticket' => $ticket,
+            'attachment_url' => $attachementPath ? asset('storage' . $attachementPath) : null,
         ], 201);
     }
-
+    
+    
+    
     public function closeTicket(Request $request, $id)
 {
     $ticket = Ticket::findOrFail($id);
@@ -96,14 +99,13 @@ class TicketController extends Controller
 {
     $request->validate([
         'reserved_by' => 'required|exists:users,id',
-        'admin_id' => 'required|exists:users,id'    //Juste pour le test en Insomnia
     ]);
 
     $ticket = Ticket::findOrFail($id);
 
-    // if (Auth::user()->role !== 'admin') {
-    //     return response()->json(['message' => 'Unauthorized action'], 403);
-    // }
+    if (Auth::user()->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized action'], 403);
+    }
 
     if ($ticket->status !== 'opened') {
         return response()->json(['message' => 'Ticket is not available for assignment'], 400);
@@ -116,10 +118,9 @@ class TicketController extends Controller
     }
 
     $ticket->reserved_by = $request->reserved_by;
-    // $ticket->admin_id = Auth::id(); 
-    $ticket->admin_id = $request->admin_id;
+    $ticket->admin_id = Auth::id(); 
     $ticket->status = 'reserved';
-    $ticket->save();                             
+    $ticket->save();
 
     return response()->json([
         'message' => 'Ticket assigned successfully',
@@ -171,12 +172,36 @@ public function getTickets(Request $request)
     ], 200);
 }
 
+public function getTicketsByUser(Request $request) {
+    $user = $request->user();
+    
+    if(!$user) return response()->json(['message' => 'Unauthorized'], 401);
+    
+    if($user->role === "client") {
+        $tickets = Ticket::where("created_by", $user->id)->get();
+        return response()->json(["tickets" => $tickets]);
+    }
+    if($user->role === "supportIt") {
+        $tickets = Ticket::where("created_by", $user->id)
+        ->orWhere('resolved_by', $user->id)
+        ->orWhere("reserved_by", $user->id)->with("supportIt")->with("creator")->with("problem")
+        ->get();
+        
+        return response()->json(["tickets" => $tickets]);
+    }
+    if($user->role === "admin") {
+        $tickets = Ticket::with("supportIt", "creator", "problem")->get();
+        return response()->json(["tickets" => $tickets]);
+    }
+}
+
 
 
 public function getTicketsWithProblems(Request $request)
 {
     
     $token = $request->bearerToken();
+
 
     if (!$token) {
         return response()->json(['error' => 'Unauthorized'], 401);
@@ -194,7 +219,7 @@ public function getTicketsWithProblems(Request $request)
 
     if ($user->role === 'admin' || $user->role === 'supportIt') {
         // Fetch all tickets with their associated problems
-        $tickets = Ticket::with(['problem', 'creator'])->get();
+        $tickets = Ticket::with(['problem', 'creator', 'SupportIt'])->orderby("created_at", "desc")->get();
     
         // Loop through each ticket and add the client's name
         $tickets->transform(function ($ticket) {
@@ -210,7 +235,7 @@ public function getTicketsWithProblems(Request $request)
         return response()->json($tickets, 200);
     } else {
         // If the user is a client, return only their tickets with associated problems
-        $ticketsWithProblems = Ticket::with('problem','creator')->where('created_by', $user->id)->get();
+        $ticketsWithProblems = Ticket::with('problem','creator')->where('created_by', $user->id)->orderBy('created_at', 'desc')->get();
     }
 
     return response()->json($ticketsWithProblems);
@@ -222,4 +247,27 @@ public function getOneTicket($id){
 }
 
 
+public function downloadAttachment($id)
+{
+    $ticket = Ticket::find($id);
+
+    if (!$ticket || !$ticket->attachement) {
+        return response()->json(['message' => 'No attachment found'], 404);
+    }
+
+    // Locate the file within 'storage/app/public'
+    $filePath = storage_path('app/public/' . $ticket->attachement);
+
+    if (!file_exists($filePath)) {
+        return response()->json(['message' => 'File not found'], 404);
+    }
+
+    return response()->download($filePath, basename($filePath));
 }
+
+
+
+
+}
+
+

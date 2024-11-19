@@ -14,6 +14,7 @@ import axios from "axios";
 import Header from "../header/header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileImport } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export const NewTicket = () => {
   const [formData, setFormData] = useState({
@@ -21,11 +22,10 @@ export const NewTicket = () => {
     problem_id: "",
     description: "",
     status: "published",
-    attachement: "",
-    clientID: "",
+    attachement: null, // Set as null initially for file upload
   });
 
-  console.log(formData);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const storedClientID = localStorage.getItem("id"); // Get clientID from localStorage
@@ -68,21 +68,32 @@ export const NewTicket = () => {
   }, [toast]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value, // Use the first file for file input
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("problem_id", formData.problem_id);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("status", formData.status);
+    formDataToSend.append("clientID", formData.clientID);
+    formDataToSend.append("attachement", formData.attachement); // Attach file
+  
     try {
+      const token = localStorage.getItem("accessToken");
+      console.log(token);
       const response = await axios.post(
         "http://127.0.0.1:8000/api/tickets",
         formData
       );
+  
       toast({
         title: "Ticket Created",
         description: "Your ticket has been created successfully.",
@@ -90,18 +101,19 @@ export const NewTicket = () => {
         duration: 5000,
         isClosable: true,
       });
-
-      // Reset the form after submission
+  
+      // Reset form
       setFormData({
         title: "",
         problem_id: "",
         description: "",
-        status: "",
-        attachement: "",
-        clientID: "",
+        status: "published",
+        attachement: null,
       });
+
+      navigate("/tickets/ticketlist");
     } catch (error) {
-      console.error("There was an error creating the ticket:", error);
+      console.error("Error creating ticket:", error);
       toast({
         title: "Error",
         description: "Failed to create ticket. Please try again.",
@@ -129,7 +141,7 @@ export const NewTicket = () => {
           <FormControl isRequired>
             <FormLabel>Title</FormLabel>
             <Input
-              name="title" 
+              name="title"
               placeholder="title"
               value={formData.title}
               onChange={handleChange}
@@ -142,9 +154,8 @@ export const NewTicket = () => {
               placeholder={loading ? "Loading problems..." : "Select Problem"}
               value={formData.problem_id}
               onChange={handleChange}
-              isDisabled={loading} // Disable select when loading
+              isDisabled={loading}
             >
-              {/* Render optgroups based on problem type */}
               {Object.keys(problems).map((type) => (
                 <optgroup key={type} label={type}>
                   {problems[type].map((problem) => (
@@ -160,7 +171,6 @@ export const NewTicket = () => {
             </Select>
           </FormControl>
 
-          {/* Description */}
           <FormControl isRequired>
             <FormLabel>Description</FormLabel>
             <Textarea
@@ -171,15 +181,23 @@ export const NewTicket = () => {
             />
           </FormControl>
 
-          {/* Attachment */}
           <FormControl>
-            <FormLabel htmlFor="file" className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded">
+            <FormLabel
+              htmlFor="file"
+              className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded"
+            >
               <FontAwesomeIcon icon={faFileImport} className="mr-3" />
-              Importer un fichier! </FormLabel>
-            <Input id="file" className="hidden" type="file" name="attachement" onChange={handleChange} />
+              Importer un fichier!
+            </FormLabel>
+            <Input
+              id="file"
+              className="hidden"
+              type="file"
+              name="attachement"
+              onChange={handleChange}
+            />
           </FormControl>
 
-          {/* Submit Button */}
           <Button type="submit" colorScheme="green" width="full">
             Create Ticket
           </Button>

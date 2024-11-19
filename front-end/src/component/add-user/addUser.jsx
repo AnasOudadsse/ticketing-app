@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import TabAddUser from "../tap-add-user/TabAddUser";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../header/header";
@@ -17,10 +17,40 @@ const AddUser = () => {
   const [error, setError] = useState("");
   const { sendRequest, loading } = useHttp();
   const navigate = useNavigate();
+  const [info, setInfo] = useState({
+    fonctions: [],
+    departements: [],
+    localisations: [],
+    specialisations: [],
+  });
   const [specialisations, setSpecialisation] = useState([]);
   const toast = useToast();
-  const { response, checkName, checkEmail, checkPassword, checkRole, checkFonction, checkDepartement, checkLocalisation } =
-    useCheckValidation();
+
+  const {
+    response,
+    checkName,
+    checkEmail,
+    checkPassword,
+    checkRole,
+    checkFonction,
+    checkDepartement,
+    checkLocalisation,
+  } = useCheckValidation();
+
+  useEffect(() => {
+    const request = {
+      url: "http://127.0.0.1:8000/api/getinfo",
+      headers: {
+        "Content-Type": "Application/Json",
+      },
+    };
+
+    sendRequest(request, getInfo);
+  }, []);
+
+  const getInfo = (dataRec) => {
+    setInfo(dataRec);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,6 +146,10 @@ const AddUser = () => {
     navigate("/tickets/usersList");
   };
 
+  if (!info) {
+    return null;
+  }
+
   return (
     <div className="w-full">
       <Header
@@ -191,54 +225,20 @@ const AddUser = () => {
         </div>
 
         {formData.role === "supportIt" && (
-          <div className="flex flex-col  w-fit  gap-3 items-center my-3">
-            {/* <label className="w-32">Specialisation</label> */}
-            {/* <select
-            required
-              name="specialisation_id"
-              className="rounded-md w-full px-2 py-2 bg-white border"
-            >
-              <option disabled>Select a specialisation</option>
-              <option value={"2"}>Konosys</option>
-              <option value={"2"}>Canvas</option>
-              <option value={"3"}>Biostar</option>
-            </select> */}
+          <div className="flex flex-col  w-fit  gap-3 items-start my-3">
             <label>Specialisation</label>
-            <span className="text-start w-full flex items-center gap-3">
-              <input
-                onChange={handleSpecialisationChange}
-                name="specialisation_id"
-                type="checkbox"
-                value={"1"}
-              />
-              <label>spes1</label>
-            </span>
-            <span className="text-start w-full flex items-center gap-3">
-              <input
-                onChange={handleSpecialisationChange}
-                name="specialisation_id"
-                type="checkbox"
-                value={"2"}
-              />
-              <label>spes2</label>
-            </span>
-            <span className="text-start w-full flex items-center gap-3">
-              <input
-                onChange={handleSpecialisationChange}
-                name="specialisation_id"
-                type="checkbox"
-                value={"3"}
-              />
-              <label>spes3</label>
-            </span>
-            <span className="text-start w-full flex items-center gap-3">
-              <input
-                onChange={handleSpecialisationChange}
-                name="specialisation_id"
-                type="checkbox"
-                value={"4"}
-              />
-              <label>spes4</label>
+            <span className="text-start w-full flex-wrap flex items-start gap-3">
+              {info.specialisations.map((specialisation) => (
+                <span className="flex gap-1">
+                  <input
+                    onChange={handleSpecialisationChange}
+                    name="specialisation_id"
+                    type="checkbox"
+                    value={specialisation.id}
+                  />
+                  <label>{specialisation.name}</label>
+                </span>
+              ))}
             </span>
           </div>
         )}
@@ -291,9 +291,11 @@ const AddUser = () => {
             <option selected disabled>
               Select a Fonction
             </option>
-            <option value={1}>Konosys</option>
-            <option value={2}>Canvas</option>
-            <option value={3}>Biostar</option>
+
+            {info.fonctions &&
+              info.fonctions.map((fonction) => (
+                <option value={fonction.id}>{fonction.name}</option>
+              ))}
           </select>
         </div>
 
@@ -309,9 +311,9 @@ const AddUser = () => {
             <option selected disabled>
               Select a Departement
             </option>
-            <option value={1}>Konosys</option>
-            <option value={2}>Canvas</option>
-            <option value={3}>Biostar</option>
+            {info.departements.map((departement) => (
+              <option value={departement.id}>{departement.name}</option>
+            ))}
           </select>
         </div>
         {/* )} */}
@@ -326,9 +328,9 @@ const AddUser = () => {
             <option selected disabled>
               Select a Localisation
             </option>
-            <option value={1}>Anfa</option>
-            <option value={2}>Ligue arab</option>
-            <option value={3}>anas inboMail</option>
+            {info.localisations.map((localisation) => (
+              <option value={1}>{localisation.name}</option>
+            ))}
           </select>
         </div>
         <div className="flex gap-2 mt-10">

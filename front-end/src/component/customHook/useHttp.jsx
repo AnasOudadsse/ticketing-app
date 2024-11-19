@@ -6,11 +6,11 @@ const useHttp = () => {
 
   const sendRequest = useCallback(async (request, applayData = () => {}) => {
     setLoading(true);
-    console.log(request);
+    // console.log(request);
     const response = await fetch(request.url, {
       method: request.method ? request.method : "GET",
       body: request.body,
-        headers: request.headers ? request.headers : null,
+        headers: request.headers ? request.headers : {},
       // headers: { "Content-Type": "application/json" },
     });
 

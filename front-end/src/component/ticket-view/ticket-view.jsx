@@ -12,8 +12,17 @@ import {
   Avatar,
   IconButton,
   useToast,
+  Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Select,
 } from "@chakra-ui/react";
-import { FaPrint, FaDownload } from "react-icons/fa";
+import { FaPrint, FaDownload, FaUserPlus } from "react-icons/fa";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Header from "../header/header";
@@ -21,7 +30,10 @@ import { formatDistanceToNow } from "date-fns";
 
 export const TicketView = () => {
   const [ticket, setTicket] = useState(null);
-  const [userRole, setUserRole] = useState(""); // Store the user role
+  const [userRole, setUserRole] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for the assignment modal
+  const [supportUsers, setSupportUsers] = useState([]); // List of Support IT users
+  const [selectedSupportUser, setSelectedSupportUser] = useState(""); // Selected user for assignment
   const toast = useToast();
   const { id } = useParams();
   const logged_id = localStorage.getItem("id");
@@ -75,6 +87,51 @@ export const TicketView = () => {
     };
     fetchTicket();
   }, [id, toast]);
+
+  // Fetch list of Support IT users
+  const fetchSupportUsers = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/getSuppotIts"); // Adjust endpoint as necessary
+      setSupportUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching support users:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch support users.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Assign ticket
+  const handleAssign = async () => {
+    try {
+      await axios.put(
+        `http://127.0.0.1:8000/api/tickets/${id}/assign`,
+        { reserved_by: selectedSupportUser },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
+      );
+      toast({
+        title: "Success",
+        description: "Ticket assigned successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setIsModalOpen(false);
+      window.location.reload();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign ticket.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleReserve = async () => {
     try {
@@ -152,12 +209,34 @@ export const TicketView = () => {
     window.print();
   };
 
-  const downloadImage = () => {
-    const link = document.createElement("a");
-    link.href = ticket.image;
-    link.download = "ticket_image.jpg";
-    link.click();
+  const downloadImage = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/tickets/${ticket.id}/download-attachment`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        responseType: 'blob', // Expect a binary file
+      });
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `attachment_${ticket.id}.jpg`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading attachment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to download attachment.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
+  
 
   if (!ticket) {
     return <Text>Loading ticket...</Text>;
@@ -243,6 +322,20 @@ export const TicketView = () => {
           </Tag>
         </HStack>
 
+        {ticket.attachement && (
+          <Box mt={4} textAlign="start">
+            <Button
+              size="sm"
+              title="Download Attachment"
+              colorScheme="green"
+              onClick={downloadImage}
+            >
+              Download Attachment
+              <Icon as={FaDownload} ml={3} />
+            </Button>
+          </Box>
+        )}
+
         <Flex mt={6} justifyContent="end" align="center">
           <HStack spacing={4}>
             {userRole === "client" && ticket.status === "opened" && (
@@ -269,9 +362,57 @@ export const TicketView = () => {
                 )}
               </>
             )}
+            {userRole === "admin" && ticket.status === 'opened' && (
+              <Button
+                colorScheme="blue"
+                size="sm"
+                leftIcon={<FaUserPlus />}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  fetchSupportUsers();
+                }}
+              >
+                Assign
+              </Button>
+            )}
           </HStack>
         </Flex>
       </Box>
+
+      {/* Assign Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Assign Ticket</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Select a Support IT to assign this ticket:</Text>
+            <Select
+              placeholder="Select Support IT"
+              onChange={(e) => setSelectedSupportUser(e.target.value)}
+            >
+              {supportUsers.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </Select>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleAssign}
+              isDisabled={!selectedSupportUser}
+            >
+              Assign
+            </Button>
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
