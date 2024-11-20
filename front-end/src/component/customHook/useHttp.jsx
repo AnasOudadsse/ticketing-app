@@ -6,7 +6,7 @@ const useHttp = () => {
 
   const sendRequest = useCallback(async (request, applayData = () => {}) => {
     setLoading(true);
-    console.log(request);
+    // console.log(request);
     const response = await fetch(request.url, {
       method: request.method ? request.method : "GET",
       body: request.body,

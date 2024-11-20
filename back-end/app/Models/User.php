@@ -64,7 +64,7 @@ class User extends Authenticatable
     }
     public function reservedTickets()
     {
-        return $this->hasMany(Ticket::class, 'assigned_to');
+        return $this->hasMany(Ticket::class, 'reserved_by');
     }
     public function admin()
     {

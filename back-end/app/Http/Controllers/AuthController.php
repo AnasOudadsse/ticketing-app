@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ticket;
+use App\Models\Fonction;
+use App\Models\Departement;
+use App\Models\localisation;
+use App\Models\Specialisation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -56,7 +63,7 @@ class AuthController extends Controller
 
 public function login(Request $request)
 {
-    try{
+    try {
     $validatedData=$request->validate([
         'email' => 'required|email',
         'password' => 'required|string',
@@ -121,6 +128,7 @@ public function update(Request $request, $id)
             'departement_id' => 'required|exists:departements,id',
             'localisation_id' => 'required|exists:localisations,id',
         ]);
+        
         $user = User::findOrFail($id);
         $user->update([
             'name' => $validatedData['name'],
@@ -156,7 +164,7 @@ public function update(Request $request, $id)
     public function getUser(Request $request)
 {
     try {
-        $user = $request->user()->load(['fonction', 'departement', 'localisation']);
+        $user = $request->user()->load(['fonction', 'departement', 'localisation', 'specialisations']);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -177,13 +185,13 @@ public function update(Request $request, $id)
 }
 
 public function authCheck(Request $request) {
-    // $user = $request->user();
-    $user = Auth::user();
-    return  response()->json(['user' => $user]);
+    $user = $request->user();
+    // $user = Auth::user();
+
     if (!$user) {
         return response()->json(['message' => 'User not found', 'ok' => false], 404);
         }
-    return response()->json(['message' => 'User authenticated', 'ok' => true], 200);
+    return response()->json(['role'=>$user->role, 'message' => 'User authenticated', 'ok' => true], 200);
 }
 
 function getUsers() {
@@ -209,14 +217,69 @@ function dropUser(Request $request, $user_id) {
 }
 
 function fetchUser(Request $request, $id) {
-    $user = User::find($id);
+    $user = User::find($id)->load("specialisations", "localisation", "departement", "fonction");
 
-    $role = $request->user()->role;
-    if($role !== "admin") {
-        return "Sorry! you can't do this";
-    }
+    // $role = $request->user()->role;
+    // if($role !== "admin") {
+    //     return "Sorry! you can't do this";
+    // }
 
     return response()->json($user);
 }
+
+    // Example Laravel API endpoint to get user stats
+    public function getUserStats(Request $request) {
+        $user = $request->user();
+        
+        // Allow only "Admin" or the user whose stats are being requested (assume user ID matches logged-in user)
+        if (!$user || !in_array($user->role, ['admin', 'supportIt'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+    
+        // Assuming 'Support IT' role requires stats visibility restriction
+        if ($user->role !== 'admin' && $user->id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+    
+        // Fetch stats
+        $ticketsCreated = Ticket::where('created_by', $user->id)->count();
+        $ticketsReserved = Ticket::where('reserved_by', $user->id)->count();
+        $ticketsResolved = Ticket::where('resolved_by', $user->id)->count();
+        // $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
+        
+        // Fetch recent tickets assigned or resolved by the user
+        $recentTickets = Ticket::where('resolved_by', $user->id)
+                                ->orWhere('reserved_by', $user->id)
+                                ->orderBy('updated_at', 'desc')
+                                ->take(4) // Limit to the 5 most recent tickets
+                                ->get();
+    
+        return response()->json([
+            'ticketsCreated' => $ticketsCreated,
+            'ticketsReserved' => $ticketsReserved,
+            'ticketsResolved' => $ticketsResolved,
+            // 'ticketsAssigned' => $ticketsAssigned,
+            'recentTickets' => $recentTickets, // Include recent tickets in response
+        ]);
+    }
+
+
+    public function getSupportIts(){
+        $supportIt = User::where('role', 'supportIt')->get();
+
+        return response()->json($supportIt);
+    }
+
+    public function getInfo() {
+        $fonctions = Fonction::all();
+        $departements = Departement::all();
+        $localisations = localisation::all();
+        $specialisations = Specialisation::all();
+
+        return response()->json(["specialisations"=>$specialisations, "fonctions"=>$fonctions, "departements"=>$departements, "localisations"=>$localisations]);
+    }
+    
+    
+
 
 }

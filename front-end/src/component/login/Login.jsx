@@ -63,8 +63,8 @@ const Login = () => {
         isClosable: true,
       });
 
-      navigate("/tickets/ticketlist"); // Redirect to tickets
-
+      if (role === "admin") navigate("/tickets"); // Redirect to tickets
+        else navigate("/tickets/ticketlist")
     } catch (error) {
       console.error("Login error:", error);
 
@@ -89,7 +89,8 @@ const Login = () => {
       <div className="bg-gradient-to-r from-green-600 to-green-700 w-full h-screen gap-10 flex justify-start flex-col items-center rounded-br-full">
         <h1 className="mt-10 text-white font-bold text-3xl">New Here?</h1>
         <p className="w-1/2 text-center text-white text-sm">
-        Lorem ipsum dolor sit amet consectetur adipisicing elitLorem ipsum dolor sit amet consectetur adipisicing elit.
+          Lorem ipsum dolor sit amet consectetur adipisicing elitLorem ipsum
+          dolor sit amet consectetur adipisicing elit.
         </p>
         <img
           className="w-72 h-72"

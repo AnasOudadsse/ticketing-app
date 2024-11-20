@@ -6,127 +6,48 @@ import DataTable from "react-data-table-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import useHttp from "../customHook/useHttp";
-const tickets = [
-  {
-    id: 1,
-    problem_id: 101,
-    description: "Impossible de se connecter à internet.",
-    status: "open",
-    attachement: "screenshot_error.png",
-    supportIt: "adam bariz",
-    adminID: 3,
-    clientID: 10,
-    created_at: "2024-10-01",
-    updated_at: "2024-10-01T10:00:00Z",
-    resolution_date: null,
-  },
-  {
-    id: 2,
-    problem_id: 102,
-    description: "L’imprimante ne fonctionne pas.",
-    status: "in_progress",
-    attachement: null,
-    supportIt: "hamza",
-    adminID: 4,
-    clientID: 12,
-    created_at: "2024-10-02",
-    updated_at: "2024-10-04T15:00:00Z",
-    resolution_date: null,
-  },
-  {
-    id: 3,
-    problem_id: 103,
-    description: "Erreur lors de la mise à jour du logiciel.",
-    status: "resolved",
-    attachement: "log_update_error.txt",
-    supportIt: "anas oudadas",
-    adminID: 2,
-    clientID: 13,
-    created_at: "2024-09-28",
-    updated_at: "2024-09-30T09:30:00Z",
-    resolution_date: "2024-09-30T09:30:00Z",
-  },
-  {
-    id: 4,
-    problem_id: 104,
-    description: "L’ordinateur ne démarre pas.",
-    status: "open",
-    attachement: null,
-    supportIt: "mezrioui hakim",
-    adminID: null,
-    clientID: 14,
-    created_at: "2024-10-05",
-    updated_at: "2024-10-05T14:00:00Z",
-    resolution_date: null,
-  },
-  {
-    id: 5,
-    problem_id: 105,
-    description: "Connexion réseau intermittente.",
-    status: "in_progress",
-    attachement: "network_log.txt",
-    supportIt: "essabouni mouad",
-    adminID: 3,
-    clientID: 15,
-    created_at: "2024-10-06",
-    updated_at: "2024-10-08T12:00:00Z",
-    resolution_date: null,
-  },
-  {
-    id: 6,
-    problem_id: 105,
-    description: "Connexion réseau intermittente.",
-    status: "in_progress",
-    attachement: "network_log.txt",
-    supportIt: "kamal kadimi",
-    adminID: 3,
-    clientID: 15,
-    created_at: "2024-10-06",
-    updated_at: "2024-10-08T12:00:00Z",
-    resolution_date: null,
-  },
-  {
-    id: 7,
-    problem_id: 105,
-    description: "Connexion réseau intermittente.",
-    status: "in_progress",
-    attachement: "network_log.txt",
-    supportIt: "anas sadikin",
-    adminID: 3,
-    clientID: 15,
-    created_at: "2024-10-20",
-    updated_at: "2024-10-08T12:00:00Z",
-    resolution_date: null,
-  },
-];
 
 const ExportTickets = () => {
   const [data, setData] = useState([]);
   const [dataF, setDataF] = useState([]);
 
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const { sendRequest, loading } = useHttp();
+  const [problems, setProblemes] = useState([]);
+  const [searchBy, setSearchBy] = useState("support_it");
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    const request = {
-      url: "http://127.0.0.1:8000/api/all-tickets",
+    const request1 = {
+      url: "http://127.0.0.1:8000/api/getTicketsByUser",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const request2 = {
+      url: "http://127.0.0.1:8000/api/problems",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
 
-    sendRequest(request, getData);
+    sendRequest(request1, getData1);
+    sendRequest(request2, getData2);
   }, []);
 
-  const getData = (dataRec) => {
+  const getData1 = (dataRec) => {
+    console.log(dataRec);
     setData(dataRec.tickets);
     setDataF(dataRec.tickets);
-    console.log(dataRec);
+  };
+
+  const getData2 = (dataRec) => {
+    setProblemes([...dataRec]);
   };
 
   const handleCategoryChange = (e) => {
@@ -144,19 +65,28 @@ const ExportTickets = () => {
     setEndDate(e.target.value);
   };
 
+  const handleSearchByChange = (e) => {
+    setSearchBy(e.target.value);
+  };
+
   useEffect(() => {
     handleFilter();
   }, [selectedCategory, search, startDate, endDate]);
 
   const handleFilter = () => {
     const ticketsFiltredByProblems = handleFilterByProblems(data);
-    const ticketsFiltredBySearch = handleFiltredBySearch(data);
+    const ticketsFiltredBySearch = handleFiltredBySearch(
+      ticketsFiltredByProblems
+    );
     const ticketsFiltredByDate = handleFiltredByDate(ticketsFiltredBySearch);
 
     setDataF(ticketsFiltredByDate);
   };
 
   const handleFilterByProblems = (values) => {
+    if (selectedCategory === "") {
+      return values;
+    }
     const resultat = values.filter((ticket) => {
       if (selectedCategory && ticket.problem_id == selectedCategory) {
         return ticket;
@@ -164,7 +94,7 @@ const ExportTickets = () => {
     });
 
     if (resultat.length === 0) {
-      return values;
+      return [];
     }
     return resultat;
   };
@@ -173,7 +103,7 @@ const ExportTickets = () => {
     const resultat = values.filter((ticket) => {
       if (
         search &&
-        ticket.supportIt?.toLowerCase().includes(search.toLowerCase())
+        ticket[searchBy].name.toLowerCase().includes(search.toLowerCase())
       ) {
         return ticket;
       }
@@ -231,7 +161,7 @@ const ExportTickets = () => {
   const columns = [
     {
       name: "Problème",
-      selector: (row) => row.description, // Correspond à la description du problème
+      selector: (row) => row.problem.name || "", // Correspond à la description du problème
       sortable: true,
     },
     {
@@ -241,17 +171,17 @@ const ExportTickets = () => {
     },
     {
       name: "Support IT",
-      selector: (row) => row.supportIt, // Correspond à l'ID du support IT
+      selector: (row) => row.support_it?.name || "", // Correspond à l'ID du support IT
       sortable: true,
     },
-    {
-      name: "Admin",
-      selector: (row) => row.adminID, // Correspond à l'ID de l'administrateur
-      sortable: true,
-    },
+    // {
+    //   name: "Admin",
+    //   selector: (row) => row.adminID, // Correspond à l'ID de l'administrateur
+    //   sortable: true,
+    // },
     {
       name: "Client",
-      selector: (row) => row.clientID, // Correspond à l'ID du client
+      selector: (row) => row.creator.name || "", // Correspond à l'ID du client
       sortable: true,
     },
     {
@@ -271,7 +201,7 @@ const ExportTickets = () => {
           "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         }
       />
-      <div className="mt-10 flex justify-between">
+      <div className="mt-10 flex gap-2 justify-between flex-wrap max-[1143px]:justify-center">
         <select
           onChange={handleCategoryChange}
           className="border border-slate-600 px-3 py-1 w-72 rounded"
@@ -279,12 +209,20 @@ const ExportTickets = () => {
           <option value="" disabled selected>
             Choisir une catégorie
           </option>
-          <option value="101">Konosys</option>
-          <option value="102">Réseaux</option>
-          <option value="103">Canvas</option>
-          <option value="104">Téléphone</option>
-          <option value="105">impriment</option>
-          <option value="autre">Autre</option>
+          {problems.map((problem) => (
+            <option key={problem.id} value={problem.id}>{problem.name}</option>
+          ))}
+          <option value={""}>Autre</option>
+        </select>
+
+        <select
+          onChange={handleSearchByChange}
+          className="border border-slate-600 px-3 py-1 w-72 rounded"
+        >
+          <option value="support_it" selected>
+            Search by support it
+          </option>
+          <option value="creator">Search by client</option>
         </select>
 
         <input
@@ -292,18 +230,18 @@ const ExportTickets = () => {
           className="border border-slate-600 px-3 py-1 w-72 rounded"
           onChange={handleSearchChange}
         />
-        <span className="border border-slate-600 rounded">
+        <span className="border border-slate-600 rounded max-[831px]:w-72 max-[831px]:border-none">
           <input
             type="date"
             placeholder="Search ..."
-            className="border-none  px-3 py-1 w-50 rounded outline-none"
+            className="border-none  px-3 py-1 w-50 rounded outline-none max-[1143px]:w-72"
             onChange={handleStartDateChange}
           />
-          -
+          <span className="hidden min-[831px]:hidden">-</span>
           <input
             type="date"
             placeholder="Search ..."
-            className="border-none px-3 py-1 w-50 rounded outline-none"
+            className="border-none px-3 py-1 w-50 rounded outline-none max-[1143px]:w-72"
             onChange={handleEndDateChange}
           />
         </span>
