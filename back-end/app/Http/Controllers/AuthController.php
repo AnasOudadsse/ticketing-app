@@ -60,6 +60,7 @@ public function login(Request $request)
     $validatedData=$request->validate([
         'email' => 'required|email',
         'password' => 'required|string',
+    ]);
 
         $user = User::where('email', $validatedData['email'])->first();
 
