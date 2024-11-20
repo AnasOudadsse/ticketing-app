@@ -24,6 +24,7 @@ class DepartementSeeder extends Seeder
      *
      * @return array
      */
+    
     private function getDepartementsData()
     {
         return [
