@@ -31,7 +31,13 @@ class TicketController extends Controller
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-    
+
+        $attachementPath = null;
+        if ($request->hasFile('attachement')) {
+            $attachementPath = $request->file('attachement')->store('attachments', 'public'); 
+            // Store the file in the "attachments" directory of the "public" disk
+        }
+
         $ticket = Ticket::create([
             'title' => $request->title,
             'problem_id' => $request->problem_id,

@@ -76,8 +76,8 @@ const TicketItem = ({
           <Flex  gap={350} >
             <Heading  size="md">Ticket: #{ticketNumber}</Heading>
             <Badge   alignContent={'center'} colorScheme={statusColor}>{status} {status === 'reserved' && (
-              <span>by</span>
-            )} {reserved_by}</Badge>
+              <span>by {reserved_by}</span> 
+            )} </Badge>
           </Flex>
           {priority && <Badge colorScheme="red">{priority}</Badge>}
           <Spacer />
