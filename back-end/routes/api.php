@@ -108,10 +108,11 @@ Route::apiResource('inventaires', InventaireController::class);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'getUser']);
 
 Route::middleware('auth:sanctum')->get('/getUserStats', [AuthController::class, 'getUserStats']);
-Route::get("authCheck", [AuthController::class, "authCheck"]);
+Route::middleware('auth:sanctum')->get("authCheck", [AuthController::class, "authCheck"]);
 
 
 Route::middleware('auth:sanctum')->get('/tickets/{id}/download-attachment', [TicketController::class, 'downloadAttachment']);
 
 
 Route::middleware('auth:sanctum')->get('/getSuppotIts', [AuthController::class, 'getSupportIts']);
+Route::get("/getinfo", [AuthController::class, "getInfo"]);

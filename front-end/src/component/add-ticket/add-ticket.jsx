@@ -196,7 +196,7 @@ export const NewTicket = () => {
               className="bg-blue-500 hover:bg-blue-600 w-fit text-white px-5 py-2 rounded"
             >
               <FontAwesomeIcon icon={faFileImport} className="mr-3" />
-              Importer un fichier!{" "}
+              Importer un fichier!
             </FormLabel>
             <Input
               id="file"

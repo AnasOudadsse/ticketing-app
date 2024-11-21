@@ -6,33 +6,38 @@ const UpdateUser = () => {
   const params = useParams();
   const navigate = useNavigate();
   const { sendRequest, loading } = useHttp();
+  const [formData, setFormData] = useState({});
 
   const [user, setUser] = useState({});
-  const [departements, setDepartements] = useState([]);
-  const [localisations, setLocalisations] = useState([]);
+  const [specialisations, setSpecialisation] = useState([]);
+  const [specialisationIds, setSpecialisationIds] = useState([]);
+  const [checkSpecialisations, setCheckSpecialisation] = useState({});
+
+  const [info, setInfo] = useState({
+    fonctions: [],
+    departements: [],
+    localisations: [],
+    specialisations: [],
+  });
 
   useEffect(() => {
-    // setRoleUser(params.role);
+    const request = {
+      url: "http://127.0.0.1:8000/api/getinfo",
+      headers: {
+        "Content-Type": "Application/Json",
+      },
+    };
+
+    sendRequest(request, getInfo);
+  }, []);
+
+  const getInfo = (dataRec) => {
+    setInfo(dataRec);
+  };
+
+  useEffect(() => {
     const id = params.id;
     const token = localStorage.getItem("accessToken");
-
-    const request1 = {
-      url: `http://127.0.0.1:8000/api/departements`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    sendRequest(request1, getData1);
-
-    const request2 = {
-      url: `http://127.0.0.1:8000/api/localisations`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    sendRequest(request2, getData2);
 
     const request3 = {
       url: `http://127.0.0.1:8000/api/user/${id}`,
@@ -43,28 +48,46 @@ const UpdateUser = () => {
       },
     };
 
-    sendRequest(request3, getData3);
+    sendRequest(request3, fetchUser);
   }, []);
 
-  const getData1 = (dataRec) => {
-    setDepartements([...dataRec]);
-  };
-  const getData2 = (dataRec) => {
-    setLocalisations(dataRec);
-  };
-  const getData3 = (dataRec) => {
+  const fetchUser = (dataRec) => {
     setUser(dataRec);
+    const sps = dataRec.specialisations;
+    setSpecialisationIds([
+      ...new Set(sps.map((specialisation) => specialisation.id)),
+    ]);
+    
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
 
     setUser({
       ...user,
       [name]: value,
     });
   };
+
+  const handleSpecialisationChange = (e) => {
+    const index = specialisations.indexOf(e.target.value);
+    const isChecked = e.target.checked;
+    if (isChecked && index === -1) {
+      setSpecialisationIds([...specialisationIds, e.target.value]);
+    } else {
+      const newSpecialisation = specialisationIds.filter(
+        (specialisation, i) => i !== index
+      );
+      setSpecialisationIds([...newSpecialisation]);
+    }
+  };
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      specialisation_ids: [...specialisations],
+    });
+  }, [specialisations]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,12 +97,13 @@ const UpdateUser = () => {
     const request = {
       url: `http://127.0.0.1:8000/api/users/${id}`,
       method: "PUT",
-      body: user,
+      body: JSON.stringify(user),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
+
     sendRequest(request, (dataRec) => console.log(dataRec));
   };
 
@@ -143,33 +167,22 @@ const UpdateUser = () => {
 
         {user.role === "supportIt" && (
           <div className="flex justify-between gap-3 items-start my-3">
-            <label className="w-32">Fonction</label>
-            <div className="w-full">
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Technicien Si</label>
-              </div>
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Infra-structure</label>
-              </div>
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Support-It</label>
-              </div>
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Planification</label>
-              </div>
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Finance</label>
-              </div>
-              <div className="w-full">
-                <input name="fonction" type="checkbox"></input>
-                <label className="ml-3">Scolarité</label>
-              </div>
-            </div>
+            <label className="w-32">Specialisation</label>
+            <span className="text-start w-full flex-wrap flex items-start gap-3">
+              {info.specialisations.map((specialisation, index) => (
+                <span key={index} className="flex gap-1">
+                  <input
+                    id={index}
+                    onChange={handleSpecialisationChange}
+                    name="specialisation_id"
+                    type="checkbox"
+                    value={specialisation.id}
+                    checked={specialisationIds.includes(specialisation.id)}
+                  />
+                  <label>{specialisation.name}</label>
+                </span>
+              ))}
+            </span>
           </div>
         )}
 
@@ -182,7 +195,7 @@ const UpdateUser = () => {
             <option selected value={null} disabled>
               Select a Departement
             </option>
-            {departements.map((departement) => (
+            {info.departements.map((departement) => (
               <option
                 selected={departement.id === user.departement_id}
                 value={departement.id}
@@ -204,7 +217,7 @@ const UpdateUser = () => {
             <option value={null} disabled>
               Select a Localisation
             </option>
-            {localisations.map((localisation) => (
+            {info.localisations.map((localisation) => (
               <option
                 selected={localisation.id === user.localisation_id}
                 value={localisation.id}

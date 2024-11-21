@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\Fonction;
+use App\Models\Departement;
+use App\Models\localisation;
+use App\Models\Specialisation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -124,6 +128,7 @@ public function update(Request $request, $id)
             'departement_id' => 'required|exists:departements,id',
             'localisation_id' => 'required|exists:localisations,id',
         ]);
+        
         $user = User::findOrFail($id);
         $user->update([
             'name' => $validatedData['name'],
@@ -159,7 +164,7 @@ public function update(Request $request, $id)
     public function getUser(Request $request)
 {
     try {
-        $user = $request->user()->load(['fonction', 'departement', 'localisation']);
+        $user = $request->user()->load(['fonction', 'departement', 'localisation', 'specialisations']);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -180,13 +185,13 @@ public function update(Request $request, $id)
 }
 
 public function authCheck(Request $request) {
-    // $user = $request->user();
-    $user = Auth::user();
-    return  response()->json(['user' => $user]);
+    $user = $request->user();
+    // $user = Auth::user();
+
     if (!$user) {
         return response()->json(['message' => 'User not found', 'ok' => false], 404);
         }
-    return response()->json(['message' => 'User authenticated', 'ok' => true], 200);
+    return response()->json(['role'=>$user->role, 'message' => 'User authenticated', 'ok' => true], 200);
 }
 
 function getUsers() {
@@ -212,7 +217,7 @@ function dropUser(Request $request, $user_id) {
 }
 
 function fetchUser(Request $request, $id) {
-    $user = User::find($id);
+    $user = User::find($id)->load("specialisations", "localisation", "departement", "fonction");
 
     // $role = $request->user()->role;
     // if($role !== "admin") {
@@ -263,6 +268,15 @@ function fetchUser(Request $request, $id) {
         $supportIt = User::where('role', 'supportIt')->get();
 
         return response()->json($supportIt);
+    }
+
+    public function getInfo() {
+        $fonctions = Fonction::all();
+        $departements = Departement::all();
+        $localisations = localisation::all();
+        $specialisations = Specialisation::all();
+
+        return response()->json(["specialisations"=>$specialisations, "fonctions"=>$fonctions, "departements"=>$departements, "localisations"=>$localisations]);
     }
     
     

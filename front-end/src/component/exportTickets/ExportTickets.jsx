@@ -17,6 +17,7 @@ const ExportTickets = () => {
   const [endDate, setEndDate] = useState(null);
   const { sendRequest, loading } = useHttp();
   const [problems, setProblemes] = useState([]);
+  const [searchBy, setSearchBy] = useState("support_it");
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -40,6 +41,7 @@ const ExportTickets = () => {
   }, []);
 
   const getData1 = (dataRec) => {
+    console.log(dataRec);
     setData(dataRec.tickets);
     setDataF(dataRec.tickets);
   };
@@ -63,26 +65,32 @@ const ExportTickets = () => {
     setEndDate(e.target.value);
   };
 
+  const handleSearchByChange = (e) => {
+    setSearchBy(e.target.value);
+  };
+
   useEffect(() => {
     handleFilter();
   }, [selectedCategory, search, startDate, endDate]);
 
   const handleFilter = () => {
     const ticketsFiltredByProblems = handleFilterByProblems(data);
-    const ticketsFiltredBySearch = handleFiltredBySearch(ticketsFiltredByProblems);
+    const ticketsFiltredBySearch = handleFiltredBySearch(
+      ticketsFiltredByProblems
+    );
     const ticketsFiltredByDate = handleFiltredByDate(ticketsFiltredBySearch);
 
     setDataF(ticketsFiltredByDate);
   };
 
   const handleFilterByProblems = (values) => {
-    if(selectedCategory === "") {
+    if (selectedCategory === "") {
       return values;
     }
     const resultat = values.filter((ticket) => {
       if (selectedCategory && ticket.problem_id == selectedCategory) {
         return ticket;
-      } 
+      }
     });
 
     if (resultat.length === 0) {
@@ -95,7 +103,7 @@ const ExportTickets = () => {
     const resultat = values.filter((ticket) => {
       if (
         search &&
-        ticket.supportIt?.toLowerCase().includes(search.toLowerCase())
+        ticket[searchBy].name.toLowerCase().includes(search.toLowerCase())
       ) {
         return ticket;
       }
@@ -153,7 +161,7 @@ const ExportTickets = () => {
   const columns = [
     {
       name: "Problème",
-      selector: (row) => row.description, // Correspond à la description du problème
+      selector: (row) => row.problem.name || "", // Correspond à la description du problème
       sortable: true,
     },
     {
@@ -163,17 +171,17 @@ const ExportTickets = () => {
     },
     {
       name: "Support IT",
-      selector: (row) => row.supportIt, // Correspond à l'ID du support IT
+      selector: (row) => row.support_it?.name || "", // Correspond à l'ID du support IT
       sortable: true,
     },
-    {
-      name: "Admin",
-      selector: (row) => row.adminID, // Correspond à l'ID de l'administrateur
-      sortable: true,
-    },
+    // {
+    //   name: "Admin",
+    //   selector: (row) => row.adminID, // Correspond à l'ID de l'administrateur
+    //   sortable: true,
+    // },
     {
       name: "Client",
-      selector: (row) => row.clientID, // Correspond à l'ID du client
+      selector: (row) => row.creator.name || "", // Correspond à l'ID du client
       sortable: true,
     },
     {
@@ -202,9 +210,19 @@ const ExportTickets = () => {
             Choisir une catégorie
           </option>
           {problems.map((problem) => (
-            <option value={problem.id}>{problem.name}</option>
+            <option key={problem.id} value={problem.id}>{problem.name}</option>
           ))}
           <option value={""}>Autre</option>
+        </select>
+
+        <select
+          onChange={handleSearchByChange}
+          className="border border-slate-600 px-3 py-1 w-72 rounded"
+        >
+          <option value="support_it" selected>
+            Search by support it
+          </option>
+          <option value="creator">Search by client</option>
         </select>
 
         <input
@@ -212,14 +230,14 @@ const ExportTickets = () => {
           className="border border-slate-600 px-3 py-1 w-72 rounded"
           onChange={handleSearchChange}
         />
-        <span className="border border-slate-600 rounded">
+        <span className="border border-slate-600 rounded max-[831px]:w-72 max-[831px]:border-none">
           <input
             type="date"
             placeholder="Search ..."
             className="border-none  px-3 py-1 w-50 rounded outline-none max-[1143px]:w-72"
             onChange={handleStartDateChange}
           />
-          -
+          <span className="hidden min-[831px]:hidden">-</span>
           <input
             type="date"
             placeholder="Search ..."

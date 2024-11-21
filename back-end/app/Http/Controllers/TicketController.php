@@ -180,9 +180,9 @@ public function getTickets(Request $request)
 
 public function getTicketsByUser(Request $request) {
     $user = $request->user();
-
+    
     if(!$user) return response()->json(['message' => 'Unauthorized'], 401);
-
+    
     if($user->role === "client") {
         $tickets = Ticket::where("created_by", $user->id)->get();
         return response()->json(["tickets" => $tickets]);
@@ -190,11 +190,13 @@ public function getTicketsByUser(Request $request) {
     if($user->role === "supportIt") {
         $tickets = Ticket::where("created_by", $user->id)
         ->orWhere('resolved_by', $user->id)
+        ->orWhere("reserved_by", $user->id)->with("supportIt")->with("creator")->with("problem")
         ->get();
+        
         return response()->json(["tickets" => $tickets]);
     }
     if($user->role === "admin") {
-        $tickets = Ticket::all();
+        $tickets = Ticket::with("supportIt", "creator", "problem")->get();
         return response()->json(["tickets" => $tickets]);
     }
 }
