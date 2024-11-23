@@ -38,7 +38,7 @@ export const TicketView = () => {
   const { id } = useParams();
   const logged_id = localStorage.getItem("id");
 
-  console.log(userRole);
+  console.log(ticket);
   
   // Fetch the user's role from the API
   useEffect(() => {

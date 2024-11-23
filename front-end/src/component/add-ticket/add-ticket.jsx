@@ -77,52 +77,61 @@ export const NewTicket = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
     formDataToSend.append("problem_id", formData.problem_id);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("status", formData.status);
     formDataToSend.append("clientID", formData.clientID);
-    formDataToSend.append("attachement", formData.attachement); // Attach file
-  
-    try {
-      const token = localStorage.getItem("accessToken");
-      console.log(token);
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/tickets",
-        formData
-      );
-  
-      toast({
-        title: "Ticket Created",
-        description: "Your ticket has been created successfully.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-  
-      // Reset form
-      setFormData({
-        title: "",
-        problem_id: "",
-        description: "",
-        status: "published",
-        attachement: null,
-      });
 
-      navigate("/tickets/ticketlist");
-    } catch (error) {
-      console.error("Error creating ticket:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create ticket. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+    if (formData.attachement) {
+        formDataToSend.append("attachement", formData.attachement); // Attach the file only if it exists
     }
-  };
+
+    try {
+        const token = localStorage.getItem("accessToken");
+
+        const response = await axios.post(
+            "http://127.0.0.1:8000/api/tickets",
+            formDataToSend,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        toast({
+            title: "Ticket Created",
+            description: "Your ticket has been created successfully.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+        });
+
+        // Reset form
+        setFormData({
+            title: "",
+            problem_id: "",
+            description: "",
+            status: "published",
+            attachement: null,
+        });
+
+        navigate("/tickets/ticketlist");
+    } catch (error) {
+        console.error("Error creating ticket:", error);
+        toast({
+            title: "Error",
+            description: "Failed to create ticket. Please try again.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+        });
+    }
+};
 
   return (
     <Fragment>

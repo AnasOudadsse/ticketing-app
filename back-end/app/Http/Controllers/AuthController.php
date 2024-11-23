@@ -148,12 +148,14 @@ public function update(Request $request, $id)
         return response()->json([
             'message' => 'Utilisateur mis à jour avec succès',
             'user' => $user,
+            'status' => 200,
         ], 200);
 
     } catch (\Exception $e) {
         return response()->json([
             'message' => 'Une erreur est survenue lors de la mise à jour',
             'error' => $e->getMessage(),
+            'status' => 500,
         ], 500);
     }
 }

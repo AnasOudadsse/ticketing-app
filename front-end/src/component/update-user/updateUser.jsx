@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useHttp from "../customHook/useHttp";
+import { Toast, useToast } from "@chakra-ui/react";
 
 const UpdateUser = () => {
   const params = useParams();
@@ -11,7 +12,8 @@ const UpdateUser = () => {
   const [user, setUser] = useState({});
   const [specialisations, setSpecialisation] = useState([]);
   const [specialisationIds, setSpecialisationIds] = useState([]);
-  const [checkSpecialisations, setCheckSpecialisation] = useState({});
+
+  const toast = useToast();
 
   const [info, setInfo] = useState({
     fonctions: [],
@@ -57,8 +59,25 @@ const UpdateUser = () => {
     setSpecialisationIds([
       ...new Set(sps.map((specialisation) => specialisation.id)),
     ]);
-    
   };
+
+  useEffect(() => {
+    let test = {};
+    if (!info.specialisations || specialisationIds.length > 0) return;
+    info.specialisations.map((specialisation) => {
+      if (specialisationIds.includes(specialisation.id)) {
+        test = {
+          ...test,
+          [specialisation.name]: true,
+        };
+      } else {
+        test = {
+          ...test,
+          [specialisation.name]: false,
+        };
+      }
+    });
+  }, [specialisationIds, user, info]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,24 +89,24 @@ const UpdateUser = () => {
   };
 
   const handleSpecialisationChange = (e) => {
-    const index = specialisations.indexOf(e.target.value);
-    const isChecked = e.target.checked;
-    if (isChecked && index === -1) {
-      setSpecialisationIds([...specialisationIds, e.target.value]);
+    const { checked, value } = e.target;
+
+    if (checked) {
+      setSpecialisationIds([...specialisationIds, parseInt(value)]);
     } else {
       const newSpecialisation = specialisationIds.filter(
-        (specialisation, i) => i !== index
+        (specialisation) => specialisation !== parseInt(value)
       );
       setSpecialisationIds([...newSpecialisation]);
     }
   };
 
   useEffect(() => {
-    setFormData({
-      ...formData,
-      specialisation_ids: [...specialisations],
+    setUser({
+      ...user,
+      specialisation_ids: [...specialisationIds],
     });
-  }, [specialisations]);
+  }, [specialisationIds]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -104,7 +123,29 @@ const UpdateUser = () => {
       },
     };
 
-    sendRequest(request, (dataRec) => console.log(dataRec));
+    sendRequest(request, afterSubmit);
+  };
+
+  const afterSubmit = (dataRec) => {
+    if(dataRec.status === 200) {
+      toast({
+        title: "Sucess",
+        description: dataRec.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: dataRec.message,
+        status: "Error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+
+    navigate(-1);
   };
 
   return (
@@ -173,7 +214,7 @@ const UpdateUser = () => {
                 <span key={index} className="flex gap-1">
                   <input
                     id={index}
-                    onChange={handleSpecialisationChange}
+                    onClick={handleSpecialisationChange}
                     name="specialisation_id"
                     type="checkbox"
                     value={specialisation.id}
