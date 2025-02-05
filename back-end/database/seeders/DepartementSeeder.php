@@ -19,7 +19,7 @@ class DepartementSeeder extends Seeder
         }
     }
 
-    /**
+    /** 
      * Get an array of departements data.
      *
      * @return array
