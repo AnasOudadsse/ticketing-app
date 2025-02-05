@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -12,7 +11,17 @@ import {
   Button,
   useToast,
   Flex,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerBody,
+  useDisclosure,
+  Spacer,
+  HStack,
 } from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -20,13 +29,18 @@ import { useNavigate } from "react-router-dom";
 import useHttp from "../customHook/useHttp";
 import { CgProfile } from "react-icons/cg";
 import { SlLogout } from "react-icons/sl";
+import { useEffect, useState } from "react";
+import LinkSideBar from "../link-side-bar/link-side-bar";
+import { faHome, faUsers, faTicket, faFileExport } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({ greeting }) => {
   const [user, setUser] = useState({});
+  const [role, setRole] = useState("");
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { loading, sendRequest } = useHttp();
   const navigate = useNavigate();
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure(); // For Drawer
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -39,7 +53,8 @@ const Header = ({ greeting }) => {
     };
 
     sendRequest(request, (data) => setUser(data));
-  }, []);
+    setRole(localStorage.getItem("role")); // Fetch role from localStorage
+  }, [sendRequest]);
 
   const handleLogout = async () => {
     try {
@@ -79,48 +94,76 @@ const Header = ({ greeting }) => {
 
   if (loading) return null;
 
+  const SidebarLinks = () => (
+    <VStack align="stretch" spacing={4}>
+      {role === "admin" && (
+        <LinkSideBar link={"tickets"} title={"Dashboard"} icon={faHome} />
+      )}
+      {role === "admin" && (
+        <LinkSideBar link={"tickets/usersList"} title={"Users"} icon={faUsers} />
+      )}
+      <LinkSideBar link={"tickets/ticketlist"} title={"Tickets"} icon={faTicket} />
+      <LinkSideBar
+        link={"tickets/exporttickets"}
+        title={"Export Tickets"}
+        icon={faFileExport}
+      />
+    </VStack>
+  );
+
   return (
     <Flex
       justifyContent="space-between"
       alignItems="center"
       rounded="xl"
-      p={5}
-      mb={5}
+      p={4}
       bg="white"
+      shadow="sm"
     >
-      {/* Greeting Section */}
-      <VStack align="start" spacing={0}>
-        <Text fontSize="lg">Hello {user.name}</Text>
-        <Text fontSize="sm" color="gray.500">
-          {greeting}
-        </Text>
-      </VStack>
+      {/* Left Section: Greeting and Hamburger Icon */}
+      <HStack spacing={4}>
+        {/* Hamburger Menu for Small Screens */}
+        <IconButton
+          aria-label="Open menu"
+          icon={<HamburgerIcon />}
+          display={{ base: "block", lg: "none" }}
+          onClick={onOpen}
+          variant="outline"
+        />
+        <VStack align="start" spacing={0} display={{ base: "none", md: "block" }}>
+          <Text fontSize="lg">Hello {user.name}</Text>
+          <Text fontSize="sm" color="gray.500">
+            {greeting}
+          </Text>
+        </VStack>
+      </HStack>
 
-      {/* User Info and Dropdown Menu */}
-      <Box  position="relative">
+      {/* Right Section: User Info and Dropdown */}
+      <Box position="relative">
         <Menu>
           <MenuButton
-            as={Flex}
             alignItems="center"
-            gap={3}
             cursor="pointer"
             _hover={{ bg: "gray.100", rounded: "md" }}
           >
-            <Flex>
-              <Avatar mx={3} size="md" name={user.name} bg="teal.500" />
-              <VStack align="start" spacing={0}>
-                <Text>{user.name}</Text>
-                <Text fontSize="sm" color="gray.400">
-                  {user.function}
-                </Text>
-              </VStack>
-              <Flex ml={'65px'} mr={5} alignItems={'center'}>
+            <Flex             
+              gap={3} // Spacing between items
+            >
+                <Avatar mx={3} size="md" name={user.name} bg="teal.500" />
+                <VStack
+                  align="start"
+                  spacing={0}
+                  display={{ base: "none", sm: "block",  }} // Hide on small screens
+                >
+                  <Text>{user.name}</Text>
+                  <Text fontSize="sm" color="gray.400">
+                    {user.function}
+                  </Text>
+                </VStack>
                 <FontAwesomeIcon
                   icon={isMenuOpen ? faAngleDown : faAngleUp}
                   className="cursor-pointer"
-                />
-              </Flex>
-              
+              />
             </Flex>
           </MenuButton>
 
@@ -130,9 +173,8 @@ const Header = ({ greeting }) => {
             rounded="md"
             border="1px solid"
             borderColor="gray.200"
-            animation="ease-in-out 0.2s"
           >
-            <MenuItem gap={3} onClick={() => navigate("/profile")}> 
+            <MenuItem gap={3} onClick={() => navigate("/profile")}>
               <CgProfile />
               Profile
             </MenuItem>
@@ -148,6 +190,20 @@ const Header = ({ greeting }) => {
           </MenuList>
         </Menu>
       </Box>
+
+      {/* Drawer for Sidebar Links on Small Screens */}
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerBody>
+            <div className="flex justify-center w-full h-40 grid grid-cols content-center">
+              <img src="/assets/images/UM6SS.webp" className="w-full h-16 px-4" alt="Logo" />
+            </div>
+            <SidebarLinks />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Flex>
   );
 };

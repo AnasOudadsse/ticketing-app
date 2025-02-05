@@ -20,9 +20,8 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../header/header";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 
-// Utility to check if a date is today, this week, or this month
 const isToday = (date) => {
   const today = new Date();
   return (
@@ -46,7 +45,6 @@ const isThisMonth = (date) => {
   );
 };
 
-// TicketItem Component
 const TicketItem = ({
   statusColor,
   problemName,
@@ -57,7 +55,7 @@ const TicketItem = ({
   description,
   status,
   created_by,
-  reserved_by
+  reserved_by,
 }) => {
   const navigate = useNavigate();
 
@@ -65,45 +63,74 @@ const TicketItem = ({
     navigate(`/tickets/ticketview/${ticketNumber}`);
   };
 
-
-  
   return (
     <Fragment>
-
-      <Box p={5} my={2} w={"full"} shadow="md" borderWidth="1px" rounded="md">
-        <HStack>
+      <Box
+        p={5}
+        my={2}
+        w="full"
+        shadow="md"
+        borderWidth="1px"
+        rounded="md"
+        bg="white"
+      >
+        <HStack
+          spacing={4}
+          flexDirection={{ base: "column", md: "row" }}
+          alignItems="flex-start"
+        >
           <Box bg={statusColor} boxSize={3} borderRadius="full" />
-          <Flex  gap={350} >
-            <Heading  size="md">Ticket: #{ticketNumber}</Heading>
-            <Badge   alignContent={'center'} colorScheme={statusColor}>{status} {status === 'reserved' && (
-              <span>by {reserved_by}</span> 
-            )} </Badge>
+          <Flex
+            flex="1"
+            flexDirection={{ base: "column", md: "row" }}
+            justifyContent="space-between"
+          >
+            <Heading size="md" isTruncated>
+              Ticket: #{ticketNumber}
+            </Heading>
+            <Badge
+              alignSelf={{ base: "flex-start", md: "center" }}
+              colorScheme={statusColor}
+            >
+              {status} {status === "reserved" && <span>by {reserved_by}</span>}
+            </Badge>
           </Flex>
-          {priority && <Badge colorScheme="red">{priority}</Badge>}
-          <Spacer />
-          <Text  color="gray.500">
-            Posted{" "}
-            {formatDistanceToNow(new Date(postedTime), { addSuffix: true })}
-
+           <Spacer />
+          <Text
+            color="gray.500"
+            fontSize={{ base: "sm", md: "md" }}
+            textAlign="right"
+          >
+            Posted {formatDistanceToNow(new Date(postedTime), { addSuffix: true })}
           </Text>
         </HStack>
 
-        <Heading  my={5} size="sm">
+        <Heading my={5} size="sm" isTruncated>
           Problem: {problemName}
         </Heading>
         <Text mb={4} mt={2} noOfLines={2}>
           {description}
         </Text>
         <hr />
-        <HStack mt={4}>
-          <Avatar size={"sm"}  mr={2} name={name} />
-          <Text color={"#7B7B7B"}>{name}</Text>
-
+        <HStack
+          mt={4}
+          spacing={4}
+          flexDirection={{ base: "column", sm: "row" }}
+          alignItems="flex-start"
+        >
+          <HStack spacing={4} flex="1">
+            <Avatar size="sm" mr={2} name={name} />
+            <Text color="#7B7B7B" fontSize={{ base: "sm", md: "md" }}>
+              {name}
+            </Text>
+          </HStack>
           <Spacer />
           <Button
             variant="link"
-            colorScheme="purple"  
+            color={"#008000"}
             onClick={handleOpenTicket}
+            size={{ base: "sm", md: "md" }}
+            mt={{ base: 2, sm: 0 }}
           >
             Open Ticket
           </Button>
@@ -114,18 +141,14 @@ const TicketItem = ({
 };
 
 export default function TicketList() {
-  const [tickets, setTickets] = useState([]); // All tickets
-  const [filteredTickets, setFilteredTickets] = useState([]); // Tickets after search or filter
+  const [tickets, setTickets] = useState([]);
+  const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState(""); // Search term state
-  const [timeFilter, setTimeFilter] = useState(""); // Time filter state
-  const [selectedTab, setSelectedTab] = useState("all"); // Manage selected tab state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [timeFilter, setTimeFilter] = useState("");
+  const [selectedTab, setSelectedTab] = useState("all");
   const toast = useToast();
 
-  console.log(tickets);
-  
-
-  // Fetch tickets from API
   useEffect(() => {
     const fetchTickets = async () => {
       try {
@@ -150,41 +173,27 @@ export default function TicketList() {
     fetchTickets();
   }, [toast]);
 
-  // Handle search input
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
     applyFilters(term, timeFilter, selectedTab);
   };
 
-  // Handle time filter
   const handleTimeFilter = (e) => {
     const filter = e.target.value;
     setTimeFilter(filter);
     applyFilters(searchTerm, filter, selectedTab);
   };
 
-  // Handle Tab Change for status filtering
   const handleTabChange = (index) => {
-    let tab = "all";
-    if (index === 1) {
-      tab = "opened";
-    } else if (index === 2) {
-      tab = "reserved";
-    } else if (index === 3) {
-      tab = "resolved";
-    } else if (index === 4) {
-      tab = "closed";
-    }
-    setSelectedTab(tab);
-    applyFilters(searchTerm, timeFilter, tab);
+    const tabs = ["all", "opened", "reserved", "resolved", "closed"];
+    setSelectedTab(tabs[index]);
+    applyFilters(searchTerm, timeFilter, tabs[index]);
   };
 
-  // Function to apply all filters (search, time, status)
   const applyFilters = (term, time, tab) => {
     let filtered = tickets;
 
-    // Apply search term filter
     if (term) {
       filtered = filtered.filter(
         (ticket) =>
@@ -194,22 +203,17 @@ export default function TicketList() {
       );
     }
 
-    // Apply time filter
     if (time) {
       filtered = filtered.filter((ticket) => {
         const ticketDate = new Date(ticket.created_at);
-        if (time === "today") {
-          return isToday(ticketDate);
-        } else if (time === "this-week") {
-          return isThisWeek(ticketDate);
-        } else if (time === "this-month") {
-          return isThisMonth(ticketDate);
-        }
-        return true;
+        return (
+          (time === "today" && isToday(ticketDate)) ||
+          (time === "this-week" && isThisWeek(ticketDate)) ||
+          (time === "this-month" && isThisMonth(ticketDate))
+        );
       });
     }
 
-    // Apply tab filter (status)
     if (tab !== "all") {
       filtered = filtered.filter((ticket) => ticket.status === tab);
     }
@@ -218,40 +222,48 @@ export default function TicketList() {
   };
 
   return (
-    <Fragment >
+    <Fragment>
       <Header
-        name={"Mezrioui Hakim"}
-        greeting={"Have a nice day"}
-        role={"super-admin"}
-        profile={
-          "https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
-        }
+        name="Mezrioui Hakim"
+        greeting="Have a nice day"
+        role="super-admin"
+        profile="https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
       />
-      <Box px={25}>
-
-        <Flex p={25}  my={25} justify={'space-between'} >
-            <Heading size={"lg"}>
-                Ticket List
-            </Heading>
-
-            <Button colorScheme="green" >
-                  <a href="newticket">New Ticket</a>
-            </Button>
+      <Box px={{ base: 4, md: 8 }} py={4}>
+        <Flex
+          justify="space-between"
+          flexDirection={{ base: "column", md: "row" }}
+          alignItems={{ base: "flex-start", md: "center" }}
+        >
+          <Heading size="lg" mb={{ base: 4, md: 0 }}>
+            Ticket List
+          </Heading>
+          <Button colorScheme="green" size={{ base: "sm", md: "md" }}>
+            <a href="newticket">New Ticket</a>
+          </Button>
         </Flex>
-        <Box borderRadius={15} bg={'white'} p={50}  w={"full"}>
-          {/* Search and Filters */}
-          <Flex mb={4} alignItems="center">
+        <Box
+          borderRadius={15}
+          bg="white"
+          p={{ base: 4, md: 8 }}
+          w="full"
+          mt={6}
+        >
+          <Flex
+            mb={4}
+            flexDirection={{ base: "column", md: "row" }}
+            gap={{ base: 4, md: 0 }}
+          >
             <Input
               placeholder="Search for ticket"
-              width="300px"
+              width={{ base: "full", md: "300px" }}
               value={searchTerm}
-              onChange={handleSearch} // Handle search input
+              onChange={handleSearch}
             />
             <Spacer />
             <Select
-              ml={4}
               placeholder="Select Time"
-              width="150px"
+              width={{ base: "full", md: "150px" }}
               onChange={handleTimeFilter}
             >
               <option value="today">Today</option>
@@ -260,9 +272,8 @@ export default function TicketList() {
             </Select>
           </Flex>
 
-          {/* Tabs for Status Filter */}
           <Tabs variant="enclosed-colored" onChange={handleTabChange}>
-            <TabList>
+            <TabList flexWrap="wrap">
               <Tab>All Tickets</Tab>
               <Tab>Opened</Tab>
               <Tab>Reserved</Tab>
@@ -271,7 +282,6 @@ export default function TicketList() {
             </TabList>
           </Tabs>
 
-          {/* Ticket Items */}
           <VStack spacing={4} mt={6}>
             {!loading && filteredTickets.length > 0 ? (
               filteredTickets.map((ticket) => (
