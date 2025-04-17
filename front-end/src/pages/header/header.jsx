@@ -198,7 +198,7 @@ const Header = ({ greeting }) => {
           <DrawerCloseButton />
           <DrawerBody>
             <div className="flex justify-center w-full h-40 grid grid-cols content-center">
-              <img src="/assets/images/UM6SS.webp" className="w-full h-16 px-4" alt="Logo" />
+              <img src="AO-LOGO.png" className="w-full h-16 px-4" alt="Logo" />
             </div>
             <SidebarLinks />
           </DrawerBody>

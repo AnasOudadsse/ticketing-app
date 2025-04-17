@@ -161,7 +161,7 @@ const UpdateUser = () => {
       >
         <img
           className="  h-28 mb-12"
-          src="https://um6ss.ma/wp-content/uploads/2024/02/UM6SS.png"
+          src="AO-LOGO.png"
           alt=""
         />
         <div className="flex justify-between gap-3 items-center my-3">

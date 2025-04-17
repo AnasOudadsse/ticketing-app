@@ -1,22 +1,22 @@
 import { ChakraProvider, Flex } from "@chakra-ui/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { NewTicket } from "./component/add-ticket/add-ticket";
-import TicketList from "./component/tickets-list/tickets-list";
-import Statistiques from "./component/statistiques/statistiques";
-import Login from "./component/login/Login";
-import Dashboard from "./component/dashboard/dashboard";
-import HomeDashboard from "./component/home-dashboard/HomeDashboard";
-import { TicketView } from "./component/ticket-view/ticket-view";
-import UsersList from "./component/users-list/usersList";
-import AddUser from "./component/add-user/addUser";
-import UpdateUser from "./component/update-user/updateUser";
-import PrintTicket from "./component/print-ticket/PrintTicket";
-import ExportTickets from "./component/exportTickets/ExportTickets";
-import RoleProtectedRoute from "./component/Route-Protection/RoleProtectiongRoute";
-import { ProtectedRoute } from "./component/Route-Protection/ProtectedRoute";
-import Unauthorized from "./component/Route-Protection/Unauthorized";
-import { ProfilePage } from "./component/Profile/Profile";
-import AuthCheck from "./component/authCheck/AuthCheck";
+import { NewTicket } from "./pages/add-ticket/add-ticket";
+import TicketList from "./pages/tickets-list/tickets-list";
+import Statistiques from "./pages/statistiques/statistiques";
+import Login from "./pages/login/Login";
+import Dashboard from "./pages/dashboard/dashboard";
+import HomeDashboard from "./pages/home-dashboard/HomeDashboard";
+import { TicketView } from "./pages/ticket-view/ticket-view";
+import UsersList from "./pages/users-list/usersList";
+import AddUser from "./pages/add-user/addUser";
+import UpdateUser from "./pages/update-user/updateUser";
+import PrintTicket from "./pages/print-ticket/PrintTicket";
+import ExportTickets from "./pages/exportTickets/ExportTickets";
+import RoleProtectedRoute from "./pages/Route-Protection/RoleProtectiongRoute";
+import { ProtectedRoute } from "./pages/Route-Protection/ProtectedRoute";
+import Unauthorized from "./pages/Route-Protection/Unauthorized";
+import { ProfilePage } from "./pages/Profile/Profile";
+import AuthCheck from "./pages/authCheck/AuthCheck";
 
 function App() {
   return (

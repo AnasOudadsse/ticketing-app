@@ -13,7 +13,7 @@ const PrintTicket = () => {
           <div className="border">
             <img
               className="p-2 h-20"
-              src="https://um6ss.ma/wp-content/uploads/2024/02/UM6SS.png"
+              src="AO-LOGO.png"
               alt=""
             />
             <h3 className="p-2 border">Code: 5552521</h3>
