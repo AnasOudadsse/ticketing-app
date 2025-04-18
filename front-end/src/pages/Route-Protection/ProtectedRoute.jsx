@@ -1,18 +1,20 @@
-// ProtectedRoute.jsx
-import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import axios from "axios";
+"use client"
+
+import { useEffect, useState } from "react"
+import { Navigate, Outlet } from "react-router-dom"
+import axios from "axios"
+import { LoadingScreen } from "@/components/ui/loading-screen"
 
 export const ProtectedRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null)
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken")
 
       if (!token) {
-        setIsAuthenticated(false);
-        return;
+        setIsAuthenticated(false)
+        return
       }
 
       try {
@@ -20,23 +22,23 @@ export const ProtectedRoute = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        })
 
         if (response.status === 200) {
-          setIsAuthenticated(true);
+          setIsAuthenticated(true)
         }
       } catch (error) {
-        console.error("Authentication check failed:", error);
-        setIsAuthenticated(false);
+        console.error("Authentication check failed:", error)
+        setIsAuthenticated(false)
       }
-    };
+    }
 
-    checkAuth();
-  }, []);
+    checkAuth()
+  }, [])
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Show a loading spinner while checking
+    return <LoadingScreen message="Authenticating" /> // Modern loading screen
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
-};
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />
+}

@@ -17,6 +17,7 @@ import { ProtectedRoute } from "./pages/Route-Protection/ProtectedRoute";
 import Unauthorized from "./pages/Route-Protection/Unauthorized";
 import { ProfilePage } from "./pages/Profile/Profile";
 import AuthCheck from "./pages/authCheck/AuthCheck";
+import './App.css';
 
 function App() {
   return (
