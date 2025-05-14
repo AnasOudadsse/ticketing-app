@@ -14,9 +14,7 @@ use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
 use App\Http\Controllers\SupportspecialisationController;
-use App\Services\ChatService;
-use App\Services\KonosysService;
-use App\Services\CanvasService;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -98,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('statistiques',[StatistiqueController::class,'statistiques']);
     Route::delete('drop-user/{user_id}',[AuthController::class,'dropUser']);
     Route::get('user/{id}',[AuthController::class,'fetchUser']);
+    Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats']);
 });
 
 
@@ -132,4 +131,6 @@ Route::get('/test-api-key', function() {
 });
 
 Route::get('/test-models', function() {
-    $chatService = new \A
+    $chatService = new \App\Services\ChatService();
+    return response()->json($chatService->listAvailableModels());
+});

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -52,25 +52,54 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-// Import mock data
-import {
-  ticketStatusData,
-  ticketPriorityData,
-  ticketTrendData,
-  recentTickets,
-  topAgents,
-  departmentData,
-  satisfactionData,
-  slaMetrics,
-  responseTimeData,
-  agentPerformanceData,
-  workloadData,
-} from "./mock-data"
+import api from '@/lib/axios'
 
 export default function Dashboard() {
   const [dateRange, setDateRange] = useState("week")
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [dashboardData, setDashboardData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('accessToken')
+      console.log('Token from localStorage:', token)
+      
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      console.log('Making API request to /api/dashboard/stats')
+      const response = await api.get('/api/dashboard/stats')
+      console.log('API Response:', response)
+
+      if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
+        console.log('Received HTML response:', response.data)
+        throw new Error('Received HTML response instead of JSON data')
+      }
+
+      setDashboardData(response.data)
+      setError(null)
+    } catch (err) {
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response,
+        status: err.response?.status,
+        data: err.response?.data
+      })
+      setError(err.message || 'Failed to fetch dashboard data')
+      setDashboardData(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
 
   // Helper function to format numbers
   const formatNumber = (num) => {
@@ -106,10 +135,100 @@ export default function Dashboard() {
   // Handle refresh
   const handleRefresh = () => {
     setIsRefreshing(true)
-    setTimeout(() => {
+    fetchDashboardData().finally(() => {
       setIsRefreshing(false)
-    }, 1000)
+    })
   }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-red-500">
+          <p className="text-xl font-bold mb-2">Error Loading Dashboard</p>
+          <p>{error}</p>
+          <button 
+            onClick={handleRefresh}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-gray-500">No data available</div>
+      </div>
+    )
+  }
+
+  // Transform API data for charts
+  const ticketStatusData = (dashboardData?.ticketStatus || []).map(item => ({
+    name: item.status,
+    value: item.count,
+    color: getStatusColor(item.status)
+  }));
+
+  const ticketPriorityData = (dashboardData?.ticketPriority || []).map(item => ({
+    name: item.priority,
+    value: item.count,
+    color: getPriorityColor(item.priority)
+  }));
+
+  const ticketTrendData = (dashboardData?.ticketTrend || []).map(item => ({
+    date: item.date,
+    tickets: item.tickets || 0,
+    resolved: item.resolved || 0
+  }));
+
+  const departmentData = (dashboardData?.departmentData || []).map(dept => ({
+    name: dept.name || 'Unknown',
+    opened: dept.opened || 0,
+    resolved: dept.resolved || 0,
+    closed: dept.closed || 0
+  }));
+
+  const topAgents = dashboardData?.topAgents || [];
+  const slaMetrics = dashboardData?.slaMetrics || [];
+  const responseTimeData = {
+    data: (dashboardData?.responseTimeData?.data || []).map(item => ({
+      date: item.date,
+      responseTime: item.responseTime || 0,
+      resolutionTime: item.resolutionTime || 0
+    })),
+    current: {
+      responseTime: {
+        value: dashboardData?.responseTimeData?.current?.responseTime?.value || 0,
+        unit: 'min',
+        change: dashboardData?.responseTimeData?.current?.responseTime?.change || 0,
+        changeDirection: dashboardData?.responseTimeData?.current?.responseTime?.changeDirection || 'increase'
+      },
+      resolutionTime: {
+        value: dashboardData?.responseTimeData?.current?.resolutionTime?.value || 0,
+        unit: 'hrs',
+        change: dashboardData?.responseTimeData?.current?.resolutionTime?.change || 0,
+        changeDirection: dashboardData?.responseTimeData?.current?.resolutionTime?.changeDirection || 'increase'
+      }
+    }
+  };
+
+  const agentWorkload = dashboardData?.agentWorkload || [];
+  const recentTickets = dashboardData?.recentTickets || [];
+  const satisfactionData = {
+    average: dashboardData?.satisfactionData?.average || 0,
+    distribution: dashboardData?.satisfactionData?.distribution || []
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
@@ -204,14 +323,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(1248)}</div>
-                <div className="flex items-center mt-1 text-xs">
-                  <div className="flex items-center text-blue-600 mr-2">
-                    <ArrowUpIcon className="h-3 w-3 mr-1" />
-                    <span>12%</span>
-                  </div>
-                  <span className="text-muted-foreground">from last month</span>
-                </div>
+                <div className="text-2xl font-bold">{formatNumber(dashboardData?.totalTickets || 0)}</div>
               </CardContent>
             </Card>
             <Card className="overflow-hidden border-l-4 border-l-blue-400">
@@ -222,14 +334,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(423)}</div>
-                <div className="flex items-center mt-1 text-xs">
-                  <div className="flex items-center text-blue-400 mr-2">
-                    <ArrowDownIcon className="h-3 w-3 mr-1" />
-                    <span>3%</span>
-                  </div>
-                  <span className="text-muted-foreground">from last month</span>
-                </div>
+                <div className="text-2xl font-bold">{formatNumber(dashboardData?.openTickets || 0)}</div>
               </CardContent>
             </Card>
             <Card className="overflow-hidden border-l-4 border-l-blue-600">
@@ -240,14 +345,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(45)}</div>
-                <div className="flex items-center mt-1 text-xs">
-                  <div className="flex items-center text-blue-600 mr-2">
-                    <ArrowUpIcon className="h-3 w-3 mr-1" />
-                    <span>8%</span>
-                  </div>
-                  <span className="text-muted-foreground">from yesterday</span>
-                </div>
+                <div className="text-2xl font-bold">{formatNumber(dashboardData?.resolvedToday || 0)}</div>
               </CardContent>
             </Card>
             <Card className="overflow-hidden border-l-4 border-l-blue-300">
@@ -258,14 +356,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">32 min</div>
-                <div className="flex items-center mt-1 text-xs">
-                  <div className="flex items-center text-blue-600 mr-2">
-                    <ArrowDownIcon className="h-3 w-3 mr-1" />
-                    <span>12%</span>
-                  </div>
-                  <span className="text-muted-foreground">from last week</span>
-                </div>
+                <div className="text-2xl font-bold">{dashboardData?.avgResponseTime || 0} min</div>
               </CardContent>
             </Card>
           </div>
@@ -851,7 +942,7 @@ export default function Dashboard() {
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={agentPerformanceData}
+                      data={agentWorkload}
                       layout="vertical"
                       margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
                     >
@@ -874,7 +965,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-6">
-                  {workloadData.map((agent) => (
+                  {agentWorkload.map((agent) => (
                     <div key={agent.id} className="space-y-2">
                       <div className="flex justify-between">
                         <div className="flex items-center">

@@ -15,12 +15,20 @@ class Ticket extends Model
         'description',
         'problem_id',
         'status',
+        'priority',
         'created_by',
         'reserved_by',
         'admin_id',
         'resolution_date',
         'attachement',
+        'first_response_at',
     ];
+
+    protected $casts = [
+        'first_response_at' => 'datetime',
+        'priority' => 'string',
+    ];
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -37,5 +45,14 @@ class Ticket extends Model
         return $this->belongsTo(Problem::class);
     }
 
-
+    /**
+     * Update the first_response_at timestamp when the first response is made
+     */
+    public function updateFirstResponseTime()
+    {
+        if (!$this->first_response_at) {
+            $this->first_response_at = now();
+            $this->save();
+        }
+    }
 }
