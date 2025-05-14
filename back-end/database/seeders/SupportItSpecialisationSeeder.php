@@ -15,7 +15,7 @@ class SupportItSpecialisationSeeder extends Seeder
     public function run()
     {
         foreach ($this->getSupportItSpecialisationsData() as $data) {
-            DB::table('support_its_specialisations')->insert($data);
+            DB::table('specialisation_user')->insert($data);
         }
     }
 

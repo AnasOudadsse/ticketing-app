@@ -4,6 +4,7 @@ use App\Console\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\FonctionController;
@@ -13,6 +14,9 @@ use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\LocalisationController;
 use App\Http\Controllers\SpecialisationController;
 use App\Http\Controllers\SupportspecialisationController;
+use App\Services\ChatService;
+use App\Services\KonosysService;
+use App\Services\CanvasService;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,3 +120,16 @@ Route::middleware('auth:sanctum')->get('/tickets/{id}/download-attachment', [Tic
 
 Route::middleware('auth:sanctum')->get('/getSuppotIts', [AuthController::class, 'getSupportIts']);
 Route::get("/getinfo", [AuthController::class, "getInfo"]);
+
+Route::middleware('auth:sanctum')
+     ->post('/chat/ask', [ChatController::class, 'ask']);
+
+Route::get('/test-api-key', function() {
+    return response()->json([
+        'api_key_set' => !empty(env('GOOGLE_AI_STUDIO_API_KEY')),
+        'api_key_length' => strlen(env('GOOGLE_AI_STUDIO_API_KEY', ''))
+    ]);
+});
+
+Route::get('/test-models', function() {
+    $chatService = new \A

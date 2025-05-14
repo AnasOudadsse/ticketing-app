@@ -18,6 +18,7 @@ import Unauthorized from "./pages/Route-Protection/Unauthorized";
 import { ProfilePage } from "./pages/Profile/Profile";
 import AuthCheck from "./pages/authCheck/AuthCheck";
 import './App.css';
+import ChatWidget from "./pages/chatWidget/ChatWidget";
 
 function App() {
   return (
@@ -99,6 +100,7 @@ function App() {
               </Route>
             </Route>
           </Routes>
+          <ChatWidget />
         </Flex>
       </BrowserRouter>
     </ChakraProvider>
