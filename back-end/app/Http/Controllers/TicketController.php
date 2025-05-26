@@ -261,7 +261,6 @@ public function downloadAttachment($id)
         return response()->json(['message' => 'No attachment found'], 404);
     }
 
-    // Locate the file within 'storage/app/public'
     $filePath = storage_path('app/public/' . $ticket->attachement);
 
     if (!file_exists($filePath)) {
