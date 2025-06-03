@@ -1,0 +1,24 @@
+# Support Ticketing Dashboard API Requirements
+
+## Overview
+This document outlines the API endpoints and data structures needed to power the support ticketing dashboard.
+
+## API Endpoints
+
+### 1. Dashboard Overview
+
+#### GET /api/dashboard/stats
+Returns key statistics for the dashboard.
+```json
+{
+  "totalTickets": 1248,
+  "openTickets": 423,
+  "resolvedToday": 87,
+  "avgResponseTime": "32m",
+  "trends": {
+    "totalTickets": 12,
+    "openTickets": -5,
+    "resolvedToday": 23,
+    "avgResponseTime": 8
+  }
+}

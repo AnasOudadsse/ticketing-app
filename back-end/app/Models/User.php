@@ -42,6 +42,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'role' => 'string',
     ];
     
     public function fonction()
@@ -66,12 +67,39 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ticket::class, 'reserved_by');
     }
+    public function resolvedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'reserved_by')
+            ->where('status', 'resolved');
+    }
     public function admin()
     {
         return $this->hasMany(Ticket::class, 'admin_id');
     }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'created_by')
+            ->orWhere('reserved_by', $this->id)
+            ->orWhere('admin_id', $this->id);
+    }
     public function specialisations()
     {
         return $this->belongsToMany(Specialisation::class, 'specialisation_user');
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Scope a query to only include users with a specific role
+     */
+    public function scopeRole($query, $role)
+    {
+        return $query->where('role', $role);
     }
 }
