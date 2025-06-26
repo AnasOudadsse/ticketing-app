@@ -28,7 +28,7 @@ function App() {
           <Routes>
             {/* Public Route */}
 
-            <Route path="" element={<AuthCheck />} />
+            <Route path="/" element={<AuthCheck />} />
             <Route path="login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 

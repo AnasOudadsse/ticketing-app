@@ -9,8 +9,10 @@ const AuthCheck = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
-    console.log(token);
-    if (!token) navigate("login");
+    if (!token) {
+      navigate("/login");
+      return; // Stop further execution if not logged in
+    }
 
     const request = {
       url: "http://127.0.0.1:8000/api/authCheck",
@@ -24,8 +26,9 @@ const AuthCheck = () => {
   }, []);
 
   const getData = (dataRec) => {
-    if (!dataRec.ok) navigate("login");
-    if(dataRec.role === "client" || dataRec.role === "supportIt") navigate("tickets/ticketlist");
+    if (!dataRec.ok) navigate("/login");
+    if (dataRec.role === "client" || dataRec.role === "supportIt")
+      navigate("tickets/ticketlist");
     else navigate("/tickets");
   };
 
