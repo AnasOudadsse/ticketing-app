@@ -16,4 +16,8 @@ class Fonction extends Model
     public function inventaire(){
         return $this->hasMany(Inventaire::class);
     }
+    public function users()
+    {
+        return $this->hasMany(\App\Models\User::class, 'fonction_id');
+    }
 }

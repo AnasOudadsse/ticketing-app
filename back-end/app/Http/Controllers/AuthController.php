@@ -219,7 +219,7 @@ function dropUser(Request $request, $user_id) {
 }
 
 function fetchUser(Request $request, $id) {
-    $user = User::find($id)->load("specialisations", "localisation", "departement", "fonction");
+    $user = User::find($id)->load("specialisations", "localisation", "department", "fonction");
 
     // $role = $request->user()->role;
     // if($role !== "admin") {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Department;
+use App\Models\Fonction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -47,23 +48,22 @@ class DashboardController extends Controller
                 ->groupBy('date')
                 ->get();
 
-            // Get department distribution by ticket creator's department
-            $departmentData = User::with('department')
-                ->whereHas('tickets')
+            // Get function distribution by ticket creator's function (status breakdown of tickets created by users with that function)
+            $functionData = Fonction::with(['users'])
                 ->get()
-                ->groupBy(function($user) {
-                    return $user->department ? $user->department->name : 'Unknown';
-                })
-                ->map(function($users, $deptName) {
-                    $tickets = $users->flatMap(function($user) {
-                        return $user->tickets;
-                    });
+                ->map(function($fonction) {
+                    $userIds = $fonction->users->pluck('id');
+                    $tickets = Ticket::whereIn('created_by', $userIds)->get();
                     return [
-                        'name' => $deptName,
-                        'opened' => $tickets->whereIn('status', ['opened', 'reserved'])->count(),
+                        'name' => $fonction->name,
+                        'opened' => $tickets->where('status', 'opened')->count(),
+                        'reserved' => $tickets->where('status', 'reserved')->count(),
                         'resolved' => $tickets->where('status', 'resolved')->count(),
                         'closed' => $tickets->where('status', 'closed')->count(),
                     ];
+                })
+                ->filter(function($item) {
+                    return $item['opened'] > 0 || $item['reserved'] > 0 || $item['resolved'] > 0 || $item['closed'] > 0;
                 })
                 ->values();
 
@@ -149,7 +149,7 @@ class DashboardController extends Controller
                 'ticketStatus' => $ticketStatus,
                 'ticketPriority' => $ticketPriority,
                 'ticketTrend' => $ticketTrend,
-                'departmentData' => $departmentData,
+                'functionData' => $functionData,
                 'topAgents' => $topAgents,
                 'slaMetrics' => $slaMetrics,
                 'responseTimeData' => $responseTimeData,

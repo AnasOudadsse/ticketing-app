@@ -489,11 +489,11 @@ export default function Dashboard() {
     resolved: item.resolved || 0,
   }));
 
-  const departmentData = (dashboardData?.departmentData || []).map((dept) => ({
-    name: dept.name || "Unknown",
-    opened: dept.opened || 0,
-    resolved: dept.resolved || 0,
-    closed: dept.closed || 0,
+  const functionData = (dashboardData?.functionData || []).map((fn) => ({
+    name: fn.name || "Unknown",
+    opened: fn.opened || 0,
+    resolved: fn.resolved || 0,
+    closed: fn.closed || 0,
   }));
 
   const topAgents = dashboardData?.topAgents || [];
@@ -1333,16 +1333,16 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            {/* Department Distribution */}
+            {/* Function Distribution */}
             <Card className="bg-white dark:bg-slate-800 shadow-md hover:shadow-lg transition-all duration-200 border-0">
               <CardHeader className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/5 dark:to-purple-500/5">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-base">
-                      Tickets by Department
+                      Tickets by Function
                     </CardTitle>
                     <CardDescription>
-                      Distribution of tickets across departments
+                      Distribution of tickets across functions
                     </CardDescription>
                   </div>
                   <BarChart3Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
@@ -1351,7 +1351,7 @@ export default function Dashboard() {
               <CardContent className="pt-6">
                 <div className="h-[400px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={departmentData} barGap={8} barSize={20}>
+                    <BarChart data={functionData} barGap={8} barSize={20}>
                       <defs>
                         <linearGradient
                           id="barOpened"
