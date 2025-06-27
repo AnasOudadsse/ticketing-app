@@ -97,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('drop-user/{user_id}',[AuthController::class,'dropUser']);
     Route::get('user/{id}',[AuthController::class,'fetchUser']);
     Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats']);
+    Route::middleware('auth:sanctum')->post('/tickets/{id}/rate', [App\Http\Controllers\TicketController::class, 'rateTicket']);
 });
 
 
@@ -134,3 +135,5 @@ Route::get('/test-models', function() {
     $chatService = new \App\Services\ChatService();
     return response()->json($chatService->listAvailableModels());
 });
+
+Route::get('/dashboard/satisfaction', [App\Http\Controllers\DashboardController::class, 'getSatisfactionData']);

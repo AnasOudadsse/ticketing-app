@@ -270,6 +270,43 @@ public function downloadAttachment($id)
     return response()->download($filePath, basename($filePath));
 }
 
+public function rateTicket(Request $request, $id)
+{
+    $request->validate([
+        'rating' => 'required|integer|min:1|max:5',
+        'comment' => 'nullable|string',
+        'response_time_rating' => 'nullable|integer|min:1|max:5',
+        'resolution_quality_rating' => 'nullable|integer|min:1|max:5',
+        'communication_rating' => 'nullable|integer|min:1|max:5',
+        'would_recommend' => 'nullable|boolean',
+    ]);
+
+    $ticket = Ticket::findOrFail($id);
+    $user = $request->user();
+
+    if (!in_array($ticket->status, ['resolved', 'closed'])) {
+        return response()->json(['message' => 'Ticket must be resolved or closed to rate.'], 400);
+    }
+    if ($ticket->created_by !== $user->id) {
+        return response()->json(['message' => 'Only the ticket creator can rate this ticket.'], 403);
+    }
+    if ($ticket->satisfaction_rating !== null) {
+        return response()->json(['message' => 'Ticket already rated.'], 400);
+    }
+
+    $ticket->satisfaction_rating = $request->rating;
+    $ticket->satisfaction_comment = $request->comment;
+    $ticket->rated_at = now();
+    $ticket->rated_by = $user->id;
+    $ticket->response_time_rating = $request->response_time_rating;
+    $ticket->resolution_quality_rating = $request->resolution_quality_rating;
+    $ticket->communication_rating = $request->communication_rating;
+    $ticket->would_recommend = $request->would_recommend;
+    $ticket->save();
+
+    return response()->json(['message' => 'Thank you for your feedback!', 'ticket' => $ticket]);
+}
+
 
 
 

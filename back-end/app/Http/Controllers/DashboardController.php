@@ -376,4 +376,63 @@ class DashboardController extends Controller
             ->where('created_at', '>=', now()->subDays(7))
             ->avg(DB::raw('TIMESTAMPDIFF(HOUR, created_at, resolution_date)')) ?? 0);
     }
+
+    public function getSatisfactionData()
+    {
+        // Get all rated tickets
+        $ratedTickets = Ticket::whereNotNull('satisfaction_rating')->get();
+        
+        if ($ratedTickets->isEmpty()) {
+            return response()->json([
+                'average' => 0,
+                'total_ratings' => 0,
+                'distribution' => [
+                    ['rating' => '1', 'count' => 0],
+                    ['rating' => '2', 'count' => 0],
+                    ['rating' => '3', 'count' => 0],
+                    ['rating' => '4', 'count' => 0],
+                    ['rating' => '5', 'count' => 0],
+                ],
+                'response_time_avg' => 0,
+                'resolution_quality_avg' => 0,
+                'communication_avg' => 0,
+                'recommendation_rate' => 0,
+            ]);
+        }
+
+        // Calculate average overall rating
+        $averageRating = $ratedTickets->avg('satisfaction_rating');
+        
+        // Calculate rating distribution
+        $distribution = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $count = $ratedTickets->where('satisfaction_rating', $i)->count();
+            $distribution[] = [
+                'rating' => (string)$i,
+                'count' => $count
+            ];
+        }
+
+        // Calculate averages for detailed ratings
+        $responseTimeAvg = $ratedTickets->whereNotNull('response_time_rating')->avg('response_time_rating') ?? 0;
+        $resolutionQualityAvg = $ratedTickets->whereNotNull('resolution_quality_rating')->avg('resolution_quality_rating') ?? 0;
+        $communicationAvg = $ratedTickets->whereNotNull('communication_rating')->avg('communication_rating') ?? 0;
+        
+        // Calculate recommendation rate
+        $recommendationRate = 0;
+        $ticketsWithRecommendation = $ratedTickets->whereNotNull('would_recommend');
+        if ($ticketsWithRecommendation->isNotEmpty()) {
+            $recommendationRate = ($ticketsWithRecommendation->where('would_recommend', true)->count() / $ticketsWithRecommendation->count()) * 100;
+        }
+
+        return response()->json([
+            'average' => round($averageRating, 1),
+            'total_ratings' => $ratedTickets->count(),
+            'distribution' => $distribution,
+            'response_time_avg' => round($responseTimeAvg, 1),
+            'resolution_quality_avg' => round($resolutionQualityAvg, 1),
+            'communication_avg' => round($communicationAvg, 1),
+            'recommendation_rate' => round($recommendationRate, 1),
+        ]);
+    }
 } 

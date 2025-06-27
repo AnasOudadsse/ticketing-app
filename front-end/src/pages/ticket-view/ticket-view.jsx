@@ -31,6 +31,7 @@ import {
   ClockIcon as ClockIconOutline,
 } from "@heroicons/react/24/outline";
 import { ClockIcon as ClockIconMini } from "@heroicons/react/20/solid";
+import { StarIcon } from "@heroicons/react/24/solid";
 
 // Status badge component
 const StatusBadge = ({ status }) => {
@@ -298,6 +299,25 @@ export const TicketView = () => {
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
+  const [rating, setRating] = useState(ticket?.satisfaction_rating || 0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [showRatingUI, setShowRatingUI] = useState(false);
+
+  // New rating states
+  const [responseTimeRating, setResponseTimeRating] = useState(
+    ticket?.response_time_rating || 0
+  );
+  const [resolutionQualityRating, setResolutionQualityRating] = useState(
+    ticket?.resolution_quality_rating || 0
+  );
+  const [communicationRating, setCommunicationRating] = useState(
+    ticket?.communication_rating || 0
+  );
+  const [wouldRecommend, setWouldRecommend] = useState(
+    ticket?.would_recommend || null
+  );
 
   const toast = useToast();
   const { id } = useParams();
@@ -353,6 +373,19 @@ export const TicketView = () => {
     };
     fetchTicket();
   }, [id, toast]);
+
+  useEffect(() => {
+    if (
+      userRole === "client" &&
+      ["resolved", "closed"].includes(ticket?.status) &&
+      String(ticket?.created_by) === String(logged_id) &&
+      ticket?.satisfaction_rating == null
+    ) {
+      setShowRatingUI(true);
+    } else {
+      setShowRatingUI(false);
+    }
+  }, [ticket, userRole, logged_id]);
 
   // Fetch list of Support IT users
   const fetchSupportUsers = async () => {
@@ -534,6 +567,55 @@ export const TicketView = () => {
     }
   };
 
+  const handleSubmitRating = async () => {
+    setSubmitting(true);
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/tickets/${ticket.id}/rate`,
+        {
+          rating,
+          comment,
+          response_time_rating: responseTimeRating,
+          resolution_quality_rating: resolutionQualityRating,
+          communication_rating: communicationRating,
+          would_recommend: wouldRecommend,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      toast({
+        title: "Thank you!",
+        description: "Your feedback has been submitted.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setShowRatingUI(false);
+      setTicket({
+        ...ticket,
+        satisfaction_rating: rating,
+        satisfaction_comment: comment,
+        response_time_rating: responseTimeRating,
+        resolution_quality_rating: resolutionQualityRating,
+        communication_rating: communicationRating,
+        would_recommend: wouldRecommend,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit rating.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   // Define tabs
   const tabs = [
     {
@@ -549,6 +631,31 @@ export const TicketView = () => {
       icon: <PaperClipIcon className="h-5 w-5" />,
     });
   }
+
+  // Add rating tab if ticket is resolved/closed and user is the creator
+  if (
+    userRole === "client" &&
+    ["resolved", "closed"].includes(ticket?.status) &&
+    String(ticket?.created_by) === String(logged_id)
+  ) {
+    tabs.push({
+      label: "Rating",
+      icon: <StarIcon className="h-5 w-5" />,
+    });
+  }
+
+  // Debug: log the values to check why rating tab might not show
+  console.log("Debug Rating Tab:", {
+    userRole,
+    ticketStatus: ticket?.status,
+    ticketCreatedBy: ticket?.created_by,
+    loggedId: logged_id,
+    shouldShowRating:
+      userRole === "client" &&
+      ["resolved", "closed"].includes(ticket?.status) &&
+      String(ticket?.created_by) === String(logged_id),
+    tabs: tabs,
+  });
 
   // Debug: log the raw date values
   if (ticket) {
@@ -782,7 +889,6 @@ export const TicketView = () => {
                       </div>
                     </div>
                   )}
-
                   {/* Attachment Tab */}
                   {activeTab === 1 && ticket.attachement && (
                     <div className="space-y-4">
@@ -831,6 +937,232 @@ export const TicketView = () => {
                       </div>
                     </div>
                   )}
+                  {/* Rating Tab */}
+                  {activeTab === (ticket?.attachement ? 2 : 1) &&
+                    userRole === "client" &&
+                    ["resolved", "closed"].includes(ticket?.status) &&
+                    String(ticket?.created_by) === String(logged_id) && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Customer Satisfaction
+                        </h3>
+
+                        {/* Show rating UI for unrated tickets */}
+                        {!ticket.satisfaction_rating && showRatingUI && (
+                          <div className="bg-gray-50 rounded-lg p-6">
+                            <div className="mb-6">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Overall Experience (1-5 stars)
+                              </label>
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <StarIcon
+                                    key={star}
+                                    className={`h-8 w-8 cursor-pointer transition-colors ${
+                                      (hoverRating || rating) >= star
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                    onMouseEnter={() => setHoverRating(star)}
+                                    onMouseLeave={() => setHoverRating(0)}
+                                    onClick={() => setRating(star)}
+                                  />
+                                ))}
+                              </div>
+                              <p className="text-sm text-gray-500 mt-1">
+                                {rating > 0 && `${rating} out of 5 stars`}
+                              </p>
+                            </div>
+
+                            {/* Response Time Rating */}
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Response Time (1-5 stars)
+                              </label>
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <StarIcon
+                                    key={star}
+                                    className={`h-6 w-6 cursor-pointer transition-colors ${
+                                      responseTimeRating >= star
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                    onClick={() => setResponseTimeRating(star)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Resolution Quality Rating */}
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Resolution Quality (1-5 stars)
+                              </label>
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <StarIcon
+                                    key={star}
+                                    className={`h-6 w-6 cursor-pointer transition-colors ${
+                                      resolutionQualityRating >= star
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                    onClick={() =>
+                                      setResolutionQualityRating(star)
+                                    }
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Communication Rating */}
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Communication (1-5 stars)
+                              </label>
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <StarIcon
+                                    key={star}
+                                    className={`h-6 w-6 cursor-pointer transition-colors ${
+                                      communicationRating >= star
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                    onClick={() => setCommunicationRating(star)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Would Recommend */}
+                            <div className="mb-4">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={wouldRecommend === true}
+                                  onChange={(e) =>
+                                    setWouldRecommend(e.target.checked)
+                                  }
+                                  className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">
+                                  I would recommend this service to others
+                                </span>
+                              </label>
+                            </div>
+
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Additional Comments (Optional)
+                              </label>
+                              <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                rows={3}
+                                placeholder="Share your feedback about the service..."
+                              />
+                            </div>
+
+                            <button
+                              onClick={handleSubmitRating}
+                              disabled={rating === 0 || submitting}
+                              className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {submitting ? "Submitting..." : "Submit Rating"}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Show submitted rating */}
+                        {ticket.satisfaction_rating && (
+                          <div className="bg-white border border-gray-200 rounded-lg p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <h4 className="text-lg font-medium text-gray-900">
+                                Your Rating
+                              </h4>
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <StarIcon
+                                    key={star}
+                                    className={`h-6 w-6 ${
+                                      star <= ticket.satisfaction_rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                  />
+                                ))}
+                                <span className="ml-2 text-sm text-gray-600">
+                                  {ticket.satisfaction_rating} out of 5 stars
+                                </span>
+                              </div>
+                            </div>
+
+                            {ticket.satisfaction_comment && (
+                              <div className="mb-4">
+                                <h5 className="text-sm font-medium text-gray-700 mb-2">
+                                  Your Comment
+                                </h5>
+                                <p className="text-gray-600 bg-gray-50 p-3 rounded-md">
+                                  {ticket.satisfaction_comment}
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="text-xs text-gray-500">
+                              Rated on{" "}
+                              {new Date(ticket.updated_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Show ticket assignment information */}
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <h4 className="text-sm font-medium text-gray-700 mb-3">
+                            Ticket Assignment Information
+                          </h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Created by:</span>
+                              <span className="font-medium">
+                                {ticket.creator?.name || "Unknown"}
+                              </span>
+                            </div>
+                            {ticket.reservedBy && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">
+                                  Assigned to:
+                                </span>
+                                <span className="font-medium">
+                                  {ticket.reservedBy.name}
+                                </span>
+                              </div>
+                            )}
+                            {ticket.resolvedBy && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">
+                                  Resolved by:
+                                </span>
+                                <span className="font-medium">
+                                  {ticket.resolvedBy.name}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Show message if rating is not available */}
+                        {!ticket.satisfaction_rating && !showRatingUI && (
+                          <div className="text-center py-8">
+                            <p className="text-gray-500">
+                              Rating is not available for this ticket.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -933,38 +1265,33 @@ export const TicketView = () => {
                     </span>
                   </div>
 
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-500">Resolved:</span>
-                    <span className="text-sm text-gray-900">
-                      {toUTCDateString(ticket.resolution_date)}
-                    </span>
-                  </div>
+                  {ticket.resolution_date && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Resolved:</span>
+                      <span className="text-sm text-gray-900">
+                        {toUTCDateString(ticket.resolution_date)}
+                      </span>
+                    </div>
+                  )}
 
-                  {ticket.support_it && (
+                  {ticket.reservedBy && (
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">
                         Assigned to:
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {ticket.support_it.name}
+                        {ticket.reservedBy.name}
                       </span>
                     </div>
                   )}
 
-                  {ticket.status === "resolved" && ticket.resolved_at && (
+                  {ticket.resolvedBy && (
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Resolved:</span>
-                      <span className="text-sm text-gray-900">
-                        {toUTCDateString(ticket.resolved_at)}
+                      <span className="text-sm text-gray-500">
+                        Resolved by:
                       </span>
-                    </div>
-                  )}
-
-                  {ticket.status === "closed" && ticket.closed_at && (
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Closed:</span>
-                      <span className="text-sm text-gray-900">
-                        {toUTCDateString(ticket.closed_at)}
+                      <span className="text-sm font-medium text-gray-900">
+                        {ticket.resolvedBy.name}
                       </span>
                     </div>
                   )}
@@ -1117,21 +1444,98 @@ export const TicketView = () => {
                         </select>
                       </div>
                     </div>
+                    <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                      <Button
+                        variant="primary"
+                        onClick={handleAssign}
+                        disabled={!selectedSupportUser}
+                        className="sm:col-start-2"
+                      >
+                        <UserPlusIcon className="mr-2 h-5 w-5" />
+                        Assign
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setIsAssignModalOpen(false)}
+                        className="mt-3 sm:col-start-1 sm:mt-0"
+                        ref={cancelButtonRef}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* Resolve Dialog */}
+      <Transition show={isResolveDialogOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsResolveDialogOpen(false)}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <CheckIcon
+                        className="h-6 w-6 text-emerald-600"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
+                        Resolve Ticket
+                      </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Are you sure you want to mark this ticket as resolved?
+                          This action cannot be undone.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                     <Button
-                      variant="primary"
-                      onClick={handleAssign}
-                      disabled={!selectedSupportUser}
-                      className="sm:col-start-2"
+                      variant="success"
+                      onClick={handleResolve}
+                      className="sm:ml-3"
                     >
-                      <UserPlusIcon className="mr-2 h-5 w-5" />
-                      Assign
+                      <CheckIcon className="mr-2 h-5 w-5" />
+                      Resolve Ticket
                     </Button>
                     <Button
                       variant="secondary"
-                      onClick={() => setIsAssignModalOpen(false)}
-                      className="mt-3 sm:col-start-1 sm:mt-0"
+                      onClick={() => setIsResolveDialogOpen(false)}
                       ref={cancelButtonRef}
                     >
                       Cancel
@@ -1362,80 +1766,6 @@ export const TicketView = () => {
                     <Button
                       variant="secondary"
                       onClick={() => setIsCloseDialogOpen(false)}
-                      className="mt-3 sm:mt-0"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
-
-      <Transition show={isResolveDialogOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => setIsResolveDialogOpen(false)}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <CheckCircleIcon
-                        className="h-6 w-6 text-green-600"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <Dialog.Title
-                        as="h3"
-                        className="text-lg font-medium leading-6 text-gray-900"
-                      >
-                        Resolve Ticket
-                      </Dialog.Title>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          Are you sure you want to mark this ticket as resolved?
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <Button
-                      variant="success"
-                      onClick={handleResolve}
-                      className="sm:ml-3"
-                    >
-                      Resolve
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => setIsResolveDialogOpen(false)}
                       className="mt-3 sm:mt-0"
                     >
                       Cancel

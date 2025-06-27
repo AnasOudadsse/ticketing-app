@@ -252,13 +252,19 @@ function generateFakeData() {
 
   // Generate fake satisfaction data
   const satisfactionData = {
-    average: (Math.random() * 1.5 + 3.5).toFixed(1),
-    distribution: Array.from({ length: 5 }, (_, i) => ({
-      rating: (i + 1).toString(),
-      count:
-        Math.floor(Math.random() * (i === 3 || i === 4 ? 100 : 50)) +
-        (i === 0 ? 5 : i === 1 ? 15 : i === 2 ? 30 : i === 3 ? 60 : 80),
-    })),
+    average: 0,
+    total_ratings: 0,
+    distribution: [
+      { rating: "1", count: 0 },
+      { rating: "2", count: 0 },
+      { rating: "3", count: 0 },
+      { rating: "4", count: 0 },
+      { rating: "5", count: 0 },
+    ],
+    response_time_avg: 0,
+    resolution_quality_avg: 0,
+    communication_avg: 0,
+    recommendation_rate: 0,
   };
 
   // Compile all fake data
@@ -303,7 +309,13 @@ export default function Dashboard() {
       }
 
       try {
+        // Fetch main dashboard stats
         const response = await api.get("/api/dashboard/stats");
+
+        // Fetch satisfaction data
+        const satisfactionResponse = await api.get(
+          "/api/dashboard/satisfaction"
+        );
 
         if (
           typeof response.data === "string" &&
@@ -316,7 +328,12 @@ export default function Dashboard() {
           console.log("Empty response from API, using fake data");
           setDashboardData(generateFakeData());
         } else {
-          setDashboardData(response.data);
+          // Combine the main dashboard data with satisfaction data
+          const combinedData = {
+            ...response.data,
+            satisfactionData: satisfactionResponse.data,
+          };
+          setDashboardData(combinedData);
         }
 
         setError(null);
