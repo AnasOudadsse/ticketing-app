@@ -89,6 +89,7 @@ import {
   SettingsIcon,
 } from "lucide-react";
 import api from "@/lib/axios";
+import Header from "../header/header";
 
 // Add this after all the imports but before the Dashboard component
 function generateFakeData() {
@@ -611,114 +612,11 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 pb-12">
       {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500">
-                Support Dashboard
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4" />
-                <span>Last updated: April 18, 2025, 11:45 AM</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-1 shadow-sm">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={
-                    dateRange === "day"
-                      ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400"
-                      : ""
-                  }
-                  onClick={() => setDateRange("day")}
-                >
-                  Day
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={
-                    dateRange === "week"
-                      ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400"
-                      : ""
-                  }
-                  onClick={() => setDateRange("week")}
-                >
-                  Week
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={
-                    dateRange === "month"
-                      ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400"
-                      : ""
-                  }
-                  onClick={() => setDateRange("month")}
-                >
-                  Month
-                </Button>
-              </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={handleRefresh}
-                      disabled={isRefreshing}
-                      className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm"
-                    >
-                      <RefreshCwIcon
-                        className={`h-4 w-4 ${
-                          isRefreshing ? "animate-spin" : ""
-                        }`}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Refresh data</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm"
-                  >
-                    <MoreHorizontalIcon className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem>
-                    <FilterIcon className="mr-2 h-4 w-4" /> Filter view
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <DownloadIcon className="mr-2 h-4 w-4" /> Export data
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <SearchIcon className="mr-2 h-4 w-4" /> Search tickets
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <SettingsIcon className="mr-2 h-4 w-4" /> Dashboard settings
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header/>
 
-      {/* Add this after the header section and before the Tabs component */}
+      {/* Add this after the header section and before the Tabs component
       {!dashboardData?.isRealData && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
+        <div className="bg-amber-50 mt-10 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
           <div className="flex items-start">
             <InfoIcon className="h-5 w-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0" />
             <div>
@@ -732,7 +630,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Tabs
