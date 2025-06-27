@@ -359,22 +359,22 @@ export default function Dashboard() {
   // Helper function to get status color
   const getStatusColor = (status) => {
     const colors = {
-      opened: "bg-indigo-500",
-      reserved: "bg-amber-500",
-      resolved: "bg-emerald-500",
-      closed: "bg-slate-500",
+      opened: "#6366f1", // Indigo
+      reserved: "#f59e0b", // Amber
+      resolved: "#10b981", // Emerald
+      closed: "#64748b", // Slate
     };
-    return colors[status] || "bg-slate-300";
+    return colors[status] || "#94a3b8";
   };
 
   // Helper function to get priority color
   const getPriorityColor = (priority) => {
     const colors = {
-      high: "bg-rose-500",
-      medium: "bg-amber-500",
-      low: "bg-emerald-500",
+      high: "#ef4444", // Red
+      medium: "#f59e0b", // Amber
+      low: "#10b981", // Emerald
     };
-    return colors[priority] || "bg-slate-300";
+    return colors[priority] || "#94a3b8";
   };
 
   // Handle refresh
