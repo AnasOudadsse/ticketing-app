@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef, Fragment } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
-import { format, formatDistanceToNow } from "date-fns"
-import { useToast } from "@chakra-ui/react"
-import PropTypes from "prop-types"
-import Header from "../header/header"
-import { Dialog, Transition } from "@headlessui/react"
+import { useState, useEffect, useRef, Fragment } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { format, formatDistanceToNow } from "date-fns";
+import { useToast } from "@chakra-ui/react";
+import PropTypes from "prop-types";
+import Header from "../header/header";
+import { Dialog, Transition } from "@headlessui/react";
 
 // Icons
 import {
@@ -29,43 +29,43 @@ import {
   ChevronRightIcon,
   ArrowDownTrayIcon,
   ClockIcon as ClockIconOutline,
-} from "@heroicons/react/24/outline"
-import { ClockIcon as ClockIconMini } from "@heroicons/react/20/solid"
+} from "@heroicons/react/24/outline";
+import { ClockIcon as ClockIconMini } from "@heroicons/react/20/solid";
 
 // Status badge component
 const StatusBadge = ({ status }) => {
-  let bgColor, textColor, icon, label
+  let bgColor, textColor, icon, label;
 
   switch (status) {
     case "opened":
-      bgColor = "bg-emerald-100"
-      textColor = "text-emerald-800"
-      icon = <ExclamationTriangleIcon className="h-4 w-4 text-emerald-600" />
-      label = "Open"
-      break
+      bgColor = "bg-emerald-100";
+      textColor = "text-emerald-800";
+      icon = <ExclamationTriangleIcon className="h-4 w-4 text-emerald-600" />;
+      label = "Open";
+      break;
     case "reserved":
-      bgColor = "bg-amber-100"
-      textColor = "text-amber-800"
-      icon = <ClockIcon className="h-4 w-4 text-amber-600" />
-      label = "Reserved"
-      break
+      bgColor = "bg-amber-100";
+      textColor = "text-amber-800";
+      icon = <ClockIcon className="h-4 w-4 text-amber-600" />;
+      label = "Reserved";
+      break;
     case "resolved":
-      bgColor = "bg-blue-100"
-      textColor = "text-blue-800"
-      icon = <CheckCircleIcon className="h-4 w-4 text-blue-600" />
-      label = "Resolved"
-      break
+      bgColor = "bg-blue-100";
+      textColor = "text-blue-800";
+      icon = <CheckCircleIcon className="h-4 w-4 text-blue-600" />;
+      label = "Resolved";
+      break;
     case "closed":
-      bgColor = "bg-red-100"
-      textColor = "text-red-800"
-      icon = <XCircleIcon className="h-4 w-4 text-red-600" />
-      label = "Closed"
-      break
+      bgColor = "bg-red-100";
+      textColor = "text-red-800";
+      icon = <XCircleIcon className="h-4 w-4 text-red-600" />;
+      label = "Closed";
+      break;
     default:
-      bgColor = "bg-gray-100"
-      textColor = "text-gray-800"
-      icon = null
-      label = status
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-800";
+      icon = null;
+      label = status;
   }
 
   return (
@@ -75,66 +75,68 @@ const StatusBadge = ({ status }) => {
       {icon}
       {label}
     </span>
-  )
-}
+  );
+};
 
 StatusBadge.propTypes = {
   status: PropTypes.string.isRequired,
-}
+};
 
 // Priority badge component
 const PriorityBadge = ({ priority }) => {
-  let bgColor, textColor, label
+  let bgColor, textColor, label;
 
   switch (priority?.toLowerCase()) {
     case "high":
-      bgColor = "bg-red-100"
-      textColor = "text-red-800"
-      label = "High Priority"
-      break
+      bgColor = "bg-red-100";
+      textColor = "text-red-800";
+      label = "High Priority";
+      break;
     case "medium":
-      bgColor = "bg-amber-100"
-      textColor = "text-amber-800"
-      label = "Medium Priority"
-      break
+      bgColor = "bg-amber-100";
+      textColor = "text-amber-800";
+      label = "Medium Priority";
+      break;
     case "low":
-      bgColor = "bg-emerald-100"
-      textColor = "text-emerald-800"
-      label = "Low Priority"
-      break
+      bgColor = "bg-emerald-100";
+      textColor = "text-emerald-800";
+      label = "Low Priority";
+      break;
     default:
-      bgColor = "bg-gray-100"
-      textColor = "text-gray-800"
-      label = "Normal Priority"
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-800";
+      label = "Normal Priority";
   }
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bgColor} ${textColor}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bgColor} ${textColor}`}
+    >
       {label}
     </span>
-  )
-}
+  );
+};
 
 PriorityBadge.propTypes = {
   priority: PropTypes.string,
-}
+};
 
 // Avatar component
 const Avatar = ({ name, size = "md" }) => {
   const getInitials = (name) => {
-    if (!name) return "U"
+    if (!name) return "U";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   const sizeClasses = {
     sm: "h-8 w-8 text-xs",
     md: "h-10 w-10 text-sm",
     lg: "h-12 w-12 text-base",
-  }
+  };
 
   return (
     <div
@@ -142,13 +144,13 @@ const Avatar = ({ name, size = "md" }) => {
     >
       {getInitials(name)}
     </div>
-  )
-}
+  );
+};
 
 Avatar.propTypes = {
   name: PropTypes.string,
   size: PropTypes.oneOf(["sm", "md", "lg"]),
-}
+};
 
 // Button component
 const Button = ({
@@ -162,25 +164,27 @@ const Button = ({
   ...props
 }) => {
   const baseClasses =
-    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
+    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
 
   const variantClasses = {
     primary:
       "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 focus:ring-emerald-500",
-    secondary: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-emerald-500",
+    secondary:
+      "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-emerald-500",
     danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-    success: "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500",
+    success:
+      "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500",
     warning: "bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500",
     info: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
     ghost: "bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
-  }
+  };
 
   const sizeClasses = {
     sm: "text-xs px-2.5 py-1.5 rounded-md",
     md: "text-sm px-4 py-2 rounded-md",
     lg: "text-base px-6 py-3 rounded-md",
     icon: "p-2 rounded-full",
-  }
+  };
 
   return (
     <button
@@ -192,27 +196,40 @@ const Button = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(["primary", "secondary", "danger", "success", "warning", "info", "ghost"]),
+  variant: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "danger",
+    "success",
+    "warning",
+    "info",
+    "ghost",
+  ]),
   size: PropTypes.oneOf(["sm", "md", "lg", "icon"]),
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   className: PropTypes.string,
   type: PropTypes.string,
-}
+};
 
 // Skeleton component
 const Skeleton = ({ className = "", ...props }) => {
-  return <div className={`animate-pulse rounded bg-gray-200 ${className}`} {...props} />
-}
+  return (
+    <div
+      className={`animate-pulse rounded bg-gray-200 ${className}`}
+      {...props}
+    />
+  );
+};
 
 Skeleton.propTypes = {
   className: PropTypes.string,
-}
+};
 
 // Tab component
 const Tabs = ({ tabs, activeTab, setActiveTab }) => {
@@ -237,72 +254,92 @@ const Tabs = ({ tabs, activeTab, setActiveTab }) => {
         ))}
       </nav>
     </div>
-  )
-}
+  );
+};
 
 Tabs.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       icon: PropTypes.node,
-    }),
+    })
   ).isRequired,
   activeTab: PropTypes.number.isRequired,
   setActiveTab: PropTypes.func.isRequired,
-}
+};
+
+// Helper to convert DB datetime to UTC string
+const toUTCDateString = (dateStr) => {
+  if (!dateStr || typeof dateStr !== "string") return "—";
+  // If already ISO (contains 'T' and ends with 'Z'), use as is
+  if (dateStr.includes("T") && dateStr.endsWith("Z")) {
+    const dateObj = new Date(dateStr);
+    return isNaN(dateObj)
+      ? "—"
+      : dateObj.toLocaleString("en-US", { timeZone: "UTC" });
+  }
+  // Otherwise, convert MySQL format to ISO
+  const iso = dateStr.replace(" ", "T") + "Z";
+  const dateObj = new Date(iso);
+  return isNaN(dateObj)
+    ? "—"
+    : dateObj.toLocaleString("en-US", { timeZone: "UTC" });
+};
 
 export const TicketView = () => {
-  const [ticket, setTicket] = useState(null)
-  const [userRole, setUserRole] = useState("")
-  const [supportUsers, setSupportUsers] = useState([])
-  const [selectedSupportUser, setSelectedSupportUser] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState(0)
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
-  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false)
-  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false)
-  const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false)
+  const [ticket, setTicket] = useState(null);
+  const [userRole, setUserRole] = useState("");
+  const [supportUsers, setSupportUsers] = useState([]);
+  const [selectedSupportUser, setSelectedSupportUser] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
+  const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
 
-  const toast = useToast()
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const logged_id = localStorage.getItem("id")
-  const cancelButtonRef = useRef(null)
+  const toast = useToast();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const logged_id = localStorage.getItem("id");
+  const cancelButtonRef = useRef(null);
 
   // Fetch the user's role from the API
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        const token = localStorage.getItem("accessToken")
+        const token = localStorage.getItem("accessToken");
         const response = await axios.get("http://127.0.0.1:8000/api/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        setUserRole(response.data.role)
+        });
+        setUserRole(response.data.role);
       } catch (error) {
-        console.error("Error fetching user role:", error)
+        console.error("Error fetching user role:", error);
         toast({
           title: "Error",
           description: "Failed to fetch user data.",
           status: "error",
           duration: 5000,
           isClosable: true,
-        })
+        });
       }
-    }
-    fetchUserRole()
-  }, [toast])
+    };
+    fetchUserRole();
+  }, [toast]);
 
   // Fetch ticket details
   useEffect(() => {
     const fetchTicket = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/tickets/get/${id}`)
-        setTicket(response.data)
-        setIsLoading(false)
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/tickets/get/${id}`
+        );
+        setTicket(response.data);
+        setIsLoading(false);
       } catch (error) {
         toast({
           title: "Error",
@@ -310,29 +347,31 @@ export const TicketView = () => {
           status: "error",
           duration: 5000,
           isClosable: true,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
-    }
-    fetchTicket()
-  }, [id, toast])
+    };
+    fetchTicket();
+  }, [id, toast]);
 
   // Fetch list of Support IT users
   const fetchSupportUsers = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/getSuppotIts")
-      setSupportUsers(response.data)
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/getSuppotIts"
+      );
+      setSupportUsers(response.data);
     } catch (error) {
-      console.error("Error fetching support users:", error)
+      console.error("Error fetching support users:", error);
       toast({
         title: "Error",
         description: "Failed to fetch support users.",
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     }
-  }
+  };
 
   // Assign ticket
   const handleAssign = async () => {
@@ -340,19 +379,25 @@ export const TicketView = () => {
       await axios.put(
         `http://127.0.0.1:8000/api/tickets/${id}/assign`,
         { reserved_by: selectedSupportUser },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } },
-      )
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
       toast({
         title: "Success",
         description: "Ticket assigned successfully.",
         status: "success",
         duration: 5000,
         isClosable: true,
-      })
-      setIsAssignModalOpen(false)
+      });
+      setIsAssignModalOpen(false);
       // Refresh ticket data
-      const response = await axios.get(`http://127.0.0.1:8000/api/tickets/get/${id}`)
-      setTicket(response.data)
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/tickets/get/${id}`
+      );
+      setTicket(response.data);
     } catch (error) {
       toast({
         title: "Error",
@@ -360,25 +405,25 @@ export const TicketView = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     }
-  }
+  };
 
   const handleReserve = async () => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/tickets/${id}/reserve`, {
         reserved_by: logged_id,
-      })
+      });
       toast({
         title: "Success",
         description: "The ticket has been reserved.",
         status: "success",
         duration: 5000,
         isClosable: true,
-      })
+      });
       // Update local state
-      const updatedTicket = { ...ticket, status: "reserved" }
-      setTicket(updatedTicket)
+      const updatedTicket = { ...ticket, status: "reserved" };
+      setTicket(updatedTicket);
     } catch (error) {
       toast({
         title: "Error",
@@ -386,26 +431,26 @@ export const TicketView = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     }
-  }
+  };
 
   const handleResolve = async () => {
     try {
       await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/resolve`, {
         resolved_by: logged_id,
-      })
+      });
       toast({
         title: "Success",
         description: "The ticket has been resolved.",
         status: "success",
         duration: 5000,
         isClosable: true,
-      })
+      });
       // Update local state
-      const updatedTicket = { ...ticket, status: "resolved" }
-      setTicket(updatedTicket)
-      setIsResolveDialogOpen(false)
+      const updatedTicket = { ...ticket, status: "resolved" };
+      setTicket(updatedTicket);
+      setIsResolveDialogOpen(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -413,27 +458,27 @@ export const TicketView = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
-      setIsResolveDialogOpen(false)
+      });
+      setIsResolveDialogOpen(false);
     }
-  }
+  };
 
   const handleCloseTicket = async () => {
     try {
       await axios.put(`http://127.0.0.1:8000/api/tickets/${id}/close`, {
         closed_by: logged_id,
-      })
+      });
       toast({
         title: "Success",
         description: "The ticket has been closed.",
         status: "success",
         duration: 5000,
         isClosable: true,
-      })
+      });
       // Update local state
-      const updatedTicket = { ...ticket, status: "closed" }
-      setTicket(updatedTicket)
-      setIsCloseDialogOpen(false)
+      const updatedTicket = { ...ticket, status: "closed" };
+      setTicket(updatedTicket);
+      setIsCloseDialogOpen(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -441,31 +486,34 @@ export const TicketView = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
-      setIsCloseDialogOpen(false)
+      });
+      setIsCloseDialogOpen(false);
     }
-  }
+  };
 
   const handlePrint = () => {
-    window.print()
-  }
+    window.print();
+  };
 
   const downloadImage = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/tickets/${ticket.id}/download-attachment`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        responseType: "blob",
-      })
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/tickets/${ticket.id}/download-attachment`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          responseType: "blob",
+        }
+      );
 
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement("a")
-      link.href = url
-      link.setAttribute("download", `attachment_${ticket.id}.jpg`)
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `attachment_${ticket.id}.jpg`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       toast({
         title: "Download Started",
@@ -473,18 +521,18 @@ export const TicketView = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
-      })
+      });
     } catch (error) {
-      console.error("Error downloading attachment:", error)
+      console.error("Error downloading attachment:", error);
       toast({
         title: "Error",
         description: "Failed to download attachment.",
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     }
-  }
+  };
 
   // Define tabs
   const tabs = [
@@ -492,14 +540,24 @@ export const TicketView = () => {
       label: "Description",
       icon: <DocumentTextIcon className="h-5 w-5" />,
     },
-  ]
+  ];
 
   // Add attachment tab if there's an attachment
   if (ticket?.attachement) {
     tabs.push({
       label: "Attachment",
       icon: <PaperClipIcon className="h-5 w-5" />,
-    })
+    });
+  }
+
+  // Debug: log the raw date values
+  if (ticket) {
+    console.log(
+      "created_at:",
+      ticket.created_at,
+      "resolution_date:",
+      ticket.resolution_date
+    );
   }
 
   // Loading skeleton
@@ -536,7 +594,7 @@ export const TicketView = () => {
           </div>
         </div>
       </>
-    )
+    );
   }
 
   if (!ticket) {
@@ -549,15 +607,23 @@ export const TicketView = () => {
           profile="https://img.freepik.com/photos-premium/photo-profil-vecteur-plat-homme-elegant-generee-par-ai_606187-310.jpg"
         />
         <div className="mx-auto max-w-7xl px-4 py-8 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-4 text-2xl font-bold text-gray-900">Ticket Not Found</h1>
-          <p className="mb-6 text-gray-600">The ticket you're looking for could not be found or has been deleted.</p>
-          <Button variant="primary" onClick={() => navigate("/tickets/ticketlist")}>
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+            Ticket Not Found
+          </h1>
+          <p className="mb-6 text-gray-600">
+            The ticket you're looking for could not be found or has been
+            deleted.
+          </p>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/tickets/ticketlist")}
+          >
             <ArrowLeftIcon className="mr-2 h-5 w-5" />
             Back to Tickets
           </Button>
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -582,10 +648,15 @@ export const TicketView = () => {
               </button>
             </li>
             <li>
-              <ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              <ChevronRightIcon
+                className="h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
             </li>
             <li>
-              <span className="text-sm font-medium text-gray-900">Ticket #{ticket.id}</span>
+              <span className="text-sm font-medium text-gray-900">
+                Ticket #{ticket.id}
+              </span>
             </li>
           </ol>
         </nav>
@@ -622,7 +693,10 @@ export const TicketView = () => {
               <PrinterIcon className="h-5 w-5" aria-hidden="true" />
               <span className="sr-only">Print Ticket</span>
             </button>
-            <Button variant="secondary" onClick={() => navigate("/tickets/ticketlist")}>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/tickets/ticketlist")}
+            >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back to List
             </Button>
@@ -644,15 +718,23 @@ export const TicketView = () => {
               </div>
 
               <div className="p-6">
-                <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+                <Tabs
+                  tabs={tabs}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                />
 
                 <div className="mt-6">
                   {/* Description Tab */}
                   {activeTab === 0 && (
                     <div className="space-y-6">
                       <div>
-                        <h3 className="mb-2 text-lg font-medium text-gray-900">Problem Description</h3>
-                        <p className="whitespace-pre-wrap text-gray-700">{ticket.description}</p>
+                        <h3 className="mb-2 text-lg font-medium text-gray-900">
+                          Problem Description
+                        </h3>
+                        <p className="whitespace-pre-wrap text-gray-700">
+                          {ticket.description}
+                        </p>
                       </div>
 
                       <hr className="my-6 border-gray-200" />
@@ -662,29 +744,39 @@ export const TicketView = () => {
                           <p className="mb-1 flex items-center text-sm font-medium text-gray-500">
                             <TagIcon className="mr-2 h-4 w-4" /> Category
                           </p>
-                          <p className="text-gray-900">{ticket?.problem?.type || "Uncategorized"}</p>
+                          <p className="text-gray-900">
+                            {ticket?.problem?.type || "Uncategorized"}
+                          </p>
                         </div>
 
                         <div>
                           <p className="mb-1 flex items-center text-sm font-medium text-gray-500">
                             <CalendarIcon className="mr-2 h-4 w-4" /> Created
                           </p>
-                          <p className="text-gray-900">{format(new Date(ticket.created_at), "PPpp")}</p>
+                          <p className="text-gray-900">
+                            {toUTCDateString(ticket.created_at)}
+                          </p>
                         </div>
 
                         <div>
                           <p className="mb-1 flex items-center text-sm font-medium text-gray-500">
-                            <UserCircleIcon className="mr-2 h-4 w-4" /> Created By
+                            <UserCircleIcon className="mr-2 h-4 w-4" /> Created
+                            By
                           </p>
-                          <p className="text-gray-900">{ticket.creator?.name || "Unknown"}</p>
+                          <p className="text-gray-900">
+                            {ticket.creator?.name || "Unknown"}
+                          </p>
                         </div>
 
                         {ticket.support_it && (
                           <div>
                             <p className="mb-1 flex items-center text-sm font-medium text-gray-500">
-                              <UserCircleIcon className="mr-2 h-4 w-4" /> Assigned To
+                              <UserCircleIcon className="mr-2 h-4 w-4" />{" "}
+                              Assigned To
                             </p>
-                            <p className="text-gray-900">{ticket.support_it?.name || "Unassigned"}</p>
+                            <p className="text-gray-900">
+                              {ticket.support_it?.name || "Unassigned"}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -694,11 +786,16 @@ export const TicketView = () => {
                   {/* Attachment Tab */}
                   {activeTab === 1 && ticket.attachement && (
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium text-gray-900">Attached File</h3>
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Attached File
+                      </h3>
 
                       <div className="overflow-hidden rounded-lg border border-gray-200">
                         {ticket.image && (
-                          <div className="relative cursor-pointer" onClick={() => setIsImageModalOpen(true)}>
+                          <div
+                            className="relative cursor-pointer"
+                            onClick={() => setIsImageModalOpen(true)}
+                          >
                             <img
                               src={ticket.image || "/placeholder.svg"}
                               alt="Ticket Attachment"
@@ -708,8 +805,8 @@ export const TicketView = () => {
                               <span className="text-sm">Click to enlarge</span>
                               <button
                                 onClick={(e) => {
-                                  e.stopPropagation()
-                                  downloadImage()
+                                  e.stopPropagation();
+                                  downloadImage();
                                 }}
                                 className="rounded-full bg-white/20 p-1.5 hover:bg-white/30"
                               >
@@ -722,7 +819,9 @@ export const TicketView = () => {
                         {!ticket.image && ticket.attachement && (
                           <div className="flex flex-col items-center justify-center bg-gray-50 p-8">
                             <DocumentTextIcon className="mb-4 h-12 w-12 text-gray-400" />
-                            <p className="mb-4 text-gray-700">File attachment available for download</p>
+                            <p className="mb-4 text-gray-700">
+                              File attachment available for download
+                            </p>
                             <Button variant="primary" onClick={downloadImage}>
                               <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
                               Download Attachment
@@ -739,7 +838,10 @@ export const TicketView = () => {
                 <div className="flex justify-end">
                   <div className="flex space-x-3">
                     {userRole === "client" && ticket.status === "opened" && (
-                      <Button variant="danger" onClick={() => setIsCloseDialogOpen(true)}>
+                      <Button
+                        variant="danger"
+                        onClick={() => setIsCloseDialogOpen(true)}
+                      >
                         <LockClosedIcon className="mr-2 h-5 w-5" />
                         Close Ticket
                       </Button>
@@ -755,7 +857,10 @@ export const TicketView = () => {
                         )}
 
                         {ticket.status === "reserved" && (
-                          <Button variant="success" onClick={() => setIsResolveDialogOpen(true)}>
+                          <Button
+                            variant="success"
+                            onClick={() => setIsResolveDialogOpen(true)}
+                          >
                             <CheckIcon className="mr-2 h-5 w-5" />
                             Resolve Ticket
                           </Button>
@@ -767,8 +872,8 @@ export const TicketView = () => {
                       <Button
                         variant="primary"
                         onClick={() => {
-                          setIsAssignModalOpen(true)
-                          fetchSupportUsers()
+                          setIsAssignModalOpen(true);
+                          fetchSupportUsers();
                         }}
                       >
                         <UserPlusIcon className="mr-2 h-5 w-5" />
@@ -786,15 +891,21 @@ export const TicketView = () => {
             {/* Creator info */}
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
-                <h3 className="text-base font-medium text-gray-900">Ticket Creator</h3>
+                <h3 className="text-base font-medium text-gray-900">
+                  Ticket Creator
+                </h3>
               </div>
 
               <div className="px-4 py-5 sm:px-6">
                 <div className="flex items-center">
                   <Avatar name={ticket.creator?.name} className="mr-3" />
                   <div>
-                    <p className="font-medium text-gray-900">{ticket.creator?.name}</p>
-                    <p className="text-sm text-gray-500">{ticket.creator?.email || "No email provided"}</p>
+                    <p className="font-medium text-gray-900">
+                      {ticket.creator?.name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {ticket.creator?.email || "No email provided"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -803,7 +914,9 @@ export const TicketView = () => {
             {/* Ticket status */}
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
-                <h3 className="text-base font-medium text-gray-900">Ticket Status</h3>
+                <h3 className="text-base font-medium text-gray-900">
+                  Ticket Status
+                </h3>
               </div>
 
               <div className="px-4 py-5 sm:px-6">
@@ -816,14 +929,25 @@ export const TicketView = () => {
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-500">Created:</span>
                     <span className="text-sm text-gray-900">
-                      {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
+                      {toUTCDateString(ticket.created_at)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-500">Resolved:</span>
+                    <span className="text-sm text-gray-900">
+                      {toUTCDateString(ticket.resolution_date)}
                     </span>
                   </div>
 
                   {ticket.support_it && (
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Assigned to:</span>
-                      <span className="text-sm font-medium text-gray-900">{ticket.support_it.name}</span>
+                      <span className="text-sm text-gray-500">
+                        Assigned to:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {ticket.support_it.name}
+                      </span>
                     </div>
                   )}
 
@@ -831,7 +955,7 @@ export const TicketView = () => {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Resolved:</span>
                       <span className="text-sm text-gray-900">
-                        {formatDistanceToNow(new Date(ticket.resolved_at), { addSuffix: true })}
+                        {toUTCDateString(ticket.resolved_at)}
                       </span>
                     </div>
                   )}
@@ -840,7 +964,7 @@ export const TicketView = () => {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Closed:</span>
                       <span className="text-sm text-gray-900">
-                        {formatDistanceToNow(new Date(ticket.closed_at), { addSuffix: true })}
+                        {toUTCDateString(ticket.closed_at)}
                       </span>
                     </div>
                   )}
@@ -851,7 +975,9 @@ export const TicketView = () => {
             {/* Tags */}
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
-                <h3 className="text-base font-medium text-gray-900">Categories & Tags</h3>
+                <h3 className="text-base font-medium text-gray-900">
+                  Categories & Tags
+                </h3>
               </div>
 
               <div className="px-4 py-5 sm:px-6">
@@ -868,8 +994,8 @@ export const TicketView = () => {
                         ticket.priority === "high"
                           ? "bg-red-100 text-red-800"
                           : ticket.priority === "medium"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-emerald-100 text-emerald-800"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-emerald-100 text-emerald-800"
                       }`}
                     >
                       {ticket.priority} priority
@@ -884,7 +1010,11 @@ export const TicketView = () => {
 
       {/* Image Preview Modal */}
       <Transition show={isImageModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsImageModalOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsImageModalOpen(false)}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -930,7 +1060,11 @@ export const TicketView = () => {
 
       {/* Assign Modal */}
       <Transition show={isAssignModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsAssignModalOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsAssignModalOpen(false)}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -957,7 +1091,10 @@ export const TicketView = () => {
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                   <div>
                     <div className="mt-3 text-center sm:mt-5">
-                      <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
                         Assign Ticket
                       </Dialog.Title>
                       <div className="mt-4">
@@ -966,7 +1103,9 @@ export const TicketView = () => {
                         </p>
                         <select
                           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
-                          onChange={(e) => setSelectedSupportUser(e.target.value)}
+                          onChange={(e) =>
+                            setSelectedSupportUser(e.target.value)
+                          }
                           value={selectedSupportUser}
                         >
                           <option value="">Select Support IT</option>
@@ -1007,7 +1146,11 @@ export const TicketView = () => {
 
       {/* History Drawer */}
       <Transition show={isHistoryDrawerOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsHistoryDrawerOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsHistoryDrawerOpen(false)}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"
@@ -1036,7 +1179,9 @@ export const TicketView = () => {
                     <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <div className="flex items-start justify-between">
-                          <Dialog.Title className="text-lg font-medium text-gray-900">Ticket History</Dialog.Title>
+                          <Dialog.Title className="text-lg font-medium text-gray-900">
+                            Ticket History
+                          </Dialog.Title>
                           <div className="ml-3 flex h-7 items-center">
                             <button
                               type="button"
@@ -1044,7 +1189,10 @@ export const TicketView = () => {
                               onClick={() => setIsHistoryDrawerOpen(false)}
                             >
                               <span className="sr-only">Close panel</span>
-                              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                              <XMarkIcon
+                                className="h-6 w-6"
+                                aria-hidden="true"
+                              />
                             </button>
                           </div>
                         </div>
@@ -1054,9 +1202,12 @@ export const TicketView = () => {
                           <div className="flex items-start space-x-3 rounded-lg bg-emerald-50 p-4">
                             <DocumentTextIcon className="h-6 w-6 text-emerald-600" />
                             <div>
-                              <h4 className="font-medium text-gray-900">Ticket Created</h4>
+                              <h4 className="font-medium text-gray-900">
+                                Ticket Created
+                              </h4>
                               <p className="text-sm text-gray-600">
-                                {format(new Date(ticket.created_at), "PPpp")} by {ticket.creator?.name}
+                                {toUTCDateString(ticket.created_at)} by{" "}
+                                {ticket.creator?.name}
                               </p>
                             </div>
                           </div>
@@ -1065,27 +1216,36 @@ export const TicketView = () => {
                             <div className="flex items-start space-x-3 rounded-lg bg-amber-50 p-4">
                               <ClockIcon className="h-6 w-6 text-amber-600" />
                               <div>
-                                <h4 className="font-medium text-gray-900">Ticket Reserved</h4>
+                                <h4 className="font-medium text-gray-900">
+                                  Ticket Reserved
+                                </h4>
                                 <p className="text-sm text-gray-600">
                                   {ticket.reserved_at
-                                    ? format(new Date(ticket.reserved_at), "PPpp")
+                                    ? toUTCDateString(ticket.reserved_at)
                                     : "Date not recorded"}
-                                  {ticket.support_it ? ` by ${ticket.support_it.name}` : ""}
+                                  {ticket.support_it
+                                    ? ` by ${ticket.support_it.name}`
+                                    : ""}
                                 </p>
                               </div>
                             </div>
                           )}
 
-                          {(ticket.status === "resolved" || ticket.status === "closed") && (
+                          {(ticket.status === "resolved" ||
+                            ticket.status === "closed") && (
                             <div className="flex items-start space-x-3 rounded-lg bg-blue-50 p-4">
                               <CheckCircleIcon className="h-6 w-6 text-blue-600" />
                               <div>
-                                <h4 className="font-medium text-gray-900">Ticket Resolved</h4>
+                                <h4 className="font-medium text-gray-900">
+                                  Ticket Resolved
+                                </h4>
                                 <p className="text-sm text-gray-600">
                                   {ticket.resolved_at
-                                    ? format(new Date(ticket.resolved_at), "PPpp")
+                                    ? toUTCDateString(ticket.resolved_at)
                                     : "Date not recorded"}
-                                  {ticket.resolved_by ? ` by Support Staff` : ""}
+                                  {ticket.resolved_by
+                                    ? ` by Support Staff`
+                                    : ""}
                                 </p>
                               </div>
                             </div>
@@ -1095,11 +1255,19 @@ export const TicketView = () => {
                             <div className="flex items-start space-x-3 rounded-lg bg-red-50 p-4">
                               <XCircleIcon className="h-6 w-6 text-red-600" />
                               <div>
-                                <h4 className="font-medium text-gray-900">Ticket Closed</h4>
+                                <h4 className="font-medium text-gray-900">
+                                  Ticket Closed
+                                </h4>
                                 <p className="text-sm text-gray-600">
-                                  {ticket.closed_at ? format(new Date(ticket.closed_at), "PPpp") : "Date not recorded"}
+                                  {ticket.closed_at
+                                    ? toUTCDateString(ticket.closed_at)
+                                    : "Date not recorded"}
                                   {ticket.closed_by
-                                    ? ` by ${ticket.closed_by === ticket.created_by ? "Creator" : "Support Staff"}`
+                                    ? ` by ${
+                                        ticket.closed_by === ticket.created_by
+                                          ? "Creator"
+                                          : "Support Staff"
+                                      }`
                                     : ""}
                                 </p>
                               </div>
@@ -1109,7 +1277,10 @@ export const TicketView = () => {
                       </div>
                       <div className="border-t border-gray-200 px-4 py-4 sm:px-6">
                         <div className="flex justify-end space-x-3">
-                          <Button variant="secondary" onClick={() => setIsHistoryDrawerOpen(false)}>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setIsHistoryDrawerOpen(false)}
+                          >
                             Close
                           </Button>
                           <Button variant="primary" onClick={handlePrint}>
@@ -1129,7 +1300,11 @@ export const TicketView = () => {
 
       {/* Confirmation Dialogs */}
       <Transition show={isCloseDialogOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsCloseDialogOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsCloseDialogOpen(false)}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -1156,24 +1331,39 @@ export const TicketView = () => {
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                   <div className="sm:flex sm:items-start">
                     <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                      <ExclamationTriangleIcon
+                        className="h-6 w-6 text-red-600"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
                         Close Ticket
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          Are you sure you want to close this ticket? This action cannot be undone.
+                          Are you sure you want to close this ticket? This
+                          action cannot be undone.
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <Button variant="danger" onClick={handleCloseTicket} className="sm:ml-3">
+                    <Button
+                      variant="danger"
+                      onClick={handleCloseTicket}
+                      className="sm:ml-3"
+                    >
                       Close Ticket
                     </Button>
-                    <Button variant="secondary" onClick={() => setIsCloseDialogOpen(false)} className="mt-3 sm:mt-0">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsCloseDialogOpen(false)}
+                      className="mt-3 sm:mt-0"
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -1185,7 +1375,11 @@ export const TicketView = () => {
       </Transition>
 
       <Transition show={isResolveDialogOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsResolveDialogOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsResolveDialogOpen(false)}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -1212,22 +1406,38 @@ export const TicketView = () => {
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                   <div className="sm:flex sm:items-start">
                     <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <CheckCircleIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+                      <CheckCircleIcon
+                        className="h-6 w-6 text-green-600"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
                         Resolve Ticket
                       </Dialog.Title>
                       <div className="mt-2">
-                        <p className="text-sm text-gray-500">Are you sure you want to mark this ticket as resolved?</p>
+                        <p className="text-sm text-gray-500">
+                          Are you sure you want to mark this ticket as resolved?
+                        </p>
                       </div>
                     </div>
                   </div>
                   <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <Button variant="success" onClick={handleResolve} className="sm:ml-3">
+                    <Button
+                      variant="success"
+                      onClick={handleResolve}
+                      className="sm:ml-3"
+                    >
                       Resolve
                     </Button>
-                    <Button variant="secondary" onClick={() => setIsResolveDialogOpen(false)} className="mt-3 sm:mt-0">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsResolveDialogOpen(false)}
+                      className="mt-3 sm:mt-0"
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -1238,7 +1448,7 @@ export const TicketView = () => {
         </Dialog>
       </Transition>
     </>
-  )
-}
+  );
+};
 
-export default TicketView
+export default TicketView;
