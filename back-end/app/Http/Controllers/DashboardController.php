@@ -304,24 +304,39 @@ class DashboardController extends Controller
 
     private function getResponseTimeTrend()
     {
-        return Ticket::selectRaw('
+        // Generate data for the last 6 weeks (42 days)
+        $startDate = now()->subDays(42);
+        
+        // Get actual ticket data where available
+        $actualData = Ticket::selectRaw('
             DATE(created_at) as date,
-            AVG(TIMESTAMPDIFF(MINUTE, created_at, first_response_at)) as responseTime,
-            AVG(TIMESTAMPDIFF(HOUR, created_at, resolution_date)) as resolutionTime
+            AVG(CASE 
+                WHEN first_response_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, first_response_at)
+                WHEN resolution_date IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, resolution_date)
+                ELSE NULL 
+            END) as responseTime,
+            AVG(CASE 
+                WHEN resolution_date IS NOT NULL THEN TIMESTAMPDIFF(HOUR, created_at, resolution_date)
+                ELSE NULL 
+            END) as resolutionTime
         ')
-        ->whereNotNull('first_response_at')
-        ->whereNotNull('resolution_date')
-        ->where('created_at', '>=', now()->subDays(30))
+        ->where('created_at', '>=', $startDate)
+        ->where(function($query) {
+            $query->whereNotNull('first_response_at')
+                  ->orWhereNotNull('resolution_date');
+        })
         ->groupBy('date')
         ->orderBy('date')
-        ->get()
-        ->map(function ($item) {
+        ->get();
+
+        // Only return actual data points, no filling of missing dates
+        return $actualData->map(function ($item) {
             return [
                 'date' => $item->date,
-                'responseTime' => round($item->responseTime),
-                'resolutionTime' => round($item->resolutionTime)
+                'responseTime' => round($item->responseTime ?? 0),
+                'resolutionTime' => round($item->resolutionTime ?? 0, 1)
             ];
-        });
+        })->toArray();
     }
 
     private function calculateResponseTimeChange()

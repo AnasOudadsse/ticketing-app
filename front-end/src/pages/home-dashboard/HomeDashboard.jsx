@@ -512,7 +512,10 @@ export default function Dashboard() {
   }
   const responseTimeData = {
     data: (dashboardData?.responseTimeData?.data || []).map((item) => ({
-      date: item.date,
+      date: new Date(item.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
       responseTime: item.responseTime || 0,
       resolutionTime: item.resolutionTime || 0,
     })),
