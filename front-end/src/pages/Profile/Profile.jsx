@@ -205,6 +205,11 @@ export const ProfilePage = () => {
                       justifyContent="space-between"
                     >
                       <Box>
+                        {ticket.problem && (
+                          <Text fontSize="xs" color="gray.500" mb={1}>
+                            {ticket.problem.name}
+                          </Text>
+                        )}
                         <Text fontWeight="bold">{ticket.title}</Text>
                         <Badge
                           colorScheme={

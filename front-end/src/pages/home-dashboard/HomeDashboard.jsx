@@ -1080,7 +1080,14 @@ export default function Dashboard() {
                         >
                           <div className="flex-1 space-y-1">
                             <div className="flex items-center justify-between">
-                              <p className="font-medium">{ticket.title}</p>
+                              <div>
+                                {ticket.problem && (
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                    {ticket.problem.name}
+                                  </p>
+                                )}
+                                <p className="font-medium">{ticket.title}</p>
+                              </div>
                               <div className="flex space-x-2">
                                 <Badge
                                   className={`${getStatusColor(

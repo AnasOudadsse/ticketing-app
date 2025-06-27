@@ -250,7 +250,8 @@ function fetchUser(Request $request, $id) {
         // $ticketsAssigned = Ticket::where('assigned_by', $user->id)->count();
         
         // Fetch recent tickets assigned or resolved by the user
-        $recentTickets = Ticket::where('resolved_by', $user->id)
+        $recentTickets = Ticket::with('problem')
+                                ->where('resolved_by', $user->id)
                                 ->orWhere('reserved_by', $user->id)
                                 ->orderBy('updated_at', 'desc')
                                 ->take(4) // Limit to the 5 most recent tickets

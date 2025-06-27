@@ -143,8 +143,8 @@ class DashboardController extends Controller
                     ];
                 });
 
-            // Get 5 most recent tickets with creator
-            $recentTickets = Ticket::with('creator')->orderBy('created_at', 'desc')->take(5)->get();
+            // Get 5 most recent tickets with creator and problem
+            $recentTickets = Ticket::with(['creator', 'problem'])->orderBy('created_at', 'desc')->take(5)->get();
 
             return response()->json([
                 'totalTickets' => $totalTickets,
