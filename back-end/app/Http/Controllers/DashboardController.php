@@ -68,7 +68,7 @@ class DashboardController extends Controller
                 ->values();
 
             // Get top performing agents
-            $topAgents = User::where('role', 'support')
+            $topAgents = User::where('role', 'supportIt')
                 ->withCount(['resolvedTickets' => function($query) {
                     $query->where('status', 'resolved');
                 }])
@@ -82,7 +82,7 @@ class DashboardController extends Controller
                         'avatar' => $agent->avatar,
                         'department' => $agent->department?->name,
                         'resolvedTickets' => $agent->resolved_tickets_count,
-                        'performance' => rand(85, 98) // This should be calculated based on actual metrics
+                        'performance' => $this->calculateAgentPerformance($agent)
                     ];
                 });
 
@@ -122,18 +122,16 @@ class DashboardController extends Controller
             ];
 
             // Get agent workload
-            $agentWorkload = User::where('role', 'support')
-                ->withCount(['tickets as currentWorkload' => function($query) {
-                    $query->whereIn('status', ['opened', 'reserved']);
-                }])
+            $agentWorkload = User::where('role', 'supportIt')
+                ->withCount(['reservedTickets as totalAssigned'])
                 ->get()
                 ->map(function($agent) {
                     return [
                         'id' => $agent->id,
                         'name' => $agent->name,
                         'avatar' => $agent->avatar,
-                        'currentWorkload' => $agent->currentWorkload,
-                        'capacity' => 10, // This should be configurable per agent
+                        'currentWorkload' => $agent->totalAssigned, // Total tickets assigned to this agent
+                        'capacity' => $agent->resolvedTickets()->count(), // Tickets resolved by this agent
                         'resolvedTickets' => $agent->resolvedTickets()->count()
                     ];
                 });
@@ -163,15 +161,13 @@ class DashboardController extends Controller
 
     private function calculateAgentPerformance($agent)
     {
-        $totalTickets = $agent->tickets()->count();
+        $totalTickets = $agent->reservedTickets()->count();
         if ($totalTickets === 0) return 0;
 
-        $resolvedTickets = $agent->tickets()->where('status', 'resolved')->count();
-        $satisfactionScore = $agent->tickets()
-            ->whereNotNull('satisfaction_rating')
-            ->avg('satisfaction_rating') ?? 5;
-
-        return round(($resolvedTickets / $totalTickets) * 100 * ($satisfactionScore / 5));
+        $resolvedTickets = $agent->resolvedTickets()->count();
+        
+        // Calculate performance based on resolution rate only
+        return round(($resolvedTickets / $totalTickets) * 100);
     }
 
     private function getSLAMetrics()
