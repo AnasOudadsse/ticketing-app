@@ -27,10 +27,17 @@ class DashboardController extends Controller
                 ->count();
             
             // Calculate average response time (in minutes)
-            $avgResponseTime = Ticket::whereNotNull('first_response_at')
-                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, first_response_at)) as avg_time')
-                ->first()
-                ->avg_time ?? 0;
+            $avgResponseTime = Ticket::where(function($query) {
+                $query->whereNotNull('first_response_at')
+                      ->orWhereNotNull('resolution_date');
+            })
+            ->selectRaw('AVG(CASE 
+                WHEN first_response_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, first_response_at)
+                WHEN resolution_date IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, resolution_date)
+                ELSE NULL 
+            END) as avg_time')
+            ->first()
+            ->avg_time ?? 0;
 
             // Get ticket status distribution
             $ticketStatus = Ticket::selectRaw('status, COUNT(*) as count')

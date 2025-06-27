@@ -842,10 +842,21 @@ export default function Dashboard() {
                   <div className="flex items-center mt-2 text-sm">
                     <Badge
                       variant="outline"
-                      className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0"
+                      className={`${
+                        responseTimeData.current.responseTime
+                          .changeDirection === "decrease"
+                          ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                          : "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400"
+                      } border-0`}
                     >
-                      <ArrowDownIcon className="h-3.5 w-3.5 mr-1" />
-                      5% from last week
+                      {responseTimeData.current.responseTime.changeDirection ===
+                      "decrease" ? (
+                        <ArrowDownIcon className="h-3.5 w-3.5 mr-1" />
+                      ) : (
+                        <ArrowUpIcon className="h-3.5 w-3.5 mr-1" />
+                      )}
+                      {Math.abs(responseTimeData.current.responseTime.change)}%
+                      from last week
                     </Badge>
                   </div>
                 </CardContent>
