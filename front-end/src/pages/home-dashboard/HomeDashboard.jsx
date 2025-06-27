@@ -1150,18 +1150,18 @@ export default function Dashboard() {
                                 <Avatar className="h-5 w-5 border border-slate-200 dark:border-slate-700">
                                   <AvatarImage
                                     src={
-                                      ticket.user.avatar ||
+                                      ticket?.user?.avatar ||
                                       "/placeholder.svg?height=40&width=40&query=user"
                                     }
-                                    alt={ticket.user.name}
+                                    alt={ticket?.user?.name}
                                   />
                                   <AvatarFallback className="text-[10px]">
-                                    {ticket.user.name.charAt(0)}
+                                    {ticket?.user?.name?.charAt(0)}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span>{ticket.user.name}</span>
+                                <span>{ticket?.user?.name}</span>
                               </div>
-                              <span>{ticket.createdAt}</span>
+                              <span>{ticket?.createdAt}</span>
                             </div>
                           </div>
                         </div>

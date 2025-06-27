@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Ticket;
+use App\Models\Department;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -50,9 +51,9 @@ class User extends Authenticatable
         return $this->belongsTo(Fonction::class);
     }
 
-    public function departement()
+    public function department()
     {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Department::class, 'departement_id');
     }
 
     public function localisation()

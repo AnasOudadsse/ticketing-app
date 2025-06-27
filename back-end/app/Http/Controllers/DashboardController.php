@@ -47,18 +47,25 @@ class DashboardController extends Controller
                 ->groupBy('date')
                 ->get();
 
-            // Get department distribution
-            $departmentData = Department::withCount([
-                'tickets as opened' => function($query) {
-                    $query->whereIn('status', ['opened', 'reserved']);
-                },
-                'tickets as resolved' => function($query) {
-                    $query->where('status', 'resolved');
-                },
-                'tickets as closed' => function($query) {
-                    $query->where('status', 'closed');
-                }
-            ])->get();
+            // Get department distribution by ticket creator's department
+            $departmentData = User::with('department')
+                ->whereHas('tickets')
+                ->get()
+                ->groupBy(function($user) {
+                    return $user->department ? $user->department->name : 'Unknown';
+                })
+                ->map(function($users, $deptName) {
+                    $tickets = $users->flatMap(function($user) {
+                        return $user->tickets;
+                    });
+                    return [
+                        'name' => $deptName,
+                        'opened' => $tickets->whereIn('status', ['opened', 'reserved'])->count(),
+                        'resolved' => $tickets->where('status', 'resolved')->count(),
+                        'closed' => $tickets->where('status', 'closed')->count(),
+                    ];
+                })
+                ->values();
 
             // Get top performing agents
             $topAgents = User::where('role', 'support')
@@ -131,6 +138,9 @@ class DashboardController extends Controller
                     ];
                 });
 
+            // Get 5 most recent tickets with creator
+            $recentTickets = Ticket::with('creator')->orderBy('created_at', 'desc')->take(5)->get();
+
             return response()->json([
                 'totalTickets' => $totalTickets,
                 'openTickets' => $openTickets,
@@ -143,7 +153,8 @@ class DashboardController extends Controller
                 'topAgents' => $topAgents,
                 'slaMetrics' => $slaMetrics,
                 'responseTimeData' => $responseTimeData,
-                'agentWorkload' => $agentWorkload
+                'agentWorkload' => $agentWorkload,
+                'recentTickets' => $recentTickets
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

@@ -102,6 +102,16 @@ class StatistiqueController extends Controller
         $materialActive = 150;
         $materialInActive = 50;
 
-        return response()->json(["users" => $users, "tickets" => $tickets, "material" => $material, "materialActive" => $materialActive, "materialInActive" => $materialInActive]);
+        // Fetch 5 most recent tickets
+        $recentTickets = Ticket::orderBy('created_at', 'desc')->take(5)->get();
+
+        return response()->json([
+            "users" => $users,
+            "tickets" => $tickets,
+            "material" => $material,
+            "materialActive" => $materialActive,
+            "materialInActive" => $materialInActive,
+            "recentTickets" => $recentTickets
+        ]);
     }
 }

@@ -166,7 +166,7 @@ public function update(Request $request, $id)
     public function getUser(Request $request)
 {
     try {
-        $user = $request->user()->load(['fonction', 'departement', 'localisation', 'specialisations']);
+        $user = $request->user()->load(['fonction', 'department', 'localisation', 'specialisations']);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -178,7 +178,7 @@ public function update(Request $request, $id)
             'email' => $user->email,
             'role' => $user->role,
             'function' => $user->fonction ? $user->fonction->name : 'No function assigned',
-            'departement' => $user->departement ? $user->departement->name : 'No department assigned',
+            'department' => $user->department ? $user->department->name : 'No department assigned',
             'localisation' => $user->localisation ? $user->localisation->name : 'No location assigned',
         ]);
     }  catch (\Exception $e) {
