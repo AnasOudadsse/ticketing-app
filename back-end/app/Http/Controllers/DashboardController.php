@@ -200,14 +200,37 @@ class DashboardController extends Controller
 
     private function calculateSLACompliance($field, $minutes)
     {
-        $total = Ticket::whereNotNull($field)->count();
-        if ($total === 0) return 0;
+        if ($field === 'first_response_at') {
+            // For first response time, consider tickets that were resolved within SLA as having responded within SLA
+            $total = Ticket::where(function($query) {
+                $query->whereNotNull('first_response_at')
+                      ->orWhereNotNull('resolution_date');
+            })->count();
+            
+            if ($total === 0) return 0;
 
-        $compliant = Ticket::whereNotNull($field)
-            ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, $field) <= ?", [$minutes])
-            ->count();
+            $compliant = Ticket::where(function($query) use ($minutes) {
+                $query->where(function($q) use ($minutes) {
+                    $q->whereNotNull('first_response_at')
+                      ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, first_response_at) <= ?", [$minutes]);
+                })->orWhere(function($q) use ($minutes) {
+                    $q->whereNotNull('resolution_date')
+                      ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, resolution_date) <= ?", [$minutes]);
+                });
+            })->count();
 
-        return round(($compliant / $total) * 100);
+            return round(($compliant / $total) * 100);
+        } else {
+            // For other fields (like resolution_date), use the original logic
+            $total = Ticket::whereNotNull($field)->count();
+            if ($total === 0) return 0;
+
+            $compliant = Ticket::whereNotNull($field)
+                ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, $field) <= ?", [$minutes])
+                ->count();
+
+            return round(($compliant / $total) * 100);
+        }
     }
 
     private function calculateSatisfactionRate()

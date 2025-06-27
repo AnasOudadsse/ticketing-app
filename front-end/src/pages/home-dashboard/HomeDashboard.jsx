@@ -497,7 +497,19 @@ export default function Dashboard() {
   }));
 
   const topAgents = dashboardData?.topAgents || [];
-  const slaMetrics = dashboardData?.slaMetrics || [];
+  let slaMetrics = dashboardData?.slaMetrics || [];
+  // If Customer Satisfaction is present in backend, add it to slaMetrics
+  if (dashboardData?.satisfactionData?.average) {
+    slaMetrics = [
+      ...slaMetrics,
+      {
+        name: "Customer Satisfaction",
+        description: "Average customer satisfaction rating (1-5 stars)",
+        value: Math.round((dashboardData.satisfactionData.average / 5) * 100),
+        target: 90,
+      },
+    ];
+  }
   const responseTimeData = {
     data: (dashboardData?.responseTimeData?.data || []).map((item) => ({
       date: item.date,
@@ -904,76 +916,6 @@ export default function Dashboard() {
                         </span>
                       </div>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Priority Distribution */}
-              <Card className="col-span-3 overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-lg transition-all duration-200 border-0">
-                <CardHeader className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-base">
-                        Ticket Priority
-                      </CardTitle>
-                      <CardDescription>
-                        Distribution of tickets by priority
-                      </CardDescription>
-                    </div>
-                    <PieChartIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadialBarChart
-                        innerRadius="30%"
-                        outerRadius="100%"
-                        data={ticketPriorityData}
-                        startAngle={180}
-                        endAngle={0}
-                      >
-                        <RadialBar
-                          minAngle={15}
-                          background
-                          clockWise={true}
-                          dataKey="value"
-                          cornerRadius={10}
-                        >
-                          {ticketPriorityData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </RadialBar>
-                        <Legend
-                          iconSize={10}
-                          layout="vertical"
-                          verticalAlign="middle"
-                          align="right"
-                          formatter={(value) => {
-                            const item = ticketPriorityData.find(
-                              (d) => d.name === value
-                            );
-                            return (
-                              <span className="text-xs font-medium">
-                                {value}: {item?.value}
-                              </span>
-                            );
-                          }}
-                        />
-                        <RechartsTooltip
-                          formatter={(value, name) => [
-                            `${value} tickets`,
-                            name,
-                          ]}
-                          contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.9)",
-                            borderRadius: "8px",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                            border: "none",
-                          }}
-                        />
-                      </RadialBarChart>
-                    </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
