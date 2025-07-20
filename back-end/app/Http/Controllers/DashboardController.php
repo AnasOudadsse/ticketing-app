@@ -172,9 +172,8 @@ class DashboardController extends Controller
         if ($totalTickets === 0) return 0;
 
         $resolvedTickets = $agent->resolvedTickets()->count();
-        
-        // Calculate performance based on resolution rate only
-        return round(($resolvedTickets / $totalTickets) * 100);
+        if ($totalTickets === 0) return 0; // Extra safety
+        return $totalTickets > 0 ? round(($resolvedTickets / $totalTickets) * 100) : 0;
     }
 
     private function getSLAMetrics()
@@ -204,12 +203,10 @@ class DashboardController extends Controller
     private function calculateSLACompliance($field, $minutes)
     {
         if ($field === 'first_response_at') {
-            // For first response time, consider tickets that were resolved within SLA as having responded within SLA
             $total = Ticket::where(function($query) {
                 $query->whereNotNull('first_response_at')
                       ->orWhereNotNull('resolution_date');
             })->count();
-            
             if ($total === 0) return 0;
 
             $compliant = Ticket::where(function($query) use ($minutes) {
@@ -222,18 +219,17 @@ class DashboardController extends Controller
                 });
             })->count();
 
-            return round(($compliant / $total) * 100);
-        } else {
-            // For other fields (like resolution_date), use the original logic
-            $total = Ticket::whereNotNull($field)->count();
-            if ($total === 0) return 0;
-
-            $compliant = Ticket::whereNotNull($field)
-                ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, $field) <= ?", [$minutes])
-                ->count();
-
-            return round(($compliant / $total) * 100);
+            return $total > 0 ? round(($compliant / $total) * 100) : 0;
         }
+        // For other fields (like resolution_date), use the original logic
+        $total = Ticket::whereNotNull($field)->count();
+        if ($total === 0) return 0;
+
+        $compliant = Ticket::whereNotNull($field)
+            ->whereRaw("TIMESTAMPDIFF(MINUTE, created_at, $field) <= ?", [$minutes])
+            ->count();
+
+        return $total > 0 ? round(($compliant / $total) * 100) : 0;
     }
 
     private function calculateSatisfactionRate()
@@ -245,7 +241,7 @@ class DashboardController extends Controller
             ->where('satisfaction_rating', '>=', 4)
             ->count();
 
-        return round(($satisfied / $total) * 100);
+        return $total > 0 ? round(($satisfied / $total) * 100) : 0;
     }
 
     private function getResponseTimeData()
@@ -286,13 +282,10 @@ class DashboardController extends Controller
     private function calculateChange($values)
     {
         if (count($values) < 2) return 0;
-        
         $current = end($values);
         $previous = prev($values);
-        
         if ($previous === 0) return 0;
-        
-        return round((($current - $previous) / $previous) * 100);
+        return $previous != 0 ? round((($current - $previous) / $previous) * 100) : 0;
     }
 
     private function getChangeDirection($values)
@@ -346,13 +339,14 @@ class DashboardController extends Controller
     {
         $currentPeriod = Ticket::whereNotNull('first_response_at')
             ->where('created_at', '>=', now()->subDays(7))
-            ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, first_response_at)')) ?? 0;
+            ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, first_response_at)'));
 
         $previousPeriod = Ticket::whereNotNull('first_response_at')
             ->whereBetween('created_at', [now()->subDays(14), now()->subDays(7)])
-            ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, first_response_at)')) ?? 0;
+            ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, first_response_at)'));
 
-        if ($previousPeriod === 0) return 0;
+        if (empty($previousPeriod) || $previousPeriod == 0) return 0;
+        if (empty($currentPeriod)) $currentPeriod = 0;
         return round((($currentPeriod - $previousPeriod) / $previousPeriod) * 100);
     }
 
@@ -360,13 +354,14 @@ class DashboardController extends Controller
     {
         $currentPeriod = Ticket::whereNotNull('resolution_date')
             ->where('created_at', '>=', now()->subDays(7))
-            ->avg(DB::raw('TIMESTAMPDIFF(HOUR, created_at, resolution_date)')) ?? 0;
+            ->avg(DB::raw('TIMESTAMPDIFF(HOUR, created_at, resolution_date)'));
 
         $previousPeriod = Ticket::whereNotNull('resolution_date')
             ->whereBetween('created_at', [now()->subDays(14), now()->subDays(7)])
-            ->avg(DB::raw('TIMESTAMPDIFF(HOUR, created_at, resolution_date)')) ?? 0;
+            ->avg(DB::raw('TIMESTAMPDIFF(HOUR, created_at, resolution_date)'));
 
-        if ($previousPeriod === 0) return 0;
+        if (empty($previousPeriod) || $previousPeriod == 0) return 0;
+        if (empty($currentPeriod)) $currentPeriod = 0;
         return round((($currentPeriod - $previousPeriod) / $previousPeriod) * 100);
     }
 
@@ -422,7 +417,8 @@ class DashboardController extends Controller
         $recommendationRate = 0;
         $ticketsWithRecommendation = $ratedTickets->whereNotNull('would_recommend');
         if ($ticketsWithRecommendation->isNotEmpty()) {
-            $recommendationRate = ($ticketsWithRecommendation->where('would_recommend', true)->count() / $ticketsWithRecommendation->count()) * 100;
+            $recommendationCount = $ticketsWithRecommendation->count();
+            $recommendationRate = $recommendationCount > 0 ? ($ticketsWithRecommendation->where('would_recommend', true)->count() / $recommendationCount) * 100 : 0;
         }
 
         return response()->json([
